@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7jgq(c#afx@wf5#@8o11xcygx7=phpo0u+r1=c@f#8g-w6)h@h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -75,8 +76,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -97,7 +102,7 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'accounts.User'
 
 RAZORPAY_KEY_ID = "rzp_test_Sg6BHzNMfwUkQ7"
-RAZORPAY_KEY_SECRET = "7vB9bPCUcKqrw6Za2c3X9N2v"
+RAZORPAY_KEY_SECRET = config("SECRET_KEY")
 
 
 # Password validation

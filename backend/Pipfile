@@ -8,11 +8,11 @@ django = "*"
 djangorestframework = "*"
 django-filter = "*"
 pillow = "*"
-python-decouple = "*"
 razorpay = "*"
-psycopg2-binary = "*"
 django-cors-headers = "*"
 djangorestframework-simplejwt = "*"
+python-decouple = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
