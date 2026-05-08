@@ -1,4 +1,4 @@
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Drawer } from "antd";
 import {
   DashboardOutlined,
   UserOutlined,
@@ -8,21 +8,43 @@ import {
   HistoryOutlined,
   CalendarOutlined,
   UsergroupAddOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  MenuOutlined
 } from "@ant-design/icons";
+
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const { Sider } = Layout;
 
 export default function Sidebar() {
+
   const router = useRouter();
+
   const [role, setRole] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+
     if (typeof window !== "undefined") {
+
       setRole(localStorage.getItem("role"));
+
+      // 🔥 MOBILE CHECK
+      const checkScreen = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+
+      checkScreen();
+
+      window.addEventListener("resize", checkScreen);
+
+      return () => {
+        window.removeEventListener("resize", checkScreen);
+      };
     }
+
   }, []);
 
   const handleLogout = () => {
@@ -30,7 +52,7 @@ export default function Sidebar() {
     window.location.href = "/login";
   };
 
-  // 🔥 BASE MENU (ALL USERS)
+  // 🔥 COMMON MENU
   let items = [
     {
       key: "/dashboard",
@@ -56,6 +78,7 @@ export default function Sidebar() {
 
   // 👑 ADMIN MENU
   if (role === "admin") {
+
     items.push(
       {
         key: "/team-performance",
@@ -82,13 +105,12 @@ export default function Sidebar() {
 
   // 🧑‍💼 MANAGER MENU
   if (role === "manager") {
+
     items.push({
       key: "/team",
       icon: <UsergroupAddOutlined />,
       label: "My Team",
     });
-
-    
   }
 
   // 🔥 LOGOUT
@@ -99,19 +121,10 @@ export default function Sidebar() {
     danger: true,
   });
 
-  return (
-    <Sider
-      width={230}
-      style={{
-        background: "#0f172a",
-        height: "100vh",
-        position: "fixed",
-        left: 0,
-        top: 0,
-        bottom: 0,
-      }}
-    >
-      {/* 🔥 LOGO / BRAND */}
+  // 🔥 MENU COMPONENT
+  const sidebarMenu = (
+    <>
+      {/* 🔥 BRAND */}
       <div
         style={{
           color: "#fff",
@@ -137,13 +150,86 @@ export default function Sidebar() {
         }}
         items={items}
         onClick={({ key }) => {
+
           if (key === "logout") {
+
             handleLogout();
+
           } else {
+
             router.push(key);
+
+            // 🔥 AUTO CLOSE MOBILE DRAWER
+            if (isMobile) {
+              setMobileOpen(false);
+            }
           }
         }}
       />
-    </Sider>
+    </>
+  );
+
+  return (
+    <>
+
+      {/* 🔥 MOBILE MENU BUTTON */}
+      {isMobile && (
+        <div
+          style={{
+            position: "fixed",
+            top: 18,
+            left: 15,
+            zIndex: 1000,
+            background: "#0f172a",
+            padding: "8px 10px",
+            borderRadius: 8,
+            cursor: "pointer",
+          }}
+          onClick={() => setMobileOpen(true)}
+        >
+          <MenuOutlined
+            style={{
+              color: "#fff",
+              fontSize: 20,
+            }}
+          />
+        </div>
+      )}
+
+      {/* 🔥 DESKTOP SIDEBAR */}
+      {!isMobile && (
+        <Sider
+          width={230}
+          style={{
+            background: "#0f172a",
+            height: "100vh",
+            position: "fixed",
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}
+        >
+          {sidebarMenu}
+        </Sider>
+      )}
+
+      {/* 🔥 MOBILE DRAWER */}
+      {isMobile && (
+        <Drawer
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          placement="left"
+          closable={false}
+          bodyStyle={{
+            padding: 0,
+            background: "#0f172a",
+          }}
+          width={230}
+        >
+          {sidebarMenu}
+        </Drawer>
+      )}
+
+    </>
   );
 }

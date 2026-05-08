@@ -10,7 +10,7 @@ from datetime import timedelta
 from .models import Subscription
 
 
-# 🔹 PLAN CONFIG (price + duration)
+# 🔥 PLAN CONFIG
 PLAN_DETAILS = {
     "basic": {
         "price": 199,
@@ -27,31 +27,45 @@ PLAN_DETAILS = {
 }
 
 
-# 🔹 CREATE ORDER
+# 🔥 CREATE ORDER
 class CreateOrder(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        client = razorpay.Client(
-            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-        )
+
+        # 🔒 Razorpay keys check
+        if not hasattr(settings, "RAZORPAY_KEY_ID") or not hasattr(settings, "RAZORPAY_KEY_SECRET"):
+            return Response({
+                "error": "Razorpay keys missing in settings"
+            }, status=500)
 
         plan = request.data.get("plan")
 
         # ❌ invalid plan
         if plan not in PLAN_DETAILS:
-            return Response({"error": "Invalid plan"}, status=400)
+            return Response({
+                "error": "Invalid plan"
+            }, status=400)
 
         amount = PLAN_DETAILS[plan]["price"]
 
         try:
+
+            client = razorpay.Client(
+                auth=(
+                    settings.RAZORPAY_KEY_ID,
+                    settings.RAZORPAY_KEY_SECRET
+                )
+            )
+
             order = client.order.create({
-                "amount": amount * 100,  # paise
+                "amount": int(amount * 100),
                 "currency": "INR",
                 "payment_capture": 1
             })
 
             return Response({
+                "success": True,
                 "order_id": order["id"],
                 "amount": amount,
                 "plan": plan,
@@ -59,22 +73,32 @@ class CreateOrder(APIView):
             })
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+
+            print("RAZORPAY ERROR:", str(e))
+
+            return Response({
+                "error": "Unable to create payment order"
+            }, status=500)
 
 
-# 🔹 VERIFY PAYMENT & ACTIVATE SUBSCRIPTION
+# 🔥 VERIFY PAYMENT
 class VerifyPayment(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        client = razorpay.Client(
-            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-        )
-
-        data = request.data
 
         try:
-            # 🔐 verify signature
+
+            client = razorpay.Client(
+                auth=(
+                    settings.RAZORPAY_KEY_ID,
+                    settings.RAZORPAY_KEY_SECRET
+                )
+            )
+
+            data = request.data
+
+            # 🔒 VERIFY SIGNATURE
             client.utility.verify_payment_signature({
                 "razorpay_order_id": data.get("razorpay_order_id"),
                 "razorpay_payment_id": data.get("razorpay_payment_id"),
@@ -85,17 +109,21 @@ class VerifyPayment(APIView):
 
             # ❌ invalid plan
             if plan not in PLAN_DETAILS:
-                return Response({"error": "Invalid plan"}, status=400)
+                return Response({
+                    "error": "Invalid plan"
+                }, status=400)
 
-            # 🔥 पुरानी subscription deactivate करो
+            # 🔥 deactivate old subscription
             Subscription.objects.filter(
                 user=request.user,
                 is_active=True
             ).update(is_active=False)
 
-            # 🔥 नई subscription बनाओ
+            # 🔥 create new subscription
             start = now()
-            end = start + timedelta(days=PLAN_DETAILS[plan]["days"])
+            end = start + timedelta(
+                days=PLAN_DETAILS[plan]["days"]
+            )
 
             Subscription.objects.create(
                 user=request.user,
@@ -106,10 +134,16 @@ class VerifyPayment(APIView):
             )
 
             return Response({
-                "msg": "Payment successful, subscription activated",
+                "success": True,
+                "message": "Subscription activated",
                 "plan": plan,
                 "valid_till": end
             })
 
         except Exception as e:
-            return Response({"error": "Payment verification failed"}, status=400)
+
+            print("VERIFY ERROR:", str(e))
+
+            return Response({
+                "error": "Payment verification failed"
+            }, status=400)

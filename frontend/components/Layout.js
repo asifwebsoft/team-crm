@@ -19,13 +19,25 @@ export default function MainLayout({ children }) {
 
         {/* 🔥 CONTENT */}
         <Content
-          style={{
-            marginLeft: 240,
-            marginTop: 10,
-            padding: 20,
-            background: "#f5f5f5",
-            minHeight: "100vh",
-          }}
+            style={{
+              padding:
+                typeof window !== "undefined" &&
+                window.innerWidth < 768
+                  ? 10
+                  : 20,
+
+              background: "#f5f5f5",
+
+              minHeight: "100vh",
+
+              marginLeft:
+                typeof window !== "undefined" &&
+                window.innerWidth < 768
+                  ? 0
+                  : 230,
+
+              overflowX: "hidden",
+            }}
         >
           {children}
         </Content>
