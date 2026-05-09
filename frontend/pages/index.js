@@ -4,14 +4,6 @@ import styles from '../styles/Home.module.css'
 
 export default function Home() {
   return (
-    <div>
-      <h1>CRM Working Successfully</h1>
-    </div>
-  )
-}
-
-export default function Home() {
-  return (
     <div className={styles.container}>
       <Head>
         <title>Create Next App</title>
