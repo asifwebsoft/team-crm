@@ -57,11 +57,11 @@ class SubscriptionMiddleware:
                     is_active=True
                 ).exists()
 
-                #if not has_subscription:
-                    #return JsonResponse(
-                       # {"error": "No active subscription"},
-                        #status=403
-                    #)
+                if not has_subscription:
+                    return JsonResponse(
+                        {"error": "No active subscription"},
+                        status=403
+                    )
 
                 if not user.company:
                     return JsonResponse(
