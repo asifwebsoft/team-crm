@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-7jgq(c#afx@wf5#@8o11xcygx7=phpo0u+r1=c@f#8g-w6)h@h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -146,3 +146,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://team-crm-roan.vercel.app",
+]
