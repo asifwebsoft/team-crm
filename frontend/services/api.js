@@ -4,14 +4,14 @@ const API = axios.create({
   baseURL: "https://team-crm-backend.onrender.com/api",
 });
 
-// PUBLIC ROUTES
-const publicRoutes = [
-  "/accounts/login/",
-  "/accounts/admin-signup/",
-];
-
 API.interceptors.request.use(
+
   (req) => {
+
+    const publicRoutes = [
+      "/accounts/login/",
+      "/accounts/admin-signup/",
+    ];
 
     // token only for protected routes
     if (!publicRoutes.includes(req.url)) {
@@ -27,7 +27,10 @@ API.interceptors.request.use(
     return req;
   },
 
-  (error) => Promise.reject(error) 
+  (error) => {
+    return Promise.reject(error);
+  }
+
 );
 
 export default API;
