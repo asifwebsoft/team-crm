@@ -122,6 +122,7 @@ class AdminSignupView(APIView):
             user.save()
 
             return Response({"message": "Admin created"})
+            print(serializer.errors)
 
         return Response(serializer.errors, status=400)
 
