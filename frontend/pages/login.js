@@ -19,6 +19,7 @@ export default function Login() {
         localStorage.setItem("access", res.data.access);
         localStorage.setItem("refresh", res.data.refresh);
         console.log(res.data)
+        window.location.href = "/dashboard";
 
         // 🔥 USER INFO (IMPORTANT)
         localStorage.setItem("role", res.data.role);
