@@ -16,7 +16,7 @@ export default function Login() {
       .then((res) => {
 
         // 🔥 SAVE TOKENS
-        localStorage.setItem("access", res.data.access);
+        localStorage.setItem("Token", res.data.access);
         localStorage.setItem("refresh", res.data.refresh);
         console.log(res.data)
 
