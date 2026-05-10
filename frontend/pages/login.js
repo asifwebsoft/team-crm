@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import API from "../services/api";
 
 export default function Login() {
+
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -12,22 +13,24 @@ export default function Login() {
   });
 
   const handleLogin = () => {
+
     API.post("/accounts/login/", form)
+
       .then((res) => {
 
-        // 🔥 SAVE TOKENS
+        // SAVE TOKENS
         localStorage.setItem("access", res.data.access);
         localStorage.setItem("refresh", res.data.refresh);
-        console.log(res.data)
-        window.location.href = "/dashboard";
 
-        // 🔥 USER INFO (IMPORTANT)
+        // SAVE USER INFO
         localStorage.setItem("role", res.data.role);
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("user_id", res.data.user_id);
         localStorage.setItem("company", res.data.company);
 
-        // 🔥 REDIRECT (ROLE BASED)
+        console.log(res.data);
+
+        // ROLE BASED REDIRECT
         if (res.data.role === "manager") {
           router.push("/manager-dashboard");
         } else {
@@ -35,19 +38,43 @@ export default function Login() {
         }
 
       })
-      .catch(() => {
+
+      .catch((err) => {
+
+        console.log(err);
+
         alert("Invalid email or password");
+
       });
+
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", marginTop: 100 }}>
-      <Card title="Login" style={{ width: 320, borderRadius: 10 }}>
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        marginTop: 100,
+      }}
+    >
+
+      <Card
+        title="Login"
+        style={{
+          width: 320,
+          borderRadius: 10,
+        }}
+      >
+
         <Input
           placeholder="Email"
           style={{ marginBottom: 10 }}
           onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
+            setForm({
+              ...form,
+              email: e.target.value,
+            })
           }
         />
 
@@ -55,15 +82,22 @@ export default function Login() {
           placeholder="Password"
           style={{ marginBottom: 10 }}
           onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
+            setForm({
+              ...form,
+              password: e.target.value,
+            })
           }
         />
 
-        <Button type="primary" block onClick={handleLogin}>
+        <Button
+          type="primary"
+          block
+          onClick={handleLogin}
+        >
           Login
         </Button>
 
-         <div
+        <div
           style={{
             marginTop: 10,
             textAlign: "right",
@@ -80,24 +114,28 @@ export default function Login() {
             Forgot Password?
           </span>
         </div>
+
         <div
-        style={{
-          marginTop: 15,
-          textAlign: "center",
-        }}
-      >
-        New Company?{" "}
-        <span
-          onClick={() => router.push("/signup")}
           style={{
-            color: "#1677ff",
-            cursor: "pointer",
+            marginTop: 15,
+            textAlign: "center",
           }}
         >
-          Create Account
-        </span>
-      </div>
+          New Company?{" "}
+          <span
+            onClick={() => router.push("/signup")}
+            style={{
+              color: "#1677ff",
+              cursor: "pointer",
+            }}
+          >
+            Create Account
+          </span>
+        </div>
+
       </Card>
+
     </div>
+
   );
 }
