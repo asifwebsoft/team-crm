@@ -11,9 +11,9 @@ pillow = "*"
 razorpay = "*"
 django-cors-headers = "*"
 djangorestframework-simplejwt = "*"
-python-decouple = "*"
 psycopg2-binary = "*"
 gunicorn = "*"
+python-decouple = "*"
 
 [dev-packages]
 
