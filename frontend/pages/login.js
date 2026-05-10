@@ -18,6 +18,7 @@ export default function Login() {
         // 🔥 SAVE TOKENS
         localStorage.setItem("token", res.data.access);
         localStorage.setItem("refresh", res.data.refresh);
+        console.log(res.data)
 
         // 🔥 USER INFO (IMPORTANT)
         localStorage.setItem("role", res.data.role);
