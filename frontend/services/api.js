@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://team-crm-backend.onrender.com/api",
+  baseURL: "https://team-crm-backend.onrender.com/api",
 });
 
 // 🔥 REQUEST INTERCEPTOR (AUTO TOKEN)
