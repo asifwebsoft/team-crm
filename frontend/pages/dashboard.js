@@ -24,7 +24,7 @@ export default function Dashboard() {
     if (typeof window !== "undefined") {
 
       const token =
-        localStorage.getItem("token");
+        localStorage.getItem("access");
 
       const userRole =
         localStorage.getItem("role");
