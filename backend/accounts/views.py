@@ -116,8 +116,6 @@ class AdminSignupView(APIView):
     def post(self, request):
 
         try:
-            print("DATA:", request.data)
-
             serializer = SignupSerializer(data=request.data)
 
             if serializer.is_valid():
@@ -127,13 +125,14 @@ class AdminSignupView(APIView):
 
                 return Response({"message": "Admin created"})
 
-            print("SERIALIZER:", serializer.errors)
-
-            return Response(serializer.errors, status=400)
+            return Response({
+                "serializer_error": serializer.errors
+            }, status=400)
 
         except Exception as e:
-            print("ERROR:", str(e))
-            return Response({"error": str(e)}, status=500)
+            return Response({
+                "python_error": str(e)
+            }, status=500)
 
 
 # ✅ STAFF / MANAGER CREATE
