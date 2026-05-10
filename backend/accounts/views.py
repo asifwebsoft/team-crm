@@ -114,17 +114,26 @@ class LoginActivityView(APIView):
 # ✅ ADMIN SIGNUP
 class AdminSignupView(APIView):
     def post(self, request):
-        serializer = SignupSerializer(data=request.data)
 
-        if serializer.is_valid():
-            user = serializer.save()
-            user.role = "admin"
-            user.save()
+        try:
+            print("DATA:", request.data)
 
-            return Response({"message": "Admin created"})
-        print("Serializer error",serializer.errors)
+            serializer = SignupSerializer(data=request.data)
 
-        return Response(serializer.errors, status=400)
+            if serializer.is_valid():
+                user = serializer.save()
+                user.role = "admin"
+                user.save()
+
+                return Response({"message": "Admin created"})
+
+            print("SERIALIZER:", serializer.errors)
+
+            return Response(serializer.errors, status=400)
+
+        except Exception as e:
+            print("ERROR:", str(e))
+            return Response({"error": str(e)}, status=500)
 
 
 # ✅ STAFF / MANAGER CREATE
