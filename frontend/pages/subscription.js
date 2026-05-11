@@ -8,7 +8,7 @@ export default function Subscription() {
 
   // 🔐 Login check
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access");
     if (!token) {
       window.location.href = "/login";
     }
