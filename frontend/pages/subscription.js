@@ -39,6 +39,9 @@ export default function Subscription() {
       };
 
       const rzp = new window.Razorpay(options);
+      console.log("Razorpay Key:", process.env.NEXT_PUBLIC_RAZORPAY_KEY);
+      console.log("Order Data:", data);
+      console.log("Razorpay Object:", window.Razorpay);
       rzp.open();
 
     } catch {
