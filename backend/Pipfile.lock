@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a80c1436a5384c45f463f1a40edb521c32fe94fa91c6ad47334c22133eca76af"
+            "sha256": "48a57368e7f89f5f92e5042ee73ac3332e97b54286662eee70410ca54073eb95"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -232,11 +232,11 @@
         },
         "idna": {
             "hashes": [
-                "sha256:585ea8fe5d69b9181ec1afba340451fba6ba764af97026f92a91d4eef164a242",
-                "sha256:892ea0cde124a99ce773decba204c5552b69c3c67ffd5f232eb7696135bc8bb3"
+                "sha256:466d810d7a2cc1022bea9b037c39728d51ae7dad40d480fc9b7d7ecf98ba8ee3",
+                "sha256:e677eaf072e290f7b725f9acf0b3a2bd55f9fd6f7c70abe5f0e34823d0accf69"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==3.13"
+            "version": "==3.14"
         },
         "packaging": {
             "hashes": [
@@ -436,11 +436,11 @@
         },
         "razorpay": {
             "hashes": [
-                "sha256:a766b9019e496c995906f75c31900bff8b2709bea251f1771925d742cba53e5b",
-                "sha256:e6a60c78203a3e1d3fc428e6fadf15bc67f75bd67217eaf9dc9925c87e98bc7a"
+                "sha256:0d812030ba29e776e66d1ceaacc31635810fde18b66ff2591e582eb651bb5131",
+                "sha256:aaf525baebc5001e5c54ae317a372c3c17c81314cedcbbf71aa0a2d3419a9757"
             ],
             "index": "pypi",
-            "version": "==2.0.1"
+            "version": "==1.4.2"
         },
         "requests": {
             "hashes": [
@@ -468,11 +468,11 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed",
-                "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4"
+                "sha256:231e0ec3b63ceb14667c67be60f2f2c40a518cb38b03af60abc813da26505f4c",
+                "sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897"
             ],
-            "markers": "python_version >= '3.9'",
-            "version": "==2.6.3"
+            "markers": "python_version >= '3.10'",
+            "version": "==2.7.0"
         }
     },
     "develop": {}
