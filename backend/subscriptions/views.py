@@ -60,7 +60,8 @@ class CreateOrder(APIView):
                 )
             )
 
-            order = client.order.create({
+            order = client.order.create(data={
+
                 "amount": int(amount * 100),
                 "currency": "INR",
                 "payment_capture": 1
