@@ -60,6 +60,11 @@ class CreateOrder(APIView):
                 )
             )
 
+            #test
+            test = client.order.all()
+            print("RAZORPAY WORKING")
+            print(test)
+
             order = client.order.create(data={
 
                 "amount": int(amount * 100),
