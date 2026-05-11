@@ -6,7 +6,7 @@ import razorpay
 from django.conf import settings
 from django.utils.timezone import now
 from datetime import timedelta
-import os
+
 from .models import Subscription
 
 
