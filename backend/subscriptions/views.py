@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
 import razorpay
 from django.conf import settings
 from django.utils.timezone import now
@@ -50,6 +49,9 @@ class CreateOrder(APIView):
         amount = PLAN_DETAILS[plan]["price"]
 
         try:
+
+            print("Key id = ", settings.RAZORPAY_KEY_ID)
+            print("Key Secret = ", settings.RAZORPAY_KEY_SECRET)
 
             client = razorpay.Client(
                 auth=(
