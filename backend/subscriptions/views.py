@@ -31,49 +31,26 @@ class CreateOrder(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
-        # 🔒 Razorpay keys check
-        if not hasattr(settings, "RAZORPAY_KEY_ID") or not hasattr(settings, "RAZORPAY_KEY_SECRET"):
-            return Response({
-                "error": "Razorpay keys missing in settings"
-            }, status=500)
+        client = razorpay.Client(
+            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+        )
 
         plan = request.data.get("plan")
 
         # ❌ invalid plan
         if plan not in PLAN_DETAILS:
-            return Response({
-                "error": "Invalid plan"
-            }, status=400)
+            return Response({"error": "Invalid plan"}, status=400)
 
         amount = PLAN_DETAILS[plan]["price"]
 
         try:
-
-            print("Key id = ", settings.RAZORPAY_KEY_ID)
-            print("Key Secret = ", settings.RAZORPAY_KEY_SECRET)
-
-            client = razorpay.Client(
-                auth=(
-                    settings.RAZORPAY_KEY_ID,
-                    settings.RAZORPAY_KEY_SECRET
-                )
-            )
-
-            #test
-            test = client.order.all()
-            print("RAZORPAY WORKING")
-            print(test)
-
-            order = client.order.create(data={
-
-                "amount": int(amount * 100),
+            order = client.order.create({
+                "amount": amount * 100,  # paise
                 "currency": "INR",
                 "payment_capture": 1
             })
 
             return Response({
-                "success": True,
                 "order_id": order["id"],
                 "amount": amount,
                 "plan": plan,
@@ -81,12 +58,7 @@ class CreateOrder(APIView):
             })
 
         except Exception as e:
-
-            print("RAZORPAY ERROR:", str(e))
-
-            return Response({
-                "error": "Unable to create payment order"
-            }, status=500)
+            return Response({"error": str(e)}, status=500)
 
 
 # 🔥 VERIFY PAYMENT
