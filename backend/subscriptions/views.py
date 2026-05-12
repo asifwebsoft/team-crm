@@ -5,6 +5,7 @@ import razorpay
 from django.conf import settings
 from django.utils.timezone import now
 from datetime import timedelta
+import traceback
 
 from .models import Subscription
 
@@ -27,38 +28,40 @@ PLAN_DETAILS = {
 
 
 # 🔥 CREATE ORDER
+import traceback
+
 class CreateOrder(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        client = razorpay.Client(
-            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-        )
-
-        plan = request.data.get("plan")
-
-        # ❌ invalid plan
-        if plan not in PLAN_DETAILS:
-            return Response({"error": "Invalid plan"}, status=400)
-
-        amount = PLAN_DETAILS[plan]["price"]
 
         try:
-            order = client.order.create({
-                "amount": amount * 100,  # paise
+
+            print("KEY:", settings.RAZORPAY_KEY_ID)
+            print("SECRET:", settings.RAZORPAY_KEY_SECRET)
+
+            client = razorpay.Client(auth=(
+                settings.RAZORPAY_KEY_ID,
+                settings.RAZORPAY_KEY_SECRET
+            ))
+
+            data = {
+                "amount": 50000,
                 "currency": "INR",
                 "payment_capture": 1
-            })
+            }
 
-            return Response({
-                "order_id": order["id"],
-                "amount": amount,
-                "plan": plan,
-                "key": settings.RAZORPAY_KEY_ID
-            })
+            order = client.order.create(data=data)
+
+            return Response(order)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+
+            print("ERROR =", str(e))
+            traceback.print_exc()
+
+            return Response({
+                "error": str(e)
+            }, status=500)
 
 
 # 🔥 VERIFY PAYMENT
