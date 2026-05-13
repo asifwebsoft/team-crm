@@ -24,24 +24,27 @@ export default function Subscription() {
       plan,
     });
 
-    console.log("CashFree Response:", Object.entries(res.data));
+    console.log("Response:", res.data);
+
+    if (!res.data.payment_session_id) {
+      alert("No payment session id");
+      return;
+    }
 
     const cashfree = await load({
       mode: "sandbox",
     });
 
-    let checkoutOptions = {
+    await cashfree.checkout({
       paymentSessionId: res.data.payment_session_id,
-      redirectTarget: "_self",
-    };
+      redirectTarget: "_modal",
+    });
 
-    cashfree.checkout(checkoutOptions);
+  } catch (err) {
 
-  } catch (error) {
+    console.log("PAYMENT ERROR:", err);
 
-    console.log(error);
-
-    message.error("Payment Failed");
+    alert("Payment Failed");
   }
 };
 
