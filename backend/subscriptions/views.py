@@ -75,7 +75,10 @@ class CreateOrder(APIView):
                 create_order_request
             )
 
-            return Response(response.data)
+            return Response({
+                "payment_session_id": response.data.payment_session_id,
+                "order_id": response.data.order_id
+            })
 
         except Exception as e:
 
