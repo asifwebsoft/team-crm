@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import API from "@/utils/api";
+import API from "../utils/api";
 
 export default function PaymentSuccess() {
 
