@@ -39,10 +39,6 @@ class CreateOrder(APIView):
 
         try:
 
-            Cashfree.XClientId = settings.CASHFREE_APP_ID
-            Cashfree.XClientSecret = settings.CASHFREE_SECRET_KEY
-            Cashfree.XEnvironment = Cashfree.SANDBOX
-
             order_id = str(uuid.uuid4())
 
             customer_details = CustomerDetails(
@@ -51,7 +47,7 @@ class CreateOrder(APIView):
             )
 
             order_meta = OrderMeta(
-                return_url="https://team-crm-roan.vercel.app/payment-success?order_id={order_id}"
+                return_url=f"https://team-crm-roan.vercel.app/payment-success?order_id={order_id}"
             )
 
             create_order_request = CreateOrderRequest(
@@ -62,7 +58,18 @@ class CreateOrder(APIView):
                 order_meta=order_meta
             )
 
-            response = Cashfree().PGCreateOrder(create_order_request)
+            x_api_version = "2023-08-01"
+
+            cashfree = Cashfree(
+                Cashfree.SANDBOX,
+                settings.CASHFREE_APP_ID,
+                settings.CASHFREE_SECRET_KEY
+            )
+
+            response = cashfree.PGCreateOrder(
+                x_api_version,
+                create_order_request
+            )
 
             return Response(response.data)
 
