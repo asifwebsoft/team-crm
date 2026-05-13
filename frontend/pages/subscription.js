@@ -16,35 +16,36 @@ export default function Subscription() {
     }
   }, []);
 
-  
-
-      const handlePayment = async (plan) => {
+    const handlePayment = async (plan) => {
 
   try {
 
-    const res = await API.post("/subscription/create-order/", { plan });
+    const res = await API.post("/subscription/create-order/", {
+      plan,
+    });
 
-    console.log("CashFree Response:", res.data);
-
-    const paymentSessionId = res.data.payment_session_id;
+    console.log("CashFree Response:", Object.entries(res.data));
 
     const cashfree = await load({
-      mode: "sandbox"
+      mode: "sandbox",
     });
 
-    cashfree.checkout({
-      paymentSessionId: paymentSessionId,
-      redirectTarget: "_self"
-    });
+    let checkoutOptions = {
+      paymentSessionId: res.data.payment_session_id,
+      redirectTarget: "_self",
+    };
 
-  } catch (err) {
+    cashfree.checkout(checkoutOptions);
 
-    console.log(err);
+  } catch (error) {
+
+    console.log(error);
 
     message.error("Payment Failed");
   }
 };
 
+      
       return (
         <MainLayout>
 
