@@ -60,10 +60,14 @@ class CreateOrder(APIView):
 
             x_api_version = "2023-08-01"
 
+            app_id = settings.CASHFREE_APP_ID.strip()
+            secret_key = settings.CASHFREE_SECRET_KEY.strip()
+
             cashfree = Cashfree(
                 Cashfree.SANDBOX,
-                settings.CASHFREE_APP_ID,
-                settings.CASHFREE_SECRET_KEY
+                app_id,
+                secret_key
+                
             )
 
             response = cashfree.PGCreateOrder(
