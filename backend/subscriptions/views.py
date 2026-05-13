@@ -9,7 +9,6 @@ from cashfree_pg.api_client import Cashfree
 from cashfree_pg.models.create_order_request import CreateOrderRequest
 from cashfree_pg.models.customer_details import CustomerDetails
 from cashfree_pg.models.order_meta import OrderMeta
-from cashfree_pg.models.create_order_request_order_meta import CreateOrderRequestOrderMeta
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
