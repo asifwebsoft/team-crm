@@ -37,32 +37,42 @@ class CreateOrder(APIView):
 
     def post(self, request):
 
-        Cashfree.XClientId = settings.CASHFREE_APP_ID
-        Cashfree.XClientSecret = settings.CASHFREE_SECRET_KEY
-        Cashfree.XEnvironment = Cashfree.SANDBOX
+        try:
 
-        order_id = str(uuid.uuid4())
+            Cashfree.XClientId = settings.CASHFREE_APP_ID
+            Cashfree.XClientSecret = settings.CASHFREE_SECRET_KEY
+            Cashfree.XEnvironment = Cashfree.SANDBOX
 
-        customer_details = CustomerDetails(
-            customer_id="123",
-            customer_phone="9999999999"
-        )
+            order_id = str(uuid.uuid4())
 
-        order_meta = OrderMeta(
-            return_url="https://team-crm-roan.vercel.app/payment-success?order_id={order_id}"
-        )
+            customer_details = CustomerDetails(
+                customer_id="123",
+                customer_phone="9999999999"
+            )
 
-        create_order_request = CreateOrderRequest(
-            order_amount=1.0,
-            order_currency="INR",
-            order_id=order_id,
-            customer_details=customer_details,
-            order_meta=order_meta
-        )
+            order_meta = OrderMeta(
+                return_url="https://team-crm-roan.vercel.app/payment-success?order_id={order_id}"
+            )
 
-        response = Cashfree().PGCreateOrder(create_order_request)
+            create_order_request = CreateOrderRequest(
+                order_amount=1.0,
+                order_currency="INR",
+                order_id=order_id,
+                customer_details=customer_details,
+                order_meta=order_meta
+            )
 
-        return Response(response.data)
+            response = Cashfree().PGCreateOrder(create_order_request)
+
+            return Response(response.data)
+
+        except Exception as e:
+
+            print("CASHFREE ERROR:", str(e))
+
+            return Response({
+                "error": str(e)
+            }, status=500)
 
 
 
