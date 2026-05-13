@@ -1,13 +1,19 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-import razorpay
 from django.conf import settings
 from django.utils.timezone import now
 from datetime import timedelta
-import traceback
-
 from .models import Subscription
+from cashfree_pg.api_client import Cashfree
+from cashfree_pg.models.create_order_request import CreateOrderRequest
+from cashfree_pg.models.customer_details import CustomerDetails
+from cashfree_pg.models.order_meta import OrderMeta
+from cashfree_pg.models.create_order_request_order_meta import CreateOrderRequestOrderMeta
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework.views import APIView
+import uuid
 
 
 # 🔥 PLAN CONFIG
@@ -28,40 +34,37 @@ PLAN_DETAILS = {
 
 
 # 🔥 CREATE ORDER
-import traceback
-
 class CreateOrder(APIView):
 
     def post(self, request):
 
-        try:
+        Cashfree.XClientId = settings.CASHFREE_APP_ID
+        Cashfree.XClientSecret = settings.CASHFREE_SECRET_KEY
+        Cashfree.XEnvironment = Cashfree.SANDBOX
 
-            print("KEY:", settings.RAZORPAY_KEY_ID)
-            print("SECRET:", settings.RAZORPAY_KEY_SECRET)
+        order_id = str(uuid.uuid4())
 
-            client = razorpay.Client(auth=(
-                settings.RAZORPAY_KEY_ID,
-                settings.RAZORPAY_KEY_SECRET
-            ))
+        customer_details = CustomerDetails(
+            customer_id="123",
+            customer_phone="9999999999"
+        )
 
-            data = {
-                "amount": 50000,
-                "currency": "INR",
-                "payment_capture": 1
-            }
+        order_meta = OrderMeta(
+            return_url="https://team-crm-roan.vercel.app/payment-success?order_id={order_id}"
+        )
 
-            order = client.order.create(data=data)
+        create_order_request = CreateOrderRequest(
+            order_amount=1.0,
+            order_currency="INR",
+            order_id=order_id,
+            customer_details=customer_details,
+            order_meta=order_meta
+        )
 
-            return Response(order)
+        response = Cashfree().PGCreateOrder(create_order_request)
 
-        except Exception as e:
+        return Response(response.data)
 
-            print("ERROR =", str(e))
-            traceback.print_exc()
-
-            return Response({
-                "error": str(e)
-            }, status=500)
 
 
 # 🔥 VERIFY PAYMENT

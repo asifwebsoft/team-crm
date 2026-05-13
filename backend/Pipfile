@@ -16,6 +16,7 @@ python-decouple = "*"
 dj-database-url = "*"
 razorpay = "==1.4.2"
 setuptools = "*"
+cashfree-pg = "*"
 
 [dev-packages]
 
