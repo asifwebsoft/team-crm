@@ -9,11 +9,15 @@ export default function PaymentSuccess() {
 
     setTimeout(() => {
 
-      router.push("/create-company");
+      router.push("/company/create");
 
     }, 2000);
 
   }, []);
 
-  return <h2>Payment Successful...</h2>;
+  return (
+    <div>
+      <h1>Payment Successful</h1>
+    </div>
+  );
 }
