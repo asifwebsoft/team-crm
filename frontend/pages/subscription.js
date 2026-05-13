@@ -37,7 +37,7 @@ export default function Subscription() {
 
     await cashfree.checkout({
       paymentSessionId: res.data.payment_session_id,
-      redirectTarget: "_modal",
+      redirectTarget: "_self",
     });
 
   } catch (err) {
