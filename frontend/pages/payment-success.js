@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import API from "../utils/api";
 
 export default function PaymentSuccess() {
 
@@ -8,22 +7,11 @@ export default function PaymentSuccess() {
 
   useEffect(() => {
 
-    const activateSubscription = async () => {
+    setTimeout(() => {
 
-      try {
+      router.push("/create-company");
 
-        await API.post("/subscription/verify/");
-
-        router.push("/create-company");
-
-      } catch (err) {
-
-        console.log(err);
-
-      }
-    };
-
-    activateSubscription();
+    }, 2000);
 
   }, []);
 
