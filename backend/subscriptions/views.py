@@ -92,44 +92,31 @@ class CreateOrder(APIView):
 
 # 🔥 VERIFY PAYMENT
 class VerifyPayment(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
 
         try:
 
-            client = razorpay.Client(
-                auth=(
-                    settings.RAZORPAY_KEY_ID,
-                    settings.RAZORPAY_KEY_SECRET
-                )
-            )
+            plan = request.data.get("plan", "pro")
 
-            data = request.data
-
-            # 🔒 VERIFY SIGNATURE
-            client.utility.verify_payment_signature({
-                "razorpay_order_id": data.get("razorpay_order_id"),
-                "razorpay_payment_id": data.get("razorpay_payment_id"),
-                "razorpay_signature": data.get("razorpay_signature"),
-            })
-
-            plan = data.get("plan")
-
-            # ❌ invalid plan
+            # invalid plan
             if plan not in PLAN_DETAILS:
+
                 return Response({
                     "error": "Invalid plan"
                 }, status=400)
 
-            # 🔥 deactivate old subscription
+            # deactivate old subscription
             Subscription.objects.filter(
                 user=request.user,
                 is_active=True
             ).update(is_active=False)
 
-            # 🔥 create new subscription
+            # create new subscription
             start = now()
+
             end = start + timedelta(
                 days=PLAN_DETAILS[plan]["days"]
             )
@@ -154,5 +141,5 @@ class VerifyPayment(APIView):
             print("VERIFY ERROR:", str(e))
 
             return Response({
-                "error": "Payment verification failed"
+                "error": str(e)
             }, status=400)
