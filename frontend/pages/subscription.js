@@ -20,31 +20,30 @@ export default function Subscription() {
 
       const handlePayment = async (plan) => {
 
-        try {
+  try {
 
-          const res = await API.post(
-            "/subscription/create-order/",
-            { plan }
-          );
+    const res = await API.post("/subscription/create-order/", { plan });
 
-          console.log("Cashfree Response:", res.data);
+    console.log("CashFree Response:", res.data);
 
-          const cashfree = await load({
-            mode: "sandbox",
-          });
+    const paymentSessionId = res.data.payment_session_id;
 
-          await cashfree.checkout({
-            paymentSessionId: res.data.payment_session_id,
-            redirectTarget: "_self",
-          });
+    const cashfree = await load({
+      mode: "sandbox"
+    });
 
-        } catch (error) {
+    cashfree.checkout({
+      paymentSessionId: paymentSessionId,
+      redirectTarget: "_self"
+    });
 
-          console.log(error);
+  } catch (err) {
 
-          message.error("Payment Failed");
-        }
-      };
+    console.log(err);
+
+    message.error("Payment Failed");
+  }
+};
 
       return (
         <MainLayout>
