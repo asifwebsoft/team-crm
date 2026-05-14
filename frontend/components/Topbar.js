@@ -230,36 +230,37 @@ export default function Topbar() {
       >
 
         {/* 🔔 NOTIFICATION */}
-        <div
-          style={{
-            position: "relative",
-          }}
-        >
+          {/* 🔔 NOTIFICATION */}
+<div
+  style={{
+    position: "relative",
+  }}
+>
 
-          <Dropdown
-            overlay={notificationDropdown}
-            trigger={["click"]}
-          >
+  <Dropdown
+    overlay={notificationDropdown}
+    trigger={["click"]}
+  >
 
-            <Badge
-              count={notifications.length}
-              offset={[-3, 3]}
-              size="small"
-            >
+    <Badge
+      count={notifications.length}
+      offset={[-3, 3]}
+      size="small"
+    >
 
-              <BellOutlined
-                style={{
-                  fontSize: isMobile ? 18 : 20,
-                  cursor: "pointer",
-                  color: "#fff",
-                }}
-              />
+      <BellOutlined
+        style={{
+          fontSize: isMobile ? 18 : 20,
+          cursor: "pointer",
+          color: "#fff",
+        }}
+      />
 
-            </Badge>
+    </Badge>
 
-          </Dropdown>
+  </Dropdown>
 
-        </div>
+</div>
 
         {/* 👤 PROFILE */}
         <Dropdown

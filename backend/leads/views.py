@@ -158,28 +158,44 @@ class NotificationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+
         leads = get_leads(request.user)
         today = date.today()
 
         data = []
 
-        for l in leads.filter(followup_date=today):
+        # ✅ TODAY FOLLOWUPS
+        today_leads = leads.filter(
+            followup_date=today
+        ).exclude(status="closed")
+
+        for l in today_leads:
             data.append({
                 "id": l.id,
                 "name": l.customer_name,
+                "title": l.title if hasattr(l, "title") else "Lead",
                 "type": "today",
                 "date": str(l.followup_date)
             })
 
-        for l in leads.filter(followup_date__lt=today).exclude(status="closed"):
+        # ✅ OVERDUE FOLLOWUPS
+        overdue_leads = leads.filter(
+            followup_date__lt=today
+        ).exclude(status="closed")
+
+        for l in overdue_leads:
             data.append({
                 "id": l.id,
                 "name": l.customer_name,
+                "title": l.title if hasattr(l, "title") else "Lead",
                 "type": "overdue",
                 "date": str(l.followup_date)
             })
 
-        return Response({"data": data})
+        return Response({
+            "count": len(data),
+            "data": data
+        })
 
 
 # ✅ FOLLOWUPS
