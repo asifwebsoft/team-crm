@@ -3,39 +3,44 @@ import { Badge, Dropdown, List, Tag } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import API from "../services/api";
 
-export default function NotificationBell({ isMobile = false }) {
+export default function NotificationBell({ isMobile }) {
 
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
 
-    const fetchNotifications = async () => {
-
-  try {
-
-    const res = await API.get("/leads/notifications/");
-
-    console.log("NOTIFICATION API:", res.data);
-
-    setNotifications(res.data.data || []);
-
-  } catch (err) {
-
-    console.log("NOTIFICATION ERROR:", err.response);
-
-  }
-
-};
-
     fetchNotifications();
 
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
 
     return () => clearInterval(interval);
 
   }, []);
 
+  const fetchNotifications = async () => {
+
+    try {
+
+      const res = await API.get("/leads/notifications/");
+
+      console.log("Notifications:", res.data);
+
+      if (res.data?.data) {
+        setNotifications(res.data.data);
+      }
+
+    } catch (error) {
+
+      console.log("Notification Error:", error);
+
+    }
+
+  };
+
   const notificationDropdown = (
+
     <div
       style={{
         width: 320,
@@ -59,7 +64,7 @@ export default function NotificationBell({ isMobile = false }) {
 
           <List.Item
             style={{
-              padding: "10px 8px",
+              padding: "10px",
               borderRadius: 8,
               marginBottom: 8,
               background:
@@ -71,13 +76,8 @@ export default function NotificationBell({ isMobile = false }) {
 
             <div style={{ width: "100%" }}>
 
-              <div
-                style={{
-                  fontWeight: 600,
-                  fontSize: 14,
-                }}
-              >
-                {item.name || "No Name"}
+              <div style={{ fontWeight: "600" }}>
+                {item.name}
               </div>
 
               <div
@@ -94,7 +94,6 @@ export default function NotificationBell({ isMobile = false }) {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center",
                   marginTop: 8,
                 }}
               >
@@ -106,7 +105,7 @@ export default function NotificationBell({ isMobile = false }) {
                       : "red"
                   }
                 >
-                  {item.type.toUpperCase()}
+                  {item.type}
                 </Tag>
 
                 <span
@@ -128,41 +127,41 @@ export default function NotificationBell({ isMobile = false }) {
       />
 
     </div>
+
   );
 
   return (
 
-    <div
-      style={{
-        position: "relative",
-      }}
+    <Dropdown
+      overlay={notificationDropdown}
+      trigger={["click"]}
+      placement="bottomRight"
     >
 
-      <Dropdown
-        overlay={notificationDropdown}
-        trigger={["click"]}
-        placement="bottomRight"
+      <div
+        style={{
+          cursor: "pointer",
+        }}
       >
 
         <Badge
           count={notifications.length}
-          offset={[-3, 3]}
+          offset={[-2, 2]}
           size="small"
         >
 
           <BellOutlined
             style={{
               fontSize: isMobile ? 18 : 20,
-              cursor: "pointer",
               color: "#fff",
             }}
           />
 
         </Badge>
 
-      </Dropdown>
+      </div>
 
-    </div>
+    </Dropdown>
 
   );
 
