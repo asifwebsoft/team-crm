@@ -164,30 +164,30 @@ class NotificationView(APIView):
 
         data = []
 
-        # ✅ TODAY FOLLOWUPS
         today_leads = leads.filter(
             followup_date=today
         ).exclude(status="closed")
 
-        for l in today_leads:
-            data.append({
-                "id": l.id,
-                "name": l.customer_name,
-                "title": l.title if hasattr(l, "title") else "Lead",
-                "type": "today",
-                "date": str(l.followup_date)
-            })
-
-        # ✅ OVERDUE FOLLOWUPS
         overdue_leads = leads.filter(
             followup_date__lt=today
         ).exclude(status="closed")
 
-        for l in overdue_leads:
+        for l in today_leads:
+
             data.append({
                 "id": l.id,
                 "name": l.customer_name,
-                "title": l.title if hasattr(l, "title") else "Lead",
+                "title": getattr(l, "title", "Lead"),
+                "type": "today",
+                "date": str(l.followup_date)
+            })
+
+        for l in overdue_leads:
+
+            data.append({
+                "id": l.id,
+                "name": l.customer_name,
+                "title": getattr(l, "title", "Lead"),
                 "type": "overdue",
                 "date": str(l.followup_date)
             })

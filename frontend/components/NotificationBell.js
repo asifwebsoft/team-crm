@@ -11,19 +11,21 @@ export default function NotificationBell({ isMobile = false }) {
 
     const fetchNotifications = async () => {
 
-      try {
+  try {
 
-        const res = await API.get("/leads/notifications/");
+    const res = await API.get("/leads/notifications/");
 
-        setNotifications(res.data.data || []);
+    console.log("NOTIFICATION API:", res.data);
 
-      } catch (err) {
+    setNotifications(res.data.data || []);
 
-        console.log("Notification Error:", err);
+  } catch (err) {
 
-      }
+    console.log("NOTIFICATION ERROR:", err.response);
 
-    };
+  }
+
+};
 
     fetchNotifications();
 
