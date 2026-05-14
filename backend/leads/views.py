@@ -199,16 +199,68 @@ class NotificationView(APIView):
 
 
 # ✅ FOLLOWUPS
+from datetime import date, timedelta
+
 class FollowupReminderView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+
         leads = get_leads(request.user)
+
         today = date.today()
 
+        today_data = []
+        overdue_data = []
+        upcoming_data = []
+
+        # ✅ TODAY
+        today_leads = leads.filter(
+            followup_date=today
+        ).exclude(status="closed")
+
+        for l in today_leads:
+
+            today_data.append({
+                "id": l.id,
+                "name": l.customer_name,
+                "phone": l.phone,
+                "date": str(l.followup_date),
+            })
+
+        # ✅ OVERDUE
+        overdue_leads = leads.filter(
+            followup_date__lt=today
+        ).exclude(status="closed")
+
+        for l in overdue_leads:
+
+            overdue_data.append({
+                "id": l.id,
+                "name": l.customer_name,
+                "phone": l.phone,
+                "date": str(l.followup_date),
+            })
+
+        # ✅ UPCOMING
+        upcoming_leads = leads.filter(
+            followup_date__gt=today
+        ).exclude(status="closed").order_by("followup_date")
+
+        for l in upcoming_leads:
+
+            upcoming_data.append({
+                "id": l.id,
+                "name": l.customer_name,
+                "phone": l.phone,
+                "date": str(l.followup_date),
+            })
+
         return Response({
-            "today": leads.filter(followup_date=today).count(),
-            "overdue": leads.filter(followup_date__lt=today).count(),
+            "today": today_data,
+            "overdue": overdue_data,
+            "upcoming": upcoming_data,
         })
 
 
