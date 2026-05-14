@@ -48,19 +48,59 @@ class CreateLeadView(APIView):
 
 
 # ✅ DASHBOARD
+from datetime import date
+
 class DashboardView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+
         leads = get_leads(request.user)
+
         today = date.today()
 
-        return Response({
-            "today_followups": list(leads.filter(followup_date=today).values()),
-            "upcoming_followups": list(leads.filter(followup_date__gt=today).values()),
-            "total_leads": leads.count(),
-        })
+        today_followups = leads.filter(
+            followup_date=today
+        ).exclude(status="closed")
 
+        upcoming_followups = leads.filter(
+            followup_date__gt=today
+        ).exclude(status="closed")
+
+        overdue_followups = leads.filter(
+            followup_date__lt=today
+        ).exclude(status="closed")
+
+        return Response({
+
+            "total_leads": leads.count(),
+
+            "today_followups": [
+                {
+                    "id": l.id,
+                    "name": l.customer_name,
+                }
+                for l in today_followups
+            ],
+
+            "upcoming_followups": [
+                {
+                    "id": l.id,
+                    "name": l.customer_name,
+                }
+                for l in upcoming_followups
+            ],
+
+            "overdue_followups": [
+                {
+                    "id": l.id,
+                    "name": l.customer_name,
+                }
+                for l in overdue_followups
+            ],
+
+        })
 
 # ✅ MY LEADS
 class MyLeadsView(APIView):
