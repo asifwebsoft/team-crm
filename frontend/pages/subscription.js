@@ -57,6 +57,7 @@ export default function Subscription() {
             <Col span={8}>
               <Card title="Basic">
                 <h2>₹199</h2>
+                <h3>Validity: 30 Days</h3>
 
                 <Button
                   type="primary"
@@ -72,6 +73,7 @@ export default function Subscription() {
             <Col span={8}>
               <Card title="Pro">
                 <h2>₹499</h2>
+                <h3>Validity: 60 Days</h3>
 
                 <Button
                   type="primary"
@@ -87,6 +89,7 @@ export default function Subscription() {
             <Col span={8}>
               <Card title="Advance">
                 <h2>₹799</h2>
+                <h3>Validity: 365 Days</h3>
 
                 <Button
                   type="primary"
