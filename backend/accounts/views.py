@@ -5,6 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.utils import timezone
 from .serializers import SignupSerializer
 from .models import LoginActivity
 from django.core.mail import send_mail
@@ -36,18 +37,83 @@ class LoginView(APIView):
             return Response({"error": "Wrong password"}, status=400)
 
         # 🔥 LOGIN TRACK
-        LoginActivity.objects.create(user=user)
 
-        refresh = RefreshToken.for_user(user)
+class LoginActivityView(APIView):
 
-        return Response({
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-            "role": user.role,
-            "name": user.full_name,
-            "user_id": user.id,
-            "company": user.company.name if user.company else "CRM"
-        })
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        activities = LoginActivity.objects.all().order_by("-login_time")
+
+        data = []
+
+        for a in activities:
+
+            login_time = localtime(a.login_time)
+
+            logout_time = (
+                localtime(a.logout_time)
+                if a.logout_time
+                else None
+            )
+
+            # ✅ EXACT DURATION
+            end_time = a.logout_time
+
+            if not end_time:
+                end_time = timezone.now()
+
+            total_seconds = int(
+                (end_time - a.login_time).total_seconds()
+            )
+
+            hours = total_seconds // 3600
+
+            minutes = (
+                total_seconds % 3600
+            ) // 60
+
+            seconds = total_seconds % 60
+
+            duration = ""
+
+            if hours > 0:
+                duration += f"{hours}h "
+
+            if minutes > 0:
+                duration += f"{minutes}m "
+
+            duration += f"{seconds}s"
+
+            data.append({
+
+                "id": a.id,
+
+                "name": (
+                    a.user.get_full_name()
+                    or a.user.username
+                ),
+
+                "user_id": a.user.id,
+
+                "login": login_time.strftime(
+                    "%d-%m-%Y %I:%M:%S %p"
+                ),
+
+                "logout": (
+                    logout_time.strftime(
+                        "%d-%m-%Y %I:%M:%S %p"
+                    )
+                    if logout_time
+                    else None
+                ),
+
+                "duration": duration,
+
+            })
+
+        return Response(data)
 
 
 # ✅ LOGOUT
