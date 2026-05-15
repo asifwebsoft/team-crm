@@ -146,7 +146,7 @@ export default function Sidebar() {
           background: "#0f172a",
           color: "#fff",
           borderRight: "none",
-          marginTop: 10,
+          marginTop: 8,
         }}
         items={items}
         onClick={({ key }) => {
