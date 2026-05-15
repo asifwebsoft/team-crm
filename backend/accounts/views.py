@@ -47,18 +47,24 @@ class LoginView(APIView):
         # ✅ JWT TOKEN
         refresh = RefreshToken.for_user(user)
 
-        # ✅ SAFE RESPONSE
+        # ✅ LOGIN RESPONSE
         return Response({
+
             "message": "Login successful",
 
             "access": str(refresh.access_token),
             "refresh": str(refresh),
 
-            "user": {
-                "id": user.id,
-                "email": user.email,
-                "full_name": getattr(user, "full_name", ""),
-            }
+            # ✅ FRONTEND REQUIRED DATA
+            "role": user.role,
+            "name": user.full_name,
+            "user_id": user.id,
+
+            # ✅ COMPANY NAME
+            "company": user.company.name if user.company else "",
+
+            # OPTIONAL
+            "email": user.email,
 
         }, status=status.HTTP_200_OK)
 
