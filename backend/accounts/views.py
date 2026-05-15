@@ -18,7 +18,9 @@ User = get_user_model()
 
 # ✅ LOGIN
 class LoginView(APIView):
+
     def post(self, request):
+
         email = request.data.get("email")
         password = request.data.get("password")
 
@@ -31,10 +33,34 @@ class LoginView(APIView):
         user = User.objects.filter(email=email).first()
 
         if not user:
-            return Response({"error": "User not found"}, status=400)
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if not user.check_password(password):
-            return Response({"error": "Wrong password"}, status=400)
+            return Response(
+                {"error": "Wrong password"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # ✅ JWT TOKEN
+        refresh = RefreshToken.for_user(user)
+
+        # ✅ SAFE RESPONSE
+        return Response({
+            "message": "Login successful",
+
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "full_name": getattr(user, "full_name", ""),
+            }
+
+        }, status=status.HTTP_200_OK)
 
         # 🔥 LOGIN TRACK
 
