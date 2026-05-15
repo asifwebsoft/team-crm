@@ -131,7 +131,7 @@ export default function Sidebar() {
           fontSize: 20,
           fontWeight: "bold",
           textAlign: "center",
-          padding: "15px 0",
+          padding: "10px 0",
           borderBottom: "1px solid #1e293b",
         }}
       >
