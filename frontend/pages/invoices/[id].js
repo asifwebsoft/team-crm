@@ -160,20 +160,21 @@ export default function InvoiceDetailPage() {
           style={{
             display: "flex",
             justifyContent: "space-between",
+            alignItems: "center",
             marginBottom: 20,
-            gap: 10,
             flexWrap: "wrap",
-          }}
+            gap: 15,
+        }}
         >
 
           <Button
             icon={<ArrowLeftOutlined />}
             onClick={() => router.push("/invoices")}
-          >
+            >
             Back
-          </Button>
+            </Button>
 
-           
+            <Space wrap>
 
             <Button
                 onClick={handleDownloadPDF}
@@ -189,7 +190,7 @@ export default function InvoiceDetailPage() {
                 Print Invoice
             </Button>
 
-        
+        </Space>
 
         </div>
 
