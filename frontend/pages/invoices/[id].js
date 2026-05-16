@@ -156,43 +156,37 @@ export default function InvoiceDetailPage() {
 
         {/* ACTION BUTTONS */}
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-            flexWrap: "wrap",
-            gap: 15,
-        }}
-        >
+             <div
+                style={{
+                    display: "flex",
+                    gap: 10,
+                    flexWrap: "wrap",
+                }}
+                >
 
-          <Button
-            icon={<ArrowLeftOutlined />}
-            onClick={() => router.push("/invoices")}
-            >
-            Back
-            </Button>
+                <Button
+                    icon={<ArrowLeftOutlined />}
+                    onClick={() => router.push("/invoices")}
+                >
+                    Back
+                </Button>
 
-            <Space wrap>
+                <Button
+                    type="default"
+                    onClick={handleDownloadPDF}
+                >
+                    Download PDF
+                </Button>
 
-            <Button
-                onClick={handleDownloadPDF}
-            >
-                Download PDF
-            </Button>
+                <Button
+                    type="primary"
+                    icon={<PrinterOutlined />}
+                    onClick={handlePrint}
+                >
+                    Print Invoice
+                </Button>
 
-            <Button
-                type="primary"
-                icon={<PrinterOutlined />}
-                onClick={handlePrint}
-            >
-                Print Invoice
-            </Button>
-
-        </Space>
-
-        </div>
+                </div>
 
         {/* PRINT AREA */}
 
