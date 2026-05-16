@@ -4,11 +4,11 @@ export default function TestPage() {
     <div
       style={{
         fontSize: 50,
-        padding: 50,
         color: "red",
+        padding: 50,
       }}
     >
-      INVOICE DETAIL WORKING
+      INVOICE DETAIL ROUTE WORKING
     </div>
   );
 }
