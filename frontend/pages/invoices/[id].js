@@ -173,7 +173,7 @@ export default function InvoiceDetailPage() {
             Back
           </Button>
 
-           <Space>
+           
 
             <Button
                 onClick={handleDownloadPDF}
@@ -189,7 +189,7 @@ export default function InvoiceDetailPage() {
                 Print Invoice
             </Button>
 
-        </Space>
+        
 
         </div>
 
