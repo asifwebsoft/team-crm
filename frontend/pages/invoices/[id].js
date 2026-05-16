@@ -7,8 +7,16 @@ import {
   Table,
   Tag,
   Button,
-  Space
+  Space,
+  Row,
+  Col,
+  Divider,
 } from "antd";
+
+import {
+  PrinterOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
 
 import MainLayout from "../../components/Layout";
 import API from "../../services/api";
@@ -23,7 +31,7 @@ export default function InvoiceDetailPage() {
 
   const [invoice, setInvoice] = useState(null);
 
-  // ✅ Fetch Detail
+  // ✅ Fetch Invoice Detail
   const fetchInvoice = async () => {
 
     try {
@@ -48,14 +56,32 @@ export default function InvoiceDetailPage() {
 
   }, [id]);
 
-  // ✅ TABLE
+  // ✅ PRINT ONLY INVOICE
+  const handlePrint = () => {
+
+    const printContent = document.getElementById(
+      "invoice-print-area"
+    ).innerHTML;
+
+    const originalContent = document.body.innerHTML;
+
+    document.body.innerHTML = printContent;
+
+    window.print();
+
+    document.body.innerHTML = originalContent;
+
+    window.location.reload();
+  };
+
+  // ✅ TABLE COLUMNS
   const columns = [
     {
       title: "Product",
       dataIndex: "product_name",
     },
     {
-      title: "Qty",
+      title: "Quantity",
       dataIndex: "quantity",
     },
     {
@@ -74,99 +100,249 @@ export default function InvoiceDetailPage() {
     return null;
   }
 
+  let statusColor = "orange";
+
+  if (invoice.status === "paid") {
+    statusColor = "green";
+  }
+
+  if (invoice.status === "partial") {
+    statusColor = "blue";
+  }
+
   return (
     <MainLayout>
 
-      <Card
+      <div
         style={{
-          maxWidth: 1000,
+          maxWidth: 1100,
           margin: "20px auto",
         }}
       >
 
-        {/* HEADER */}
+        {/* ACTION BUTTONS */}
 
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             marginBottom: 20,
+            gap: 10,
+            flexWrap: "wrap",
           }}
         >
 
-          <div>
-
-            <Title level={3}>
-              Invoice
-            </Title>
-
-            <Text>
-              #{invoice.invoice_number}
-            </Text>
-
-          </div>
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={() => router.push("/invoices")}
+          >
+            Back
+          </Button>
 
           <Button
             type="primary"
-            onClick={() => window.print()}
+            icon={<PrinterOutlined />}
+            onClick={handlePrint}
           >
-            Print
+            Print Invoice
           </Button>
 
         </div>
 
-        {/* CUSTOMER */}
+        {/* PRINT AREA */}
 
-        <Space
-          direction="vertical"
-          style={{
-            marginBottom: 20,
-          }}
-        >
+        <div id="invoice-print-area">
 
-          <Text strong>
-            Customer:
-          </Text>
+          <Card
+            bordered={false}
+            style={{
+              borderRadius: 12,
+              boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+            }}
+          >
 
-          <Text>
-            {invoice.customer_name}
-          </Text>
+            {/* HEADER */}
 
-          <Text>
-            {invoice.phone}
-          </Text>
+            <Row
+              justify="space-between"
+              align="middle"
+              gutter={[20, 20]}
+            >
 
-          <Tag color="blue">
-            {invoice.status.toUpperCase()}
-          </Tag>
+              <Col>
 
-        </Space>
+                <Title
+                  level={2}
+                  style={{
+                    marginBottom: 0,
+                    color: "#1677ff",
+                  }}
+                >
+                  CRM Invoice
+                </Title>
 
-        {/* TABLE */}
+                <Text type="secondary">
+                  Professional Billing Invoice
+                </Text>
 
-        <Table
-          columns={columns}
-          dataSource={invoice.items}
-          pagination={false}
-          rowKey="product_name"
-        />
+              </Col>
 
-        {/* FOOTER */}
+              <Col>
 
-        <div
-          style={{
-            marginTop: 30,
-            textAlign: "right",
-          }}
-        >
+                <div style={{ textAlign: "right" }}>
 
-          <Title level={4}>
-            Total: ₹{invoice.total_amount}
-          </Title>
+                  <Title
+                    level={4}
+                    style={{ marginBottom: 5 }}
+                  >
+                    Invoice #{invoice.invoice_number}
+                  </Title>
+
+                  <Text>
+                    Date: {invoice.created_at}
+                  </Text>
+
+                </div>
+
+              </Col>
+
+            </Row>
+
+            <Divider />
+
+            {/* CUSTOMER DETAILS */}
+
+            <Row gutter={[20, 20]}>
+
+              <Col xs={24} md={12}>
+
+                <Card
+                  size="small"
+                  style={{
+                    borderRadius: 10,
+                    background: "#fafafa",
+                  }}
+                >
+
+                  <Space direction="vertical">
+
+                    <Title
+                      level={5}
+                      style={{ margin: 0 }}
+                    >
+                      Customer Details
+                    </Title>
+
+                    <Text>
+                      <strong>Name:</strong> {invoice.customer_name}
+                    </Text>
+
+                    <Text>
+                      <strong>Phone:</strong> {invoice.phone}
+                    </Text>
+
+                  </Space>
+
+                </Card>
+
+              </Col>
+
+              <Col xs={24} md={12}>
+
+                <Card
+                  size="small"
+                  style={{
+                    borderRadius: 10,
+                    background: "#fafafa",
+                  }}
+                >
+
+                  <Space direction="vertical">
+
+                    <Title
+                      level={5}
+                      style={{ margin: 0 }}
+                    >
+                      Invoice Info
+                    </Title>
+
+                    <Text>
+                      <strong>Created By:</strong> {invoice.created_by}
+                    </Text>
+
+                    <div>
+                      <Tag color={statusColor}>
+                        {invoice.status.toUpperCase()}
+                      </Tag>
+                    </div>
+
+                  </Space>
+
+                </Card>
+
+              </Col>
+
+            </Row>
+
+            <Divider />
+
+            {/* PRODUCT TABLE */}
+
+            <Title level={4}>
+              Products
+            </Title>
+
+            <Table
+              columns={columns}
+              dataSource={invoice.items}
+              pagination={false}
+              rowKey="product_name"
+              bordered
+              style={{ marginTop: 20 }}
+            />
+
+            {/* TOTAL */}
+
+            <div
+              style={{
+                marginTop: 30,
+                textAlign: "right",
+              }}
+            >
+
+              <Title
+                level={3}
+                style={{
+                  color: "#1677ff",
+                }}
+              >
+                Grand Total: ₹{invoice.total_amount}
+              </Title>
+
+            </div>
+
+            <Divider />
+
+            {/* FOOTER */}
+
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: 20,
+              }}
+            >
+
+              <Text type="secondary">
+                Thank you for your business.
+              </Text>
+
+            </div>
+
+          </Card>
 
         </div>
 
-      </Card>
+      </div>
 
     </MainLayout>
   );
