@@ -179,3 +179,86 @@ class UpdateInvoiceStatusView(APIView):
                 },
                 status=404
             )
+        
+class InvoiceDetailView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        CanCreateInvoice
+    ]
+
+    def get(self, request, pk):
+
+        try:
+
+            invoice = Invoice.objects.get(id=pk)
+
+            # ✅ STAFF SECURITY
+            if request.user.role == "staff":
+
+                if invoice.created_by != request.user:
+
+                    return Response(
+                        {
+                            "error": "Permission denied"
+                        },
+                        status=403
+                    )
+
+            # ✅ MANAGER SECURITY
+            elif request.user.role == "manager":
+
+                is_team_invoice = (
+                    invoice.created_by.manager ==
+                    request.user
+                    if invoice.created_by.manager
+                    else False
+                )
+
+                if (
+                    invoice.created_by != request.user
+                    and not is_team_invoice
+                ):
+
+                    return Response(
+                        {
+                            "error": "Permission denied"
+                        },
+                        status=403
+                    )
+
+            items = []
+
+            for item in invoice.items.all():
+
+                items.append({
+                    "product_name": item.product_name,
+                    "quantity": item.quantity,
+                    "price": item.price,
+                    "subtotal": item.subtotal,
+                })
+
+            data = {
+                "id": invoice.id,
+                "invoice_number": invoice.invoice_number,
+                "customer_name": invoice.customer_name,
+                "phone": invoice.phone,
+                "status": invoice.status,
+                "total_amount": invoice.total_amount,
+                "created_by": invoice.created_by.full_name,
+                "created_at": invoice.created_at.strftime(
+                    "%d-%m-%Y %I:%M %p"
+                ),
+                "items": items,
+            }
+
+            return Response(data)
+
+        except Invoice.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Invoice not found"
+                },
+                status=404
+            )

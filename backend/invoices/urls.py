@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CreateInvoiceView, InvoiceListView, UpdateInvoiceStatusView
+from .views import CreateInvoiceView, InvoiceListView, UpdateInvoiceStatusView, InvoiceDetailView
 
 
 urlpatterns = [
@@ -16,7 +16,11 @@ urlpatterns = [
     ),
     path(
     'status/<int:pk>/',
-    UpdateInvoiceStatusView.as_view(),
+    UpdateInvoiceStatusView.as_view()
     
-),
+    ),
+    path(
+    '<int:pk>/',
+    InvoiceDetailView.as_view()
+    ),
 ]
