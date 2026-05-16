@@ -2,9 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-
+from django.db import models
 from .models import Invoice, InvoiceItem
 from .permissions import CanCreateInvoice
+from .models import Invoice, InvoiceItem
 
 
 class CreateInvoiceView(APIView):
@@ -103,9 +104,10 @@ class InvoiceListView(APIView):
         # ✅ MANAGER
         elif user.role == "manager":
 
-            invoices = Invoice.objects.filter(
-                created_by__manager=user
-            ).order_by("-id")
+         invoices = Invoice.objects.filter(
+            models.Q(created_by=user) |
+            models.Q(created_by__manager=user)
+        ).order_by("-id")
 
         # ✅ STAFF
         else:
