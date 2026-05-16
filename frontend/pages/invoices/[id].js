@@ -13,14 +13,8 @@ import {
   Divider,
 } from "antd";
 
-import {
-  PrinterOutlined,
-  ArrowLeftOutlined,
-} from "@ant-design/icons";
-
 import MainLayout from "../../components/Layout";
 import API from "../../services/api";
-
 
 const { Title, Text } = Typography;
 
@@ -38,7 +32,7 @@ export default function InvoiceDetailPage() {
 
   const [invoice, setInvoice] = useState(null);
 
-  // ✅ Fetch Invoice Detail
+  // ✅ FETCH INVOICE
   const fetchInvoice = async () => {
 
     try {
@@ -81,12 +75,12 @@ export default function InvoiceDetailPage() {
     window.location.reload();
   };
 
+  // ✅ SAVE PDF
   const handleDownloadPDF = () => {
 
     window.print();
   };
 
- 
   // ✅ TABLE COLUMNS
   const columns = [
     {
@@ -109,8 +103,25 @@ export default function InvoiceDetailPage() {
     },
   ];
 
+  // ✅ LOADING FIX
   if (!invoice) {
-    return null;
+
+    return (
+
+      <MainLayout>
+
+        <div
+          style={{
+            padding: 40,
+            fontSize: 24,
+            fontWeight: "bold",
+          }}
+        >
+          Loading Invoice...
+        </div>
+
+      </MainLayout>
+    );
   }
 
   let statusColor = "orange";
@@ -125,16 +136,6 @@ export default function InvoiceDetailPage() {
 
   return (
     <MainLayout>
-        <div
-            style={{
-                background: "red",
-                color: "#fff",
-                padding: 20,
-                fontSize: 30,
-            }}
-            >
-            ASIF FRONTEND TEST
-            </div>
 
       <div
         style={{
@@ -146,50 +147,57 @@ export default function InvoiceDetailPage() {
         {/* ACTION BUTTONS */}
 
         <div
-        style={{
+          style={{
             marginBottom: 20,
-        }}
+          }}
         >
 
-        {/* ROW */}
-
-        <div
+          <div
             style={{
-            display: "flex",
-            gap: 12,
-            flexWrap: "wrap",
+              display: "flex",
+              gap: 12,
+              flexWrap: "wrap",
             }}
-        >
+          >
 
             {/* BACK */}
 
             <button
-            onClick={() => router.push("/invoices")}
-            style={{
+              onClick={() => router.push("/invoices")}
+              style={{
                 padding: "10px 18px",
                 border: "1px solid #d9d9d9",
                 borderRadius: 6,
                 background: "#fff",
                 cursor: "pointer",
                 fontWeight: 500,
-            }}
+              }}
             >
-            ← Back
+              ← Back
             </button>
 
-            {/* PDF */}
+            {/* SAVE PDF */}
 
-            <Button
+            <button
               onClick={handleDownloadPDF}
+              style={{
+                padding: "10px 18px",
+                border: "none",
+                borderRadius: 6,
+                background: "#22c55e",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
             >
-            Save PDF
-          </Button>
+              Save PDF
+            </button>
 
             {/* PRINT */}
 
             <button
-            onClick={handlePrint}
-            style={{
+              onClick={handlePrint}
+              style={{
                 padding: "10px 18px",
                 border: "none",
                 borderRadius: 6,
@@ -197,12 +205,12 @@ export default function InvoiceDetailPage() {
                 color: "#fff",
                 cursor: "pointer",
                 fontWeight: 600,
-            }}
+              }}
             >
-            Print Invoice
+              Print Invoice
             </button>
 
-        </div>
+          </div>
 
         </div>
 
@@ -235,7 +243,7 @@ export default function InvoiceDetailPage() {
                     color: "#1677ff",
                   }}
                 >
-                  CRM Invoice UPDATED
+                  CRM Invoice
                 </Title>
 
                 <Text type="secondary">
@@ -347,7 +355,7 @@ export default function InvoiceDetailPage() {
 
             <Divider />
 
-            {/* PRODUCT TABLE */}
+            {/* PRODUCTS */}
 
             <Title level={4}>
               Products
