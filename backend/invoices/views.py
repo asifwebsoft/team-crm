@@ -130,3 +130,50 @@ class InvoiceListView(APIView):
             })
 
         return Response(data)
+    
+
+class UpdateInvoiceStatusView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        CanCreateInvoice
+    ]
+
+    def patch(self, request, pk):
+
+        try:
+
+            invoice = Invoice.objects.get(id=pk)
+
+            # ✅ ONLY ADMIN & MANAGER
+            if request.user.role not in [
+                "admin",
+                "manager"
+            ]:
+
+                return Response(
+                    {
+                        "error": "Permission denied"
+                    },
+                    status=403
+                )
+
+            invoice.status = request.data.get(
+                "status",
+                invoice.status
+            )
+
+            invoice.save()
+
+            return Response({
+                "message": "Status updated"
+            })
+
+        except Invoice.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Invoice not found"
+                },
+                status=404
+            )

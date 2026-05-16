@@ -9,7 +9,8 @@ import {
   Typography,
   Table,
   Tag,
-  Divider
+  Divider,
+  Select
 } from "antd";
 
 import MainLayout from "../components/Layout";
@@ -33,6 +34,12 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(false);
 
   const [invoiceList, setInvoiceList] = useState([]);
+
+  // ✅ USER ROLE
+  const role =
+    typeof window !== "undefined"
+      ? localStorage.getItem("role")
+      : null;
 
   // ✅ Fetch Invoices
   const fetchInvoices = async () => {
@@ -136,6 +143,31 @@ export default function InvoicesPage() {
     }
   };
 
+  // ✅ UPDATE STATUS
+  const updateStatus = async (
+    invoiceId,
+    status
+  ) => {
+
+    try {
+
+      await API.patch(
+        `/invoices/status/${invoiceId}/`,
+        {
+          status
+        }
+      );
+
+      message.success("Status Updated");
+
+      fetchInvoices();
+
+    } catch (err) {
+
+      message.error("Failed");
+    }
+  };
+
   // ✅ TABLE COLUMNS
   const columns = [
     {
@@ -155,10 +187,13 @@ export default function InvoicesPage() {
       dataIndex: "total_amount",
       render: (amount) => `₹${amount}`,
     },
+
+    // ✅ STATUS COLUMN
     {
       title: "Status",
       dataIndex: "status",
-      render: (status) => {
+
+      render: (status, record) => {
 
         let color = "orange";
 
@@ -166,13 +201,48 @@ export default function InvoicesPage() {
           color = "green";
         }
 
+        if (status === "partial") {
+          color = "blue";
+        }
+
+        // ✅ STAFF VIEW ONLY
+        if (role === "staff") {
+
+          return (
+            <Tag color={color}>
+              {status.toUpperCase()}
+            </Tag>
+          );
+        }
+
+        // ✅ ADMIN & MANAGER
         return (
-          <Tag color={color}>
-            {status.toUpperCase()}
-          </Tag>
+
+          <Select
+            value={status}
+            style={{ width: 120 }}
+            onChange={(value) =>
+              updateStatus(record.id, value)
+            }
+            options={[
+              {
+                label: "Pending",
+                value: "pending",
+              },
+              {
+                label: "Paid",
+                value: "paid",
+              },
+              {
+                label: "Partial",
+                value: "partial",
+              },
+            ]}
+          />
         );
       },
     },
+
     {
       title: "Created By",
       dataIndex: "created_by",
