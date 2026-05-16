@@ -156,37 +156,75 @@ export default function InvoiceDetailPage() {
 
         {/* ACTION BUTTONS */}
 
-             <div
-                style={{
-                    display: "flex",
-                    gap: 10,
-                    flexWrap: "wrap",
-                }}
-                >
+        <div
+        style={{
+            marginBottom: 20,
+        }}
+        >
 
-                <Button
-                    icon={<ArrowLeftOutlined />}
-                    onClick={() => router.push("/invoices")}
-                >
-                    Back
-                </Button>
+        {/* ROW */}
 
-                <Button
-                    type="default"
-                    onClick={handleDownloadPDF}
-                >
-                    Download PDF
-                </Button>
+        <div
+            style={{
+            display: "flex",
+            gap: 12,
+            flexWrap: "wrap",
+            }}
+        >
 
-                <Button
-                    type="primary"
-                    icon={<PrinterOutlined />}
-                    onClick={handlePrint}
-                >
-                    Print Invoice
-                </Button>
+            {/* BACK */}
 
-                </div>
+            <button
+            onClick={() => router.push("/invoices")}
+            style={{
+                padding: "10px 18px",
+                border: "1px solid #d9d9d9",
+                borderRadius: 6,
+                background: "#fff",
+                cursor: "pointer",
+                fontWeight: 500,
+            }}
+            >
+            ← Back
+            </button>
+
+            {/* PDF */}
+
+            <button
+            onClick={handleDownloadPDF}
+            style={{
+                padding: "10px 18px",
+                border: "none",
+                borderRadius: 6,
+                background: "#22c55e",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: 600,
+            }}
+            >
+            Download PDF
+            </button>
+
+            {/* PRINT */}
+
+            <button
+            onClick={handlePrint}
+            style={{
+                padding: "10px 18px",
+                border: "none",
+                borderRadius: 6,
+                background: "#1677ff",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: 600,
+            }}
+            >
+            Print Invoice
+            </button>
+
+        </div>
+
+        </div>
 
         {/* PRINT AREA */}
 
