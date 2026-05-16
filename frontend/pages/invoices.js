@@ -20,17 +20,6 @@ const { Title } = Typography;
 
 export default function InvoicesPage() {
 
-  <div
-  style={{
-    background: "red",
-    color: "#fff",
-    padding: 20,
-    fontSize: 40,
-  }}
->
-  ASIF INVOICES TEST
-</div>
-
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -275,7 +264,7 @@ export default function InvoicesPage() {
           type="link"
           onClick={() =>
             window.location.href =
-              `/invoices-detail/${record.id}`
+              `/invoice-detail/${record.id}`
           }
         >
           View
