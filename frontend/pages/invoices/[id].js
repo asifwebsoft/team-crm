@@ -24,6 +24,12 @@ import API from "../../services/api";
 
 const { Title, Text } = Typography;
 
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
+}
+
 export default function InvoiceDetailPage() {
 
   const router = useRouter();
@@ -265,7 +271,7 @@ export default function InvoiceDetailPage() {
                     color: "#1677ff",
                   }}
                 >
-                  CRM Invoice Test
+                  CRM Invoice UPDATED
                 </Title>
 
                 <Text type="secondary">
