@@ -1,0 +1,132 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
+from .models import Invoice, InvoiceItem
+from .permissions import CanCreateInvoice
+
+
+class CreateInvoiceView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        CanCreateInvoice
+    ]
+
+    def post(self, request):
+
+        try:
+
+            data = request.data
+
+            items = data.get("items", [])
+
+            total_amount = 0
+
+            # ✅ Generate Invoice Number
+            last_invoice = Invoice.objects.order_by("-id").first()
+
+            if last_invoice:
+                next_id = last_invoice.id + 1
+            else:
+                next_id = 1
+
+            invoice_number = f"INV-{next_id:04d}"
+
+            # ✅ Create Invoice
+            invoice = Invoice.objects.create(
+                invoice_number=invoice_number,
+                customer_name=data.get("customer_name"),
+                phone=data.get("phone"),
+                status=data.get("status", "pending"),
+                created_by=request.user,
+                company=request.user.company
+            )
+
+            # ✅ Create Invoice Items
+            for item in items:
+
+                quantity = int(item.get("quantity", 1))
+                price = float(item.get("price", 0))
+
+                subtotal = quantity * price
+
+                total_amount += subtotal
+
+                InvoiceItem.objects.create(
+                    invoice=invoice,
+                    product_name=item.get("product_name"),
+                    quantity=quantity,
+                    price=price,
+                    subtotal=subtotal
+                )
+
+            invoice.total_amount = total_amount
+            invoice.save()
+
+            return Response(
+                {
+                    "message": "Invoice created successfully",
+                    "invoice_id": invoice.id,
+                    "invoice_number": invoice.invoice_number,
+                    "total_amount": invoice.total_amount
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+class InvoiceListView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        CanCreateInvoice
+    ]
+
+    def get(self, request):
+
+        user = request.user
+
+        # ✅ ADMIN
+        if user.role == "admin":
+
+            invoices = Invoice.objects.all().order_by("-id")
+
+        # ✅ MANAGER
+        elif user.role == "manager":
+
+            invoices = Invoice.objects.filter(
+                created_by__manager=user
+            ).order_by("-id")
+
+        # ✅ STAFF
+        else:
+
+            invoices = Invoice.objects.filter(
+                created_by=user
+            ).order_by("-id")
+
+        data = []
+
+        for invoice in invoices:
+
+            data.append({
+                "id": invoice.id,
+                "invoice_number": invoice.invoice_number,
+                "customer_name": invoice.customer_name,
+                "phone": invoice.phone,
+                "status": invoice.status,
+                "total_amount": invoice.total_amount,
+                "created_by": invoice.created_by.full_name if invoice.created_by else "",
+                "created_at": invoice.created_at.strftime("%d-%m-%Y %I:%M %p"),
+            })
+
+        return Response(data)

@@ -4,8 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-djangorestframework = "*"
 django-filter = "*"
 pillow = "*"
 django-cors-headers = "*"
@@ -17,6 +15,8 @@ dj-database-url = "*"
 razorpay = "==1.4.2"
 setuptools = "*"
 cashfree-pg = "*"
+django = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

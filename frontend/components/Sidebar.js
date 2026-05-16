@@ -73,7 +73,12 @@ export default function Sidebar() {
       key: "/followups",
       icon: <CalendarOutlined />,
       label: "Follow Ups",
-    }
+    },
+     {
+      key: "/invoices",
+      icon: <LineChartOutlined />,
+      label: "Invoices",
+  }
   ];
 
   // 👑 ADMIN MENU

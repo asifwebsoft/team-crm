@@ -10,5 +10,7 @@ urlpatterns = [
     path('api/leads/', include('leads.urls')),
     path('api/company/', include('companies.urls')),
     path('api/subscription/', include('subscriptions.urls')),
+    path('api/invoices/', include('invoices.urls')),
     path('api/token/refresh/', TokenRefreshView.as_view()),
+   
 ]
