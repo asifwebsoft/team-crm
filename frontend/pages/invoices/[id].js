@@ -20,6 +20,7 @@ import {
 
 import MainLayout from "../../components/Layout";
 import API from "../../services/api";
+import html2pdf from "html2pdf.js";
 
 const { Title, Text } = Typography;
 
@@ -73,6 +74,36 @@ export default function InvoiceDetailPage() {
 
     window.location.reload();
   };
+
+ // ✅ Download Invoice
+  const handleDownloadPDF = () => {
+
+  const element = document.getElementById(
+    "invoice-print-area"
+  );
+
+  const options = {
+    margin: 0.5,
+    filename: `${invoice.invoice_number}.pdf`,
+    image: {
+      type: "jpeg",
+      quality: 1,
+    },
+    html2canvas: {
+      scale: 2,
+    },
+    jsPDF: {
+      unit: "in",
+      format: "a4",
+      orientation: "portrait",
+    },
+  };
+
+  html2pdf()
+    .set(options)
+    .from(element)
+    .save();
+};
 
   // ✅ TABLE COLUMNS
   const columns = [
@@ -139,13 +170,23 @@ export default function InvoiceDetailPage() {
             Back
           </Button>
 
-          <Button
-            type="primary"
-            icon={<PrinterOutlined />}
-            onClick={handlePrint}
-          >
-            Print Invoice
-          </Button>
+           <Space>
+
+            <Button
+                onClick={handleDownloadPDF}
+            >
+                Download PDF
+            </Button>
+
+            <Button
+                type="primary"
+                icon={<PrinterOutlined />}
+                onClick={handlePrint}
+            >
+                Print Invoice
+            </Button>
+
+        </Space>
 
         </div>
 
