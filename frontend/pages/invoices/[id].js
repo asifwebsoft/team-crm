@@ -241,6 +241,10 @@ export default function InvoiceDetailPage() {
                       <strong>Phone:</strong> {invoice.phone}
                     </Text>
 
+                    <Text>
+                      <strong>Address:</strong> {invoice.address}
+                    </Text>
+
                   </Space>
 
                 </Card>

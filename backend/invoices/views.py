@@ -40,6 +40,7 @@ class CreateInvoiceView(APIView):
                 invoice_number=invoice_number,
                 customer_name=data.get("customer_name"),
                 phone=data.get("phone"),
+                address=data.get("address"),
                 status=data.get("status", "pending"),
                 created_by=request.user,
                 company=request.user.company
@@ -125,6 +126,7 @@ class InvoiceListView(APIView):
                 "invoice_number": invoice.invoice_number,
                 "customer_name": invoice.customer_name,
                 "phone": invoice.phone,
+                "address": invoice.address,
                 "status": invoice.status,
                 "total_amount": invoice.total_amount,
                 "created_by": invoice.created_by.full_name if invoice.created_by else "",
@@ -243,6 +245,7 @@ class InvoiceDetailView(APIView):
                 "invoice_number": invoice.invoice_number,
                 "customer_name": invoice.customer_name,
                 "phone": invoice.phone,
+                "address": invoice.address,
                 "status": invoice.status,
                 "total_amount": invoice.total_amount,
                 "created_by": invoice.created_by.full_name,

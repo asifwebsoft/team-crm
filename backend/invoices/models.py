@@ -33,6 +33,11 @@ class Invoice(models.Model):
         blank=True
     )
 
+    address = models.TextField(
+    blank=True,
+    null=True
+    )
+
     total_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,

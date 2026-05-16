@@ -22,6 +22,7 @@ export default function InvoicesPage() {
 
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const [items, setItems] = useState([
     {
@@ -106,6 +107,7 @@ export default function InvoicesPage() {
         {
           customer_name: customerName,
           phone,
+          address,
           status: "pending",
           items,
         }
@@ -117,6 +119,7 @@ export default function InvoicesPage() {
 
         setCustomerName("");
         setPhone("");
+        setAddress("");
 
         setItems([
           {
@@ -303,6 +306,14 @@ export default function InvoicesPage() {
             onChange={(e) =>
               setPhone(e.target.value)
             }
+          />
+          <Input.TextArea
+              placeholder="Customer Address"
+              value={address}
+              rows={3}
+              onChange={(e) =>
+                setAddress(e.target.value)
+              }
           />
 
           {/* PRODUCTS */}
