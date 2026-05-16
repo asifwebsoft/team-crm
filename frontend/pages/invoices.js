@@ -251,6 +251,23 @@ export default function InvoicesPage() {
       title: "Date",
       dataIndex: "created_at",
     },
+
+    {
+      title: "Action",
+
+      render: (_, record) => (
+
+        <Button
+          type="link"
+          onClick={() =>
+            window.location.href =
+              `/invoices/${record.id}`
+          }
+        >
+          View
+        </Button>
+      ),
+    },
   ];
 
   return (
