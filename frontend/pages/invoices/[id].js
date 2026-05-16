@@ -146,6 +146,16 @@ export default function InvoiceDetailPage() {
 
   return (
     <MainLayout>
+        <div
+            style={{
+                background: "red",
+                color: "#fff",
+                padding: 20,
+                fontSize: 30,
+            }}
+            >
+            ASIF FRONTEND TEST
+            </div>
 
       <div
         style={{
