@@ -255,7 +255,7 @@ export default function InvoiceDetailPage() {
                     color: "#1677ff",
                   }}
                 >
-                  CRM Invoice
+                  CRM Invoice Test
                 </Title>
 
                 <Text type="secondary">
