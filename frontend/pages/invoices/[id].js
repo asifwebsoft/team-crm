@@ -20,7 +20,7 @@ import {
 
 import MainLayout from "../../components/Layout";
 import API from "../../services/api";
-import html2pdf from "html2pdf.js";
+
 
 const { Title, Text } = Typography;
 
@@ -76,7 +76,11 @@ export default function InvoiceDetailPage() {
   };
 
  // ✅ Download Invoice
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
+
+  const html2pdf = (
+    await import("html2pdf.js")
+  ).default;
 
   const element = document.getElementById(
     "invoice-print-area"
@@ -104,7 +108,6 @@ export default function InvoiceDetailPage() {
     .from(element)
     .save();
 };
-
   // ✅ TABLE COLUMNS
   const columns = [
     {
