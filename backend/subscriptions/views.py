@@ -35,23 +35,41 @@ PLAN_DETAILS = {
 # 🔥 CREATE ORDER
 class CreateOrder(APIView):
 
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
 
         try:
 
+            plan = request.data.get("plan")
+
+            PLAN_PRICES = {
+                "basic": 199,
+                "pro": 499,
+                "advance": 799
+            }
+
+            if plan not in PLAN_PRICES:
+
+                return Response({
+                    "error": "Invalid plan"
+                }, status=400)
+
+            amount = PLAN_PRICES[plan]
+
             order_id = str(uuid.uuid4())
 
             customer_details = CustomerDetails(
-                customer_id="123",
+                customer_id=str(request.user.id),
                 customer_phone="9999999999"
             )
 
             order_meta = OrderMeta(
-                return_url=f"https://team-crm-roan.vercel.app/payment-success?order_id={order_id}"
+                return_url=f"https://team-crm-roan.vercel.app/payment-success?plan={plan}"
             )
 
             create_order_request = CreateOrderRequest(
-                order_amount=1.0,
+                order_amount=amount,
                 order_currency="INR",
                 order_id=order_id,
                 customer_details=customer_details,
@@ -67,7 +85,6 @@ class CreateOrder(APIView):
                 Cashfree.SANDBOX,
                 app_id,
                 secret_key
-                
             )
 
             response = cashfree.PGCreateOrder(
@@ -77,7 +94,9 @@ class CreateOrder(APIView):
 
             return Response({
                 "payment_session_id": response.data.payment_session_id,
-                "order_id": response.data.order_id
+                "order_id": response.data.order_id,
+                "plan": plan,
+                "amount": amount
             })
 
         except Exception as e:
