@@ -325,7 +325,7 @@ export default function InvoicesPage() {
           type="link"
           onClick={() =>
             window.location.href =
-              `/invoice-details?id=${record.id}`
+              `/invoice-detail?id=${record.id}`
           }
         >
           View
