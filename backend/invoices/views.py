@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.db import models
+
 from .models import Invoice, InvoiceItem
 from .permissions import CanCreateInvoice
-from .models import Invoice, InvoiceItem
 
 
 class CreateInvoiceView(APIView):
@@ -85,7 +85,8 @@ class CreateInvoiceView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
+
 class InvoiceListView(APIView):
 
     permission_classes = [
@@ -100,20 +101,25 @@ class InvoiceListView(APIView):
         # ✅ ADMIN
         if user.role == "admin":
 
-            invoices = Invoice.objects.all().order_by("-id")
+            invoices = Invoice.objects.filter(
+                company=user.company
+            ).order_by("-id")
 
         # ✅ MANAGER
         elif user.role == "manager":
 
-         invoices = Invoice.objects.filter(
-            models.Q(created_by=user) |
-            models.Q(created_by__manager=user)
-        ).order_by("-id")
+            invoices = Invoice.objects.filter(
+                company=user.company
+            ).filter(
+                models.Q(created_by=user) |
+                models.Q(created_by__manager=user)
+            ).order_by("-id")
 
         # ✅ STAFF
         else:
 
             invoices = Invoice.objects.filter(
+                company=user.company,
                 created_by=user
             ).order_by("-id")
 
@@ -134,7 +140,7 @@ class InvoiceListView(APIView):
             })
 
         return Response(data)
-    
+
 
 class UpdateInvoiceStatusView(APIView):
 
@@ -147,7 +153,10 @@ class UpdateInvoiceStatusView(APIView):
 
         try:
 
-            invoice = Invoice.objects.get(id=pk)
+            invoice = Invoice.objects.get(
+                id=pk,
+                company=request.user.company
+            )
 
             # ✅ ONLY ADMIN & MANAGER
             if request.user.role not in [
@@ -161,6 +170,28 @@ class UpdateInvoiceStatusView(APIView):
                     },
                     status=403
                 )
+
+            # ✅ MANAGER SECURITY
+            if request.user.role == "manager":
+
+                is_team_invoice = (
+                    invoice.created_by.manager ==
+                    request.user
+                    if invoice.created_by.manager
+                    else False
+                )
+
+                if (
+                    invoice.created_by != request.user
+                    and not is_team_invoice
+                ):
+
+                    return Response(
+                        {
+                            "error": "Permission denied"
+                        },
+                        status=403
+                    )
 
             invoice.status = request.data.get(
                 "status",
@@ -181,7 +212,8 @@ class UpdateInvoiceStatusView(APIView):
                 },
                 status=404
             )
-        
+
+
 class InvoiceDetailView(APIView):
 
     permission_classes = [
@@ -193,7 +225,10 @@ class InvoiceDetailView(APIView):
 
         try:
 
-            invoice = Invoice.objects.get(id=pk)
+            invoice = Invoice.objects.get(
+                id=pk,
+                company=request.user.company
+            )
 
             # ✅ STAFF SECURITY
             if request.user.role == "staff":
