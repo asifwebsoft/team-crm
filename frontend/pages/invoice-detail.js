@@ -14,6 +14,8 @@ import {
 
 import MainLayout from "../components/Layout";
 import API from "../services/api";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const { Title, Text } = Typography;
 
@@ -68,11 +70,45 @@ export default function InvoiceDetailPage() {
     window.location.reload();
   };
 
-  // ✅ SAVE PDF
-  const handleSavePDF = () => {
+  // ✅ Download PDF
+  const handleDownloadPDF = async () => {
 
-    window.print();
-  };
+  const input = document.getElementById(
+    "invoice-print-area"
+  );
+
+  const canvas = await html2canvas(input);
+
+  const imgData = canvas.toDataURL(
+    "image/png"
+  );
+
+  const pdf = new jsPDF(
+    "p",
+    "mm",
+    "a4"
+  );
+
+  const pdfWidth =
+    pdf.internal.pageSize.getWidth();
+
+  const pdfHeight =
+    (canvas.height * pdfWidth) /
+    canvas.width;
+
+  pdf.addImage(
+    imgData,
+    "PNG",
+    0,
+    0,
+    pdfWidth,
+    pdfHeight
+  );
+
+  pdf.save(
+    `${invoice.invoice_number}.pdf`
+  );
+};
 
   // ✅ TABLE COLUMNS
   const columns = [
