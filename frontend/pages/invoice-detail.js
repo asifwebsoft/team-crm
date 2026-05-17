@@ -14,8 +14,7 @@ import {
 
 import MainLayout from "../components/Layout";
 import API from "../services/api";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+
 
 const { Title, Text } = Typography;
 
@@ -72,6 +71,14 @@ export default function InvoiceDetailPage() {
 
   // ✅ Download PDF
   const handleDownloadPDF = async () => {
+
+  const jsPDF = (
+    await import("jspdf")
+  ).default;
+
+  const html2canvas = (
+    await import("html2canvas")
+  ).default;
 
   const input = document.getElementById(
     "invoice-print-area"
