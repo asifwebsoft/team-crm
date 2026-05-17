@@ -10,7 +10,9 @@ import {
   Table,
   Tag,
   Divider,
-  Select
+  Select,
+  Row,
+  Col
 } from "antd";
 
 import MainLayout from "../components/Layout";
@@ -23,6 +25,12 @@ export default function InvoicesPage() {
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+
+  const [searchText, setSearchText] =
+    useState("");
+
+  const [statusFilter, setStatusFilter] =
+    useState("");
 
   const [items, setItems] = useState([
     {
@@ -42,7 +50,7 @@ export default function InvoicesPage() {
       ? localStorage.getItem("role")
       : null;
 
-  // ✅ Fetch Invoices
+  // ✅ FETCH INVOICES
   const fetchInvoices = async () => {
 
     try {
@@ -65,7 +73,7 @@ export default function InvoicesPage() {
 
   }, []);
 
-  // ✅ Add Product Row
+  // ✅ ADD PRODUCT ROW
   const addItem = () => {
 
     setItems([
@@ -78,8 +86,12 @@ export default function InvoicesPage() {
     ]);
   };
 
-  // ✅ Handle Input
-  const handleChange = (index, field, value) => {
+  // ✅ HANDLE PRODUCT INPUT
+  const handleChange = (
+    index,
+    field,
+    value
+  ) => {
 
     const updated = [...items];
 
@@ -88,14 +100,20 @@ export default function InvoicesPage() {
     setItems(updated);
   };
 
-  // ✅ Total
-  const totalAmount = items.reduce((sum, item) => {
+  // ✅ TOTAL AMOUNT
+  const totalAmount = items.reduce(
+    (sum, item) => {
 
-    return sum + (item.quantity * item.price);
+      return (
+        sum +
+        (item.quantity * item.price)
+      );
 
-  }, 0);
+    },
+    0
+  );
 
-  // ✅ Create Invoice
+  // ✅ CREATE INVOICE
   const createInvoice = async () => {
 
     try {
@@ -115,7 +133,9 @@ export default function InvoicesPage() {
 
       if (response.status === 201) {
 
-        message.success("Invoice Created");
+        message.success(
+          "Invoice Created"
+        );
 
         setCustomerName("");
         setPhone("");
@@ -129,15 +149,14 @@ export default function InvoicesPage() {
           },
         ]);
 
-        // ✅ Refresh Table
         fetchInvoices();
-
       }
 
     } catch (err) {
 
       message.error(
-        err?.response?.data?.error || "Failed"
+        err?.response?.data?.error ||
+        "Failed"
       );
 
     } finally {
@@ -161,7 +180,9 @@ export default function InvoicesPage() {
         }
       );
 
-      message.success("Status Updated");
+      message.success(
+        "Status Updated"
+      );
 
       fetchInvoices();
 
@@ -170,6 +191,38 @@ export default function InvoicesPage() {
       message.error("Failed");
     }
   };
+
+  // ✅ SEARCH + FILTER
+  const filteredData =
+    invoiceList.filter((item) => {
+
+      const matchesSearch =
+
+        item.customer_name
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          )
+
+        ||
+
+        item.invoice_number
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          );
+
+      const matchesStatus =
+
+        statusFilter
+          ? item.status === statusFilter
+          : true;
+
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+    });
 
   // ✅ TABLE COLUMNS
   const columns = [
@@ -188,15 +241,19 @@ export default function InvoicesPage() {
     {
       title: "Amount",
       dataIndex: "total_amount",
-      render: (amount) => `₹${amount}`,
+      render: (amount) =>
+        `₹${amount}`,
     },
 
-    // ✅ STATUS COLUMN
+    // ✅ STATUS
     {
       title: "Status",
       dataIndex: "status",
 
-      render: (status, record) => {
+      render: (
+        status,
+        record
+      ) => {
 
         let color = "orange";
 
@@ -225,7 +282,10 @@ export default function InvoicesPage() {
             value={status}
             style={{ width: 120 }}
             onChange={(value) =>
-              updateStatus(record.id, value)
+              updateStatus(
+                record.id,
+                value
+              )
             }
             options={[
               {
@@ -250,6 +310,7 @@ export default function InvoicesPage() {
       title: "Created By",
       dataIndex: "created_by",
     },
+
     {
       title: "Date",
       dataIndex: "created_at",
@@ -264,7 +325,7 @@ export default function InvoicesPage() {
           type="link"
           onClick={() =>
             window.location.href =
-              `/invoice-detail?id=${record.id}`
+              `/invoice-details?id=${record.id}`
           }
         >
           View
@@ -296,7 +357,9 @@ export default function InvoicesPage() {
             placeholder="Customer Name"
             value={customerName}
             onChange={(e) =>
-              setCustomerName(e.target.value)
+              setCustomerName(
+                e.target.value
+              )
             }
           />
 
@@ -304,16 +367,21 @@ export default function InvoicesPage() {
             placeholder="Phone Number"
             value={phone}
             onChange={(e) =>
-              setPhone(e.target.value)
+              setPhone(
+                e.target.value
+              )
             }
           />
+
           <Input.TextArea
-              placeholder="Customer Address"
-              value={address}
-              rows={3}
-              onChange={(e) =>
-                setAddress(e.target.value)
-              }
+            placeholder="Customer Address"
+            value={address}
+            rows={3}
+            onChange={(e) =>
+              setAddress(
+                e.target.value
+              )
+            }
           />
 
           {/* PRODUCTS */}
@@ -348,7 +416,9 @@ export default function InvoicesPage() {
                   handleChange(
                     index,
                     "quantity",
-                    Number(e.target.value)
+                    Number(
+                      e.target.value
+                    )
                   )
                 }
               />
@@ -361,7 +431,9 @@ export default function InvoicesPage() {
                   handleChange(
                     index,
                     "price",
-                    Number(e.target.value)
+                    Number(
+                      e.target.value
+                    )
                   )
                 }
               />
@@ -389,17 +461,79 @@ export default function InvoicesPage() {
 
         <Divider />
 
-        {/* ✅ TABLE */}
+        {/* ✅ INVOICE LIST */}
 
         <Title level={4}>
           Invoice List
         </Title>
 
+        {/* ✅ FILTERS */}
+
+        <Row
+          gutter={[16, 16]}
+          style={{
+            marginBottom: 20,
+          }}
+        >
+
+          <Col xs={24} md={12}>
+
+            <Input
+              placeholder="Search customer or invoice number"
+              value={searchText}
+              onChange={(e) =>
+                setSearchText(
+                  e.target.value
+                )
+              }
+            />
+
+          </Col>
+
+          <Col xs={24} md={12}>
+
+            <Select
+              style={{
+                width: "100%"
+              }}
+              placeholder="Filter by status"
+              value={
+                statusFilter ||
+                undefined
+              }
+              onChange={(value) =>
+                setStatusFilter(
+                  value
+                )
+              }
+              allowClear
+            >
+
+              <Select.Option value="pending">
+                Pending
+              </Select.Option>
+
+              <Select.Option value="paid">
+                Paid
+              </Select.Option>
+
+              <Select.Option value="partial">
+                Partial
+              </Select.Option>
+
+            </Select>
+
+          </Col>
+
+        </Row>
+
         <Table
           columns={columns}
-          dataSource={invoiceList}
+          dataSource={filteredData}
           rowKey="id"
-          pagination={{ pageSize: 5 }}
+          pagination={{
+            pageSize: 5
+          }}
         />
 
       </Card>
