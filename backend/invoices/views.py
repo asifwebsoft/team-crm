@@ -23,34 +23,167 @@ class CreateInvoiceView(APIView):
 
             items = data.get("items", [])
 
+            # ✅ VALIDATION
+
+            customer_name = data.get(
+                "customer_name",
+                ""
+            ).strip()
+
+            phone = data.get(
+                "phone",
+                ""
+            ).strip()
+
+            address = data.get(
+                "address",
+                ""
+            ).strip()
+
+            # ✅ REQUIRED FIELDS
+
+            if not customer_name:
+
+                return Response(
+                    {
+                        "error": "Customer name required"
+                    },
+                    status=400
+                )
+
+            if not phone:
+
+                return Response(
+                    {
+                        "error": "Phone number required"
+                    },
+                    status=400
+                )
+
+            if not address:
+
+                return Response(
+                    {
+                        "error": "Address required"
+                    },
+                    status=400
+                )
+
+            # ✅ PRODUCTS REQUIRED
+
+            if not items:
+
+                return Response(
+                    {
+                        "error": "At least one product required"
+                    },
+                    status=400
+                )
+
+            # ✅ PRODUCT VALIDATION
+
+            for item in items:
+
+                product_name = str(
+                    item.get(
+                        "product_name",
+                        ""
+                    )
+                ).strip()
+
+                quantity = int(
+                    item.get(
+                        "quantity",
+                        0
+                    )
+                )
+
+                price = float(
+                    item.get(
+                        "price",
+                        0
+                    )
+                )
+
+                if not product_name:
+
+                    return Response(
+                        {
+                            "error": "Product name required"
+                        },
+                        status=400
+                    )
+
+                if quantity <= 0:
+
+                    return Response(
+                        {
+                            "error": "Quantity must be greater than 0"
+                        },
+                        status=400
+                    )
+
+                if price <= 0:
+
+                    return Response(
+                        {
+                            "error": "Price must be greater than 0"
+                        },
+                        status=400
+                    )
+
             total_amount = 0
 
-            # ✅ Generate Invoice Number
-            last_invoice = Invoice.objects.order_by("-id").first()
+            # ✅ GENERATE INVOICE NUMBER
+
+            last_invoice = Invoice.objects.order_by(
+                "-id"
+            ).first()
 
             if last_invoice:
+
                 next_id = last_invoice.id + 1
+
             else:
+
                 next_id = 1
 
-            invoice_number = f"INV-{next_id:04d}"
+            invoice_number = (
+                f"INV-{next_id:04d}"
+            )
 
-            # ✅ Create Invoice
+            # ✅ CREATE INVOICE
+
             invoice = Invoice.objects.create(
                 invoice_number=invoice_number,
-                customer_name=data.get("customer_name"),
-                phone=data.get("phone"),
-                address=data.get("address"),
-                status=data.get("status", "pending"),
+                customer_name=customer_name,
+                phone=phone,
+                address=address,
+                status=data.get(
+                    "status",
+                    "pending"
+                ),
                 created_by=request.user,
                 company=request.user.company
             )
 
-            # ✅ Create Invoice Items
+            # ✅ CREATE INVOICE ITEMS
+
             for item in items:
 
-                quantity = int(item.get("quantity", 1))
-                price = float(item.get("price", 0))
+                quantity = int(
+                    item.get(
+                        "quantity",
+                        1
+                    )
+                )
+
+                price = float(
+                    item.get(
+                        "price",
+                        0
+                    )
+                )
 
                 subtotal = quantity * price
 
@@ -58,13 +191,16 @@ class CreateInvoiceView(APIView):
 
                 InvoiceItem.objects.create(
                     invoice=invoice,
-                    product_name=item.get("product_name"),
+                    product_name=item.get(
+                        "product_name"
+                    ),
                     quantity=quantity,
                     price=price,
                     subtotal=subtotal
                 )
 
             invoice.total_amount = total_amount
+
             invoice.save()
 
             return Response(
@@ -99,6 +235,7 @@ class InvoiceListView(APIView):
         user = request.user
 
         # ✅ ADMIN
+
         if user.role == "admin":
 
             invoices = Invoice.objects.filter(
@@ -106,6 +243,7 @@ class InvoiceListView(APIView):
             ).order_by("-id")
 
         # ✅ MANAGER
+
         elif user.role == "manager":
 
             invoices = Invoice.objects.filter(
@@ -116,6 +254,7 @@ class InvoiceListView(APIView):
             ).order_by("-id")
 
         # ✅ STAFF
+
         else:
 
             invoices = Invoice.objects.filter(
@@ -136,7 +275,9 @@ class InvoiceListView(APIView):
                 "status": invoice.status,
                 "total_amount": invoice.total_amount,
                 "created_by": invoice.created_by.full_name if invoice.created_by else "",
-                "created_at": invoice.created_at.strftime("%d-%m-%Y %I:%M %p"),
+                "created_at": invoice.created_at.strftime(
+                    "%d-%m-%Y %I:%M %p"
+                ),
             })
 
         return Response(data)
@@ -159,6 +300,7 @@ class UpdateInvoiceStatusView(APIView):
             )
 
             # ✅ ONLY ADMIN & MANAGER
+
             if request.user.role not in [
                 "admin",
                 "manager"
@@ -172,6 +314,7 @@ class UpdateInvoiceStatusView(APIView):
                 )
 
             # ✅ MANAGER SECURITY
+
             if request.user.role == "manager":
 
                 is_team_invoice = (
@@ -231,6 +374,7 @@ class InvoiceDetailView(APIView):
             )
 
             # ✅ STAFF SECURITY
+
             if request.user.role == "staff":
 
                 if invoice.created_by != request.user:
@@ -243,6 +387,7 @@ class InvoiceDetailView(APIView):
                     )
 
             # ✅ MANAGER SECURITY
+
             elif request.user.role == "manager":
 
                 is_team_invoice = (

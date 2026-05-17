@@ -117,6 +117,52 @@ export default function InvoicesPage() {
   // ✅ CREATE INVOICE
   const createInvoice = async () => {
 
+    // ✅ VALIDATION
+
+if (!customerName.trim()) {
+
+  return message.error(
+    "Customer name required"
+  );
+}
+
+if (!phone.trim()) {
+
+  return message.error(
+    "Phone number required"
+  );
+}
+
+if (!address.trim()) {
+
+  return message.error(
+    "Address required"
+  );
+}
+
+// ✅ CHECK PRODUCTS
+
+const invalidItem = items.find(
+  (item) =>
+
+    !item.product_name.trim()
+
+    ||
+
+    item.quantity <= 0
+
+    ||
+
+    item.price <= 0
+);
+
+if (invalidItem) {
+
+  return message.error(
+    "Please fill all product details correctly"
+  );
+}
+
     try {
 
       setLoading(true);
