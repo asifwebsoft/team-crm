@@ -213,7 +213,7 @@ export default function InvoiceDetailPage() {
           {/* SAVE PDF */}
 
           <button
-            onClick={handleSavePDF}
+            onClick={handleDownloadPDF}
             style={{
               padding: "10px 18px",
               border: "none",
@@ -224,7 +224,7 @@ export default function InvoiceDetailPage() {
               fontWeight: 600,
             }}
           >
-            Save PDF
+            Download PDF
           </button>
 
           {/* PRINT */}
