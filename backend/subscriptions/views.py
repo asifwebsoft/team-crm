@@ -60,7 +60,7 @@ class CreateOrder(APIView):
             order_id = str(uuid.uuid4())
 
             customer_details = CustomerDetails(
-                customer_id=str(request.user.id),
+                customer_id=f"user_{request.user.id}",
                 customer_phone="9999999999"
             )
 
