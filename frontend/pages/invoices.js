@@ -12,7 +12,8 @@ import {
   Divider,
   Select,
   Row,
-  Col
+  Col,
+  Statistic
 } from "antd";
 
 import MainLayout from "../components/Layout";
@@ -224,6 +225,44 @@ export default function InvoicesPage() {
       );
     });
 
+  // ✅ DASHBOARD SUMMARY
+
+const totalInvoices =
+  invoiceList.length;
+
+const totalRevenue =
+  invoiceList.reduce(
+    (sum, item) =>
+      sum + Number(item.total_amount),
+    0
+  );
+
+const paidAmount =
+  invoiceList
+    .filter(
+      (item) =>
+        item.status === "paid"
+    )
+    .reduce(
+      (sum, item) =>
+        sum +
+        Number(item.total_amount),
+      0
+    );
+
+const pendingAmount =
+  invoiceList
+    .filter(
+      (item) =>
+        item.status === "pending"
+    )
+    .reduce(
+      (sum, item) =>
+        sum +
+        Number(item.total_amount),
+      0
+    );
+
   // ✅ TABLE COLUMNS
   const columns = [
     {
@@ -343,6 +382,63 @@ export default function InvoicesPage() {
           margin: "20px auto",
         }}
       >
+        {/* ✅ DASHBOARD CARDS */}
+
+<Row
+  gutter={[16, 16]}
+  style={{
+    marginBottom: 25,
+  }}
+>
+
+  <Col xs={24} sm={12} md={6}>
+
+    <Card>
+      <Statistic
+        title="Total Invoices"
+        value={totalInvoices}
+      />
+    </Card>
+
+  </Col>
+
+  <Col xs={24} sm={12} md={6}>
+
+    <Card>
+      <Statistic
+        title="Total Revenue"
+        value={totalRevenue}
+        prefix="₹"
+      />
+    </Card>
+
+  </Col>
+
+  <Col xs={24} sm={12} md={6}>
+
+    <Card>
+      <Statistic
+        title="Paid Amount"
+        value={paidAmount}
+        prefix="₹"
+      />
+    </Card>
+
+  </Col>
+
+  <Col xs={24} sm={12} md={6}>
+
+    <Card>
+      <Statistic
+        title="Pending Amount"
+        value={pendingAmount}
+        prefix="₹"
+      />
+    </Card>
+
+  </Col>
+
+</Row>
 
         <Title level={3}>
           Create Invoice
