@@ -17,6 +17,14 @@ import {
   Modal
 } from "antd";
 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
 import MainLayout from "../components/Layout";
 import API from "../services/api";
 
@@ -495,6 +503,32 @@ const handleUpdateInvoice =
         0
       );
 
+      // ✅ CHART DATA
+
+const chartData = [
+  {
+    name: "Paid",
+    value: paidAmount,
+  },
+  {
+    name: "Pending",
+    value: pendingAmount,
+  },
+  {
+    name: "Cancelled",
+    value: invoiceList.filter(
+      (item) =>
+        item.status === "cancelled"
+    ).length,
+  },
+];
+
+const COLORS = [
+  "#52c41a",
+  "#faad14",
+  "#ff4d4f",
+];
+
   // ✅ TABLE COLUMNS
 
   const columns = [
@@ -701,6 +735,62 @@ const handleUpdateInvoice =
           </Col>
 
         </Row>
+
+        <Card
+  style={{
+    marginBottom: 25,
+  }}
+>
+
+  <Title level={4}>
+    Invoice Analytics
+  </Title>
+
+  <div
+    style={{
+      width: "100%",
+      height: 300,
+    }}
+  >
+
+    <ResponsiveContainer>
+
+      <PieChart>
+
+        <Pie
+          data={chartData}
+          cx="50%"
+          cy="50%"
+          outerRadius={100}
+          dataKey="value"
+          label
+        >
+
+          {chartData.map(
+            (entry, index) => (
+
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  COLORS[index %
+                  COLORS.length]
+                }
+              />
+
+            )
+          )}
+
+        </Pie>
+
+        <Tooltip />
+
+      </PieChart>
+
+    </ResponsiveContainer>
+
+  </div>
+
+</Card>
 
         <Title level={3}>
           Create Invoice
