@@ -727,35 +727,7 @@ const handleSaveFollowup =
                   WhatsApp
                 </Button>
 
-                  {(
-
-                    role === "admin"
-
-                    ||
-
-                    lead.assigned_to === userId
-
-                    ||
-
-                    role === "manager"
-
-                  ) && (
-
-                    <Button
-                      block
-                      type="primary"
-                      style={{
-                        marginTop: 12,
-                        height: 42,
-                      }}
-                      onClick={() =>
-                        openFollowupModal(lead)
-                      }
-                    >
-                      Follow-up
-                    </Button>
-
-                  )}
+                  
 
                 {/* EDIT */}
                 {lead.assigned_to ===
@@ -830,39 +802,7 @@ const handleSaveFollowup =
 
       </div>
 
-      <Modal
-  title="Add Follow-up"
-  open={isFollowupModalOpen}
-  onCancel={() =>
-    setIsFollowupModalOpen(false)
-  }
-  onOk={handleSaveFollowup}
->
-
-  <Input.TextArea
-    rows={4}
-    placeholder="Follow-up notes"
-    value={followupNotes}
-    onChange={(e) =>
-      setFollowupNotes(
-        e.target.value
-      )
-    }
-    style={{
-      marginBottom: 15,
-    }}
-  />
-
-  <DatePicker
-    style={{
-      width: "100%",
-    }}
-    onChange={(date) =>
-      setNextFollowupDate(date)
-    }
-  />
-
-</Modal>
+      
 
     </MainLayout>
 
