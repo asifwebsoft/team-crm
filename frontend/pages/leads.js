@@ -9,8 +9,7 @@ import {
   Select,
   Tag,
   message,
-  Modal,
-  DatePicker
+  Modal
 } from "antd";
 
 import { PlusOutlined } from "@ant-design/icons";
