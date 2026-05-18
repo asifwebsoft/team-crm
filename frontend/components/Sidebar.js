@@ -9,8 +9,8 @@ import {
   CalendarOutlined,
   UsergroupAddOutlined,
   LogoutOutlined,
-  MenuOutlined,
-  HistoryOutlined
+  MenuOutlined
+  
 } from "@ant-design/icons";
 
 import { useRouter } from "next/router";
