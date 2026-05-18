@@ -462,7 +462,7 @@ class UpdateInvoiceView(APIView):
                 company=request.user.company
             )
 
-            # ✅ STAFF NOT ALLOWED
+            # ✅ STAFF BLOCKED
 
             if request.user.role == "staff":
 
@@ -496,7 +496,7 @@ class UpdateInvoiceView(APIView):
                         status=403
                     )
 
-            # ✅ SAFE EDIT FIELDS
+            # ✅ SAFE FIELDS
 
             customer_name = request.data.get(
                 "customer_name",
@@ -546,8 +546,6 @@ class UpdateInvoiceView(APIView):
                     },
                     status=400
                 )
-
-            # ✅ PHONE VALIDATION
 
             if not phone.isdigit():
 
