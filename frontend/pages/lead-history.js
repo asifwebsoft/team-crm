@@ -125,10 +125,7 @@ const filteredData = data.filter(
       dataIndex: "lead_name",
     },
 
-    {
-      title: "Name",
-      dataIndex: "customer_name",
-    },
+    
 
     {
       title: "Phone",
