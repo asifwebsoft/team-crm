@@ -127,103 +127,65 @@ export default function InvoicesPage() {
 
     // ✅ FRONTEND VALIDATION
 
-    if (!customerName.trim()) {
+if (!customerName.trim()) {
 
-      return message.error(
-        "Customer name required"
-      );
-    }
+  alert("Customer name required");
 
-    if (!phone.trim()) {
+  message.error(
+    "Customer name required"
+  );
 
-      return message.error(
-        "Phone number required"
-      );
-    }
+  return;
+}
 
-    if (!address.trim()) {
+if (!phone.trim()) {
 
-      return message.error(
-        "Address required"
-      );
-    }
+  alert("Phone number required");
 
-    const invalidItem = items.find(
-      (item) =>
+  message.error(
+    "Phone number required"
+  );
 
-        !item.product_name.trim()
+  return;
+}
 
-        ||
+if (!address.trim()) {
 
-        item.quantity <= 0
+  alert("Address required");
 
-        ||
+  message.error(
+    "Address required"
+  );
 
-        item.price <= 0
-    );
+  return;
+}
 
-    if (invalidItem) {
+const invalidItem = items.find(
+  (item) =>
 
-      return message.error(
-        "Please fill all product details correctly"
-      );
-    }
+    !item.product_name.trim()
 
-    try {
+    ||
 
-      setLoading(true);
+    item.quantity <= 0
 
-      const response = await API.post(
-        "/invoices/create/",
-        {
-          customer_name: customerName,
-          phone,
-          address,
-          status: "pending",
-          items,
-        }
-      );
+    ||
 
-      if (response.status === 201) {
+    item.price <= 0
+);
 
-        message.success(
-          "Invoice Created"
-        );
+if (invalidItem) {
 
-        setCustomerName("");
-        setPhone("");
-        setAddress("");
+  alert(
+    "Please fill all product details correctly"
+  );
 
-        setItems([
-          {
-            product_name: "",
-            quantity: 1,
-            price: 0,
-          },
-        ]);
+  message.error(
+    "Please fill all product details correctly"
+  );
 
-        fetchInvoices();
-      }
-
-    } catch (err) {
-
-      console.log(err);
-
-      const errorMessage =
-
-        err?.response?.data?.error
-
-        ||
-
-        "Failed to create invoice";
-
-      message.error(errorMessage);
-
-    } finally {
-
-      setLoading(false);
-    }
-  };
+  return;
+}}
 
   // ✅ UPDATE STATUS
 
