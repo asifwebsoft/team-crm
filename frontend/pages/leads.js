@@ -9,6 +9,8 @@ import {
   Select,
   Tag,
   message,
+  Modal,
+  DatePicker
 } from "antd";
 
 import { PlusOutlined } from "@ant-design/icons";
@@ -49,6 +51,28 @@ export default function Leads() {
   const [userId, setUserId] = useState(null);
 
   const [isMobile, setIsMobile] = useState(false);
+
+  // 🔥 FOLLOWUP MODAL
+
+const [
+  isFollowupModalOpen,
+  setIsFollowupModalOpen
+] = useState(false);
+
+const [
+  selectedLead,
+  setSelectedLead
+] = useState(null);
+
+const [
+  followupNotes,
+  setFollowupNotes
+] = useState("");
+
+const [
+  nextFollowupDate,
+  setNextFollowupDate
+] = useState(null);
 
   // 🔥 FORM
   const [form, setForm] = useState({
@@ -288,6 +312,69 @@ export default function Leads() {
 
       });
 
+  };
+
+  // 🔥 OPEN FOLLOWUP MODAL
+
+const openFollowupModal = (
+  lead
+) => {
+
+  setSelectedLead(lead);
+
+  setFollowupNotes("");
+
+  setNextFollowupDate(null);
+
+  setIsFollowupModalOpen(true);
+};
+
+// 🔥 SAVE FOLLOWUP
+
+const handleSaveFollowup =
+  async () => {
+
+    try {
+
+      if (!followupNotes.trim()) {
+
+        message.error(
+          "Notes required"
+        );
+
+        return;
+      }
+
+      await API.post(
+        `/leads/followup/${selectedLead.id}/`,
+        {
+          notes: followupNotes,
+
+          next_followup_date:
+            nextFollowupDate
+              ?
+              nextFollowupDate.format(
+                "YYYY-MM-DD"
+              )
+              :
+              null,
+        }
+      );
+
+      message.success(
+        "Follow-up added"
+      );
+
+      setIsFollowupModalOpen(false);
+
+    } catch (err) {
+
+      message.error(
+        err?.response?.data?.error
+        ||
+        "Failed"
+      );
+    }
   };
 
   // 🔥 STATUS COLOR
@@ -641,6 +728,36 @@ export default function Leads() {
                   WhatsApp
                 </Button>
 
+                  {(
+
+                    role === "admin"
+
+                    ||
+
+                    lead.assigned_to === userId
+
+                    ||
+
+                    role === "manager"
+
+                  ) && (
+
+                    <Button
+                      block
+                      type="primary"
+                      style={{
+                        marginTop: 12,
+                        height: 42,
+                      }}
+                      onClick={() =>
+                        openFollowupModal(lead)
+                      }
+                    >
+                      Follow-up
+                    </Button>
+
+                  )}
+
                 {/* EDIT */}
                 {lead.assigned_to ===
                   userId && (
@@ -713,6 +830,40 @@ export default function Leads() {
         </Row>
 
       </div>
+
+      <Modal
+  title="Add Follow-up"
+  open={isFollowupModalOpen}
+  onCancel={() =>
+    setIsFollowupModalOpen(false)
+  }
+  onOk={handleSaveFollowup}
+>
+
+  <Input.TextArea
+    rows={4}
+    placeholder="Follow-up notes"
+    value={followupNotes}
+    onChange={(e) =>
+      setFollowupNotes(
+        e.target.value
+      )
+    }
+    style={{
+      marginBottom: 15,
+    }}
+  />
+
+  <DatePicker
+    style={{
+      width: "100%",
+    }}
+    onChange={(date) =>
+      setNextFollowupDate(date)
+    }
+  />
+
+</Modal>
 
     </MainLayout>
 
