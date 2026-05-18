@@ -13,7 +13,8 @@ import {
   Select,
   Row,
   Col,
-  Statistic
+  Statistic,
+  Modal
 } from "antd";
 
 import MainLayout from "../components/Layout";
@@ -46,6 +47,30 @@ export default function InvoicesPage() {
 
   const [invoiceList, setInvoiceList] =
     useState([]);
+
+  const [isEditModalOpen,
+  setIsEditModalOpen] =
+  useState(false);
+
+  const [editingInvoice,
+    setEditingInvoice] =
+    useState(null);
+
+  const [editCustomerName,
+    setEditCustomerName] =
+    useState("");
+
+  const [editPhone,
+    setEditPhone] =
+    useState("");
+
+  const [editAddress,
+    setEditAddress] =
+    useState("");
+
+  const [editStatus,
+    setEditStatus] =
+    useState("pending");
 
   // ✅ USER ROLE
 
@@ -329,6 +354,75 @@ if (phone.length > 12) {
     }
   };
 
+  // ✅ OPEN EDIT MODAL
+
+const openEditModal = (
+  invoice
+) => {
+
+  setEditingInvoice(invoice);
+
+  setEditCustomerName(
+    invoice.customer_name
+  );
+
+  setEditPhone(
+    invoice.phone
+  );
+
+  setEditAddress(
+    invoice.address
+  );
+
+  setEditStatus(
+    invoice.status
+  );
+
+  setIsEditModalOpen(true);
+};
+
+// ✅ UPDATE INVOICE
+
+const handleUpdateInvoice =
+  async () => {
+
+    try {
+
+      await API.patch(
+        `/invoices/update/${editingInvoice.id}/`,
+        {
+          customer_name:
+            editCustomerName,
+
+          phone:
+            editPhone,
+
+          address:
+            editAddress,
+
+          status:
+            editStatus,
+        }
+      );
+
+      message.success(
+        "Invoice Updated"
+      );
+
+      setIsEditModalOpen(false);
+
+      fetchInvoices();
+
+    } catch (err) {
+
+      message.error(
+        err?.response?.data?.error
+        ||
+        "Update failed"
+      );
+    }
+  };
+
   // ✅ SEARCH + FILTER
 
   const filteredData =
@@ -498,21 +592,38 @@ if (phone.length > 12) {
     },
 
     {
-      title: "Action",
+  title: "Action",
 
-      render: (_, record) => (
+  render: (_, record) => (
+
+    <Space>
+
+      <Button
+        type="link"
+        onClick={() =>
+          window.location.href =
+            `/invoice-detail?id=${record.id}`
+        }
+      >
+        View
+      </Button>
+
+      {role !== "staff" && (
 
         <Button
           type="link"
           onClick={() =>
-            window.location.href =
-              `/invoice-detail?id=${record.id}`
+            openEditModal(record)
           }
         >
-          View
+          Edit
         </Button>
-      ),
-    },
+
+      )}
+
+    </Space>
+  ),
+},
   ];
 
   return (
@@ -776,6 +887,76 @@ if (phone.length > 12) {
         />
 
       </Card>
+
+      <Modal
+  title="Edit Invoice"
+  open={isEditModalOpen}
+  onCancel={() =>
+    setIsEditModalOpen(false)
+  }
+  onOk={handleUpdateInvoice}
+>
+
+  <Space
+    direction="vertical"
+    style={{ width: "100%" }}
+  >
+
+    <Input
+      placeholder="Customer Name"
+      value={editCustomerName}
+      onChange={(e) =>
+        setEditCustomerName(
+          e.target.value
+        )
+      }
+    />
+
+    <Input
+      placeholder="Phone"
+      value={editPhone}
+      onChange={(e) =>
+        setEditPhone(
+          e.target.value
+        )
+      }
+    />
+
+    <Input.TextArea
+      placeholder="Address"
+      rows={3}
+      value={editAddress}
+      onChange={(e) =>
+        setEditAddress(
+          e.target.value
+        )
+      }
+    />
+
+    <Select
+      value={editStatus}
+      onChange={(value) =>
+        setEditStatus(value)
+      }
+    >
+
+      <Select.Option value="pending">
+        Pending
+      </Select.Option>
+
+      <Select.Option value="paid">
+        Paid
+      </Select.Option>
+
+      <Select.Option value="partial">
+        Partial
+      </Select.Option>
+
+    </Select>
+
+  </Space>
+
+</Modal>
 
     </MainLayout>
   );
