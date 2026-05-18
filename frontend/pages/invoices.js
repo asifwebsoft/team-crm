@@ -154,6 +154,49 @@ export default function InvoicesPage() {
     return;
   }
 
+  // ✅ PHONE VALIDATION
+
+const phoneRegex = /^[0-9]+$/;
+
+if (!phoneRegex.test(phone)) {
+
+  alert(
+    "Phone number must contain only numbers"
+  );
+
+  message.error(
+    "Phone number must contain only numbers"
+  );
+
+  return;
+}
+
+if (phone.length < 10) {
+
+  alert(
+    "Phone number must be at least 10 digits"
+  );
+
+  message.error(
+    "Phone number must be at least 10 digits"
+  );
+
+  return;
+}
+
+if (phone.length > 12) {
+
+  alert(
+    "Phone number cannot exceed 12 digits"
+  );
+
+  message.error(
+    "Phone number cannot exceed 12 digits"
+  );
+
+  return;
+}
+
   if (!address.trim()) {
 
     alert("Address required");
