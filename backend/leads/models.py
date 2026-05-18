@@ -38,6 +38,18 @@ class LeadFollowupHistory(models.Model):
         related_name="followups"
     )
 
+    customer_name = models.CharField(
+    max_length=255,
+    null=True,
+    blank=True
+    )
+
+    phone = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True
+    )
+
     notes = models.TextField()
 
     next_followup_date = models.DateField(

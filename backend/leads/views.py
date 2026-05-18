@@ -193,6 +193,10 @@ class UpdateLeadView(APIView):
 
                 lead=lead,
 
+                customer_name=lead.customer_name,
+
+                phone=lead.phone,
+
                 notes=new_notes,
 
                 next_followup_date=
@@ -595,6 +599,9 @@ class LeadHistoryView(APIView):
 
                 "lead_name":
                     h.lead.customer_name,
+
+                "phone":
+                    h.phone,
 
                 "notes":
                     h.notes,

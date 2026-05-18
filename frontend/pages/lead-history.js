@@ -126,6 +126,11 @@ const filteredData = data.filter(
     },
 
     {
+      title: "Phone",
+      dataIndex: "phone",
+    },
+
+    {
       title: "Notes",
       dataIndex: "notes",
     },
