@@ -9,7 +9,8 @@ import {
   CalendarOutlined,
   UsergroupAddOutlined,
   LogoutOutlined,
-  MenuOutlined
+  MenuOutlined,
+  HistoryOutlined
 } from "@ant-design/icons";
 
 import { useRouter } from "next/router";
@@ -78,7 +79,12 @@ export default function Sidebar() {
       key: "/invoices",
       icon: <LineChartOutlined />,
       label: "Invoices",
-  }
+  },
+    {
+    key: "/lead-history",
+    icon: <HistoryOutlined/>,
+    label: "Lead History",
+  },
   ];
 
   // 👑 ADMIN MENU

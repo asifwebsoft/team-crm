@@ -127,24 +127,95 @@ class MyLeadsView(APIView):
 
 
 # ✅ UPDATE
+# ✅ UPDATE
 class UpdateLeadView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
+
         try:
-            lead = Lead.objects.get(id=pk, company=request.user.company)
+
+            lead = Lead.objects.get(
+                id=pk,
+                company=request.user.company
+            )
+
         except Lead.DoesNotExist:
-            return Response({"error": "Not found"}, status=404)
 
-        if not can_edit_lead(request.user, lead):
-            return Response({"error": "Not allowed"}, status=403)
+            return Response(
+                {
+                    "error": "Not found"
+                },
+                status=404
+            )
 
-        lead.notes = request.data.get("notes", lead.notes)
-        lead.followup_date = request.data.get("followup_date", lead.followup_date)
-        lead.status = request.data.get("status", lead.status)
+        # 🔐 EDIT PERMISSION
+
+        if not can_edit_lead(
+            request.user,
+            lead
+        ):
+
+            return Response(
+                {
+                    "error": "Not allowed"
+                },
+                status=403
+            )
+
+        # ✅ GET UPDATED VALUES
+
+        new_notes = request.data.get(
+            "notes",
+            lead.notes
+        )
+
+        new_followup_date = request.data.get(
+            "followup_date",
+            lead.followup_date
+        )
+
+        new_status = request.data.get(
+            "status",
+            lead.status
+        )
+
+        # ✅ CREATE FOLLOWUP HISTORY
+
+        if (
+            request.data.get("notes")
+            or
+            request.data.get("followup_date")
+        ):
+
+            LeadFollowupHistory.objects.create(
+
+                lead=lead,
+
+                notes=new_notes,
+
+                next_followup_date=
+                    new_followup_date,
+
+                created_by=request.user,
+
+                company=request.user.company
+            )
+
+        # ✅ UPDATE LEAD
+
+        lead.notes = new_notes
+
+        lead.followup_date = new_followup_date
+
+        lead.status = new_status
 
         lead.save()
-        return Response({"message": "Updated"})
+
+        return Response({
+            "message": "Updated"
+        })
 
 
 # ✅ DELETE
@@ -465,3 +536,84 @@ class AddLeadFollowupView(APIView):
                 },
                 status=400
             )
+        
+
+# ✅ LEAD HISTORY
+class LeadHistoryView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        user = request.user
+
+        # ✅ ADMIN
+
+        if user.role == "admin":
+
+            history = LeadFollowupHistory.objects.filter(
+                company=user.company
+            )
+
+        # ✅ MANAGER
+
+        elif user.role == "manager":
+
+            team = User.objects.filter(
+                company=user.company,
+                manager=user
+            )
+
+            history = LeadFollowupHistory.objects.filter(
+                company=user.company
+            ).filter(
+
+                Q(created_by__in=team)
+                |
+                Q(created_by=user)
+
+            )
+
+        # ✅ STAFF
+
+        else:
+
+            history = LeadFollowupHistory.objects.filter(
+                company=user.company,
+                created_by=user
+            )
+
+        history = history.order_by(
+            "-created_at"
+        )
+
+        return Response([
+
+            {
+
+                "id": h.id,
+
+                "lead_name":
+                    h.lead.customer_name,
+
+                "notes":
+                    h.notes,
+
+                "next_followup_date":
+                    str(h.next_followup_date)
+                    if h.next_followup_date
+                    else None,
+
+                "created_by":
+                    h.created_by.full_name,
+
+                "created_at":
+                    h.created_at.strftime(
+                        "%d-%m-%Y %I:%M %p"
+                    )
+
+            }
+
+            for h in history
+
+        ])

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateLeadView,UpdateLeadView, MyLeadsView, DeleteLeadView, ManagerDashboardView, AssignLeadView, DashboardView, NotificationView, TeamPerformanceView, ConversionView, FollowupReminderView, AddLeadFollowupView
+from .views import CreateLeadView,UpdateLeadView, MyLeadsView, DeleteLeadView, LeadHistoryView, ManagerDashboardView, AssignLeadView, DashboardView, NotificationView, TeamPerformanceView, ConversionView, FollowupReminderView, AddLeadFollowupView
 
 urlpatterns = [
     path('create/', CreateLeadView.as_view()),
@@ -14,6 +14,8 @@ urlpatterns = [
     path("manager-dashboard/", ManagerDashboardView.as_view()),
     path("delete/<int:pk>/", DeleteLeadView.as_view()),
     path("followup/<int:pk>/",AddLeadFollowupView.as_view()),
+    path("history/",LeadHistoryView.as_view(),
+),
     
     
 ]
