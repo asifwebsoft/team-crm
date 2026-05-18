@@ -598,7 +598,7 @@ class LeadHistoryView(APIView):
                 "id": h.id,
 
                 "lead_name":
-                    h.customer_name,
+                    h.lead.customer_name,
 
                 "phone":
                     h.phone,
