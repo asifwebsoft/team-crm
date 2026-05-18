@@ -69,6 +69,11 @@ export default function InvoicesPage() {
     } catch (err) {
 
       console.log(err);
+      alert(
+          JSON.stringify(
+            err?.response?.data
+          )
+        );
     }
   };
 
@@ -125,67 +130,133 @@ export default function InvoicesPage() {
 
   const createInvoice = async () => {
 
-    // ✅ FRONTEND VALIDATION
+  // ✅ FRONTEND VALIDATION
 
-if (!customerName.trim()) {
+  if (!customerName.trim()) {
 
-  alert("Customer name required");
+    alert("Customer name required");
 
-  message.error(
-    "Customer name required"
+    message.error(
+      "Customer name required"
+    );
+
+    return;
+  }
+
+  if (!phone.trim()) {
+
+    alert("Phone number required");
+
+    message.error(
+      "Phone number required"
+    );
+
+    return;
+  }
+
+  if (!address.trim()) {
+
+    alert("Address required");
+
+    message.error(
+      "Address required"
+    );
+
+    return;
+  }
+
+  const invalidItem = items.find(
+    (item) =>
+
+      !item.product_name.trim()
+
+      ||
+
+      item.quantity <= 0
+
+      ||
+
+      item.price <= 0
   );
 
-  return;
-}
+  if (invalidItem) {
 
-if (!phone.trim()) {
+    alert(
+      "Please fill all product details correctly"
+    );
 
-  alert("Phone number required");
+    message.error(
+      "Please fill all product details correctly"
+    );
 
-  message.error(
-    "Phone number required"
-  );
+    return;
+  }
 
-  return;
-}
+  try {
 
-if (!address.trim()) {
+    setLoading(true);
 
-  alert("Address required");
+    const response = await API.post(
+      "/invoices/create/",
+      {
+        customer_name: customerName,
+        phone,
+        address,
+        status: "pending",
+        items,
+      }
+    );
 
-  message.error(
-    "Address required"
-  );
+    if (response.status === 201) {
 
-  return;
-}
+      message.success(
+        "Invoice Created"
+      );
 
-const invalidItem = items.find(
-  (item) =>
+      alert(
+        "Invoice Created Successfully"
+      );
 
-    !item.product_name.trim()
+      setCustomerName("");
+      setPhone("");
+      setAddress("");
 
-    ||
+      setItems([
+        {
+          product_name: "",
+          quantity: 1,
+          price: 0,
+        },
+      ]);
 
-    item.quantity <= 0
+      fetchInvoices();
+    }
 
-    ||
+  } catch (err) {
 
-    item.price <= 0
-);
+    console.log(err);
 
-if (invalidItem) {
+    alert(
+      JSON.stringify(
+        err?.response?.data
+      )
+    );
 
-  alert(
-    "Please fill all product details correctly"
-  );
+    const errorMessage =
 
-  message.error(
-    "Please fill all product details correctly"
-  );
+      err?.response?.data?.error
 
-  return;
-}}
+      ||
+
+      "Failed to create invoice";
+
+    message.error(errorMessage);
+
+  } finally {
+
+    setLoading(false);
+  }
+};
 
   // ✅ UPDATE STATUS
 
