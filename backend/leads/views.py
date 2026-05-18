@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from datetime import date
 from .models import Lead
 from accounts.models import User
+from .models import LeadFollowupHistory
+
 
 
 # 🔐 STRICT EDIT PERMISSION
@@ -360,3 +362,106 @@ class ManagerDashboardView(APIView):
             "closed": leads.filter(status="closed").count(),
             "today": leads.filter(followup_date=today).count()
         })
+    
+class AddLeadFollowupView(APIView):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    def post(self, request, pk):
+
+        try:
+
+            lead = Lead.objects.get(
+                id=pk,
+                company=request.user.company
+            )
+
+            # ✅ STAFF SECURITY
+
+            if request.user.role == "staff":
+
+                if lead.assigned_to != request.user:
+
+                    return Response(
+                        {
+                            "error": "Permission denied"
+                        },
+                        status=403
+                    )
+
+            # ✅ MANAGER SECURITY
+
+            elif request.user.role == "manager":
+
+                is_team_lead = (
+                    lead.assigned_to.manager ==
+                    request.user
+                    if lead.assigned_to.manager
+                    else False
+                )
+
+                if (
+                    lead.assigned_to != request.user
+                    and not is_team_lead
+                ):
+
+                    return Response(
+                        {
+                            "error": "Permission denied"
+                        },
+                        status=403
+                    )
+
+            notes = request.data.get(
+                "notes",
+                ""
+            ).strip()
+
+            next_followup_date = request.data.get(
+                "next_followup_date"
+            )
+
+            # ✅ VALIDATION
+
+            if not notes:
+
+                return Response(
+                    {
+                        "error": "Notes required"
+                    },
+                    status=400
+                )
+
+            # ✅ CREATE HISTORY
+
+            LeadFollowupHistory.objects.create(
+                lead=lead,
+                notes=notes,
+                next_followup_date=next_followup_date,
+                created_by=request.user,
+                company=request.user.company
+            )
+
+            return Response({
+                "message": "Follow-up added successfully"
+            })
+
+        except Lead.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Lead not found"
+                },
+                status=404
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
+            )
