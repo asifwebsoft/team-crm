@@ -445,3 +445,164 @@ class InvoiceDetailView(APIView):
                 },
                 status=404
             )
+
+class UpdateInvoiceView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        CanCreateInvoice
+    ]
+
+    def patch(self, request, pk):
+
+        try:
+
+            invoice = Invoice.objects.get(
+                id=pk,
+                company=request.user.company
+            )
+
+            # ✅ STAFF NOT ALLOWED
+
+            if request.user.role == "staff":
+
+                return Response(
+                    {
+                        "error": "Permission denied"
+                    },
+                    status=403
+                )
+
+            # ✅ MANAGER SECURITY
+
+            if request.user.role == "manager":
+
+                is_team_invoice = (
+                    invoice.created_by.manager ==
+                    request.user
+                    if invoice.created_by.manager
+                    else False
+                )
+
+                if (
+                    invoice.created_by != request.user
+                    and not is_team_invoice
+                ):
+
+                    return Response(
+                        {
+                            "error": "Permission denied"
+                        },
+                        status=403
+                    )
+
+            # ✅ SAFE EDIT FIELDS
+
+            customer_name = request.data.get(
+                "customer_name",
+                invoice.customer_name
+            ).strip()
+
+            phone = request.data.get(
+                "phone",
+                invoice.phone
+            ).strip()
+
+            address = request.data.get(
+                "address",
+                invoice.address
+            ).strip()
+
+            status_value = request.data.get(
+                "status",
+                invoice.status
+            )
+
+            # ✅ VALIDATION
+
+            if not customer_name:
+
+                return Response(
+                    {
+                        "error": "Customer name required"
+                    },
+                    status=400
+                )
+
+            if not phone:
+
+                return Response(
+                    {
+                        "error": "Phone required"
+                    },
+                    status=400
+                )
+
+            if not address:
+
+                return Response(
+                    {
+                        "error": "Address required"
+                    },
+                    status=400
+                )
+
+            # ✅ PHONE VALIDATION
+
+            if not phone.isdigit():
+
+                return Response(
+                    {
+                        "error": "Phone must contain only numbers"
+                    },
+                    status=400
+                )
+
+            if len(phone) < 10:
+
+                return Response(
+                    {
+                        "error": "Phone must be at least 10 digits"
+                    },
+                    status=400
+                )
+
+            if len(phone) > 12:
+
+                return Response(
+                    {
+                        "error": "Phone cannot exceed 12 digits"
+                    },
+                    status=400
+                )
+
+            # ✅ UPDATE
+
+            invoice.customer_name = customer_name
+            invoice.phone = phone
+            invoice.address = address
+            invoice.status = status_value
+
+            invoice.save()
+
+            return Response({
+                "message": "Invoice updated successfully"
+            })
+
+        except Invoice.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Invoice not found"
+                },
+                status=404
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
+            )
