@@ -126,7 +126,7 @@ const filteredData = data.filter(
     },
 
     {
-      title: "Customer Name",
+      title: "Name",
       dataIndex: "customer_name",
     },
 
