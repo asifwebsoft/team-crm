@@ -538,6 +538,10 @@ const handleUpdateInvoice =
           color = "blue";
         }
 
+        if (status === "cancelled") {
+          color = "red";
+        }
+
         // ✅ STAFF VIEW
 
         if (role === "staff") {
@@ -574,6 +578,10 @@ const handleUpdateInvoice =
               {
                 label: "Partial",
                 value: "partial",
+              },
+              {
+                label: "Cancelled",
+                value: "cancelled",
               },
             ]}
           />
@@ -869,6 +877,10 @@ const handleUpdateInvoice =
 
               <Select.Option value="partial">
                 Partial
+              </Select.Option>
+
+              <Select.Option value="cancelled">
+                Cancelled
               </Select.Option>
 
             </Select>
