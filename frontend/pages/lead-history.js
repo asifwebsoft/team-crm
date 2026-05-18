@@ -126,6 +126,11 @@ const filteredData = data.filter(
     },
 
     {
+      title: "Customer Name",
+      dataIndex: "customer_name",
+    },
+
+    {
       title: "Phone",
       dataIndex: "phone",
     },
