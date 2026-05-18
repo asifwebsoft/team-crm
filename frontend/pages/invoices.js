@@ -41,17 +41,21 @@ export default function InvoicesPage() {
     },
   ]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const [invoiceList, setInvoiceList] = useState([]);
+  const [invoiceList, setInvoiceList] =
+    useState([]);
 
   // ✅ USER ROLE
+
   const role =
     typeof window !== "undefined"
       ? localStorage.getItem("role")
       : null;
 
   // ✅ FETCH INVOICES
+
   const fetchInvoices = async () => {
 
     try {
@@ -74,7 +78,8 @@ export default function InvoicesPage() {
 
   }, []);
 
-  // ✅ ADD PRODUCT ROW
+  // ✅ ADD PRODUCT
+
   const addItem = () => {
 
     setItems([
@@ -87,7 +92,8 @@ export default function InvoicesPage() {
     ]);
   };
 
-  // ✅ HANDLE PRODUCT INPUT
+  // ✅ HANDLE PRODUCT CHANGE
+
   const handleChange = (
     index,
     field,
@@ -101,7 +107,8 @@ export default function InvoicesPage() {
     setItems(updated);
   };
 
-  // ✅ TOTAL AMOUNT
+  // ✅ TOTAL
+
   const totalAmount = items.reduce(
     (sum, item) => {
 
@@ -115,53 +122,52 @@ export default function InvoicesPage() {
   );
 
   // ✅ CREATE INVOICE
+
   const createInvoice = async () => {
 
-    // ✅ VALIDATION
+    // ✅ FRONTEND VALIDATION
 
-if (!customerName.trim()) {
+    if (!customerName.trim()) {
 
-  return message.error(
-    "Customer name required"
-  );
-}
+      return message.error(
+        "Customer name required"
+      );
+    }
 
-if (!phone.trim()) {
+    if (!phone.trim()) {
 
-  return message.error(
-    "Phone number required"
-  );
-}
+      return message.error(
+        "Phone number required"
+      );
+    }
 
-if (!address.trim()) {
+    if (!address.trim()) {
 
-  return message.error(
-    "Address required"
-  );
-}
+      return message.error(
+        "Address required"
+      );
+    }
 
-// ✅ CHECK PRODUCTS
+    const invalidItem = items.find(
+      (item) =>
 
-const invalidItem = items.find(
-  (item) =>
+        !item.product_name.trim()
 
-    !item.product_name.trim()
+        ||
 
-    ||
+        item.quantity <= 0
 
-    item.quantity <= 0
+        ||
 
-    ||
+        item.price <= 0
+    );
 
-    item.price <= 0
-);
+    if (invalidItem) {
 
-if (invalidItem) {
-
-  return message.error(
-    "Please fill all product details correctly"
-  );
-}
+      return message.error(
+        "Please fill all product details correctly"
+      );
+    }
 
     try {
 
@@ -199,26 +205,28 @@ if (invalidItem) {
         fetchInvoices();
       }
 
-    }  catch (err) {
+    } catch (err) {
 
-  console.log(err);
+      console.log(err);
 
-  const errorMessage =
+      const errorMessage =
 
-    err?.response?.data?.error
+        err?.response?.data?.error
 
-    ||
+        ||
 
-    "Failed to create invoice";
+        "Failed to create invoice";
 
-  message.error(errorMessage);
+      message.error(errorMessage);
 
-} finally {
+    } finally {
 
-  setLoading(false);
-}
+      setLoading(false);
+    }
+  };
 
   // ✅ UPDATE STATUS
+
   const updateStatus = async (
     invoiceId,
     status
@@ -246,6 +254,7 @@ if (invalidItem) {
   };
 
   // ✅ SEARCH + FILTER
+
   const filteredData =
     invoiceList.filter((item) => {
 
@@ -279,43 +288,45 @@ if (invalidItem) {
 
   // ✅ DASHBOARD SUMMARY
 
-const totalInvoices =
-  invoiceList.length;
+  const totalInvoices =
+    invoiceList.length;
 
-const totalRevenue =
-  invoiceList.reduce(
-    (sum, item) =>
-      sum + Number(item.total_amount),
-    0
-  );
-
-const paidAmount =
-  invoiceList
-    .filter(
-      (item) =>
-        item.status === "paid"
-    )
-    .reduce(
+  const totalRevenue =
+    invoiceList.reduce(
       (sum, item) =>
         sum +
         Number(item.total_amount),
       0
     );
 
-const pendingAmount =
-  invoiceList
-    .filter(
-      (item) =>
-        item.status === "pending"
-    )
-    .reduce(
-      (sum, item) =>
-        sum +
-        Number(item.total_amount),
-      0
-    );
+  const paidAmount =
+    invoiceList
+      .filter(
+        (item) =>
+          item.status === "paid"
+      )
+      .reduce(
+        (sum, item) =>
+          sum +
+          Number(item.total_amount),
+        0
+      );
+
+  const pendingAmount =
+    invoiceList
+      .filter(
+        (item) =>
+          item.status === "pending"
+      )
+      .reduce(
+        (sum, item) =>
+          sum +
+          Number(item.total_amount),
+        0
+      );
 
   // ✅ TABLE COLUMNS
+
   const columns = [
     {
       title: "Invoice No",
@@ -337,6 +348,7 @@ const pendingAmount =
     },
 
     // ✅ STATUS
+
     {
       title: "Status",
       dataIndex: "status",
@@ -356,7 +368,8 @@ const pendingAmount =
           color = "blue";
         }
 
-        // ✅ STAFF VIEW ONLY
+        // ✅ STAFF VIEW
+
         if (role === "staff") {
 
           return (
@@ -367,6 +380,7 @@ const pendingAmount =
         }
 
         // ✅ ADMIN & MANAGER
+
         return (
 
           <Select
@@ -434,63 +448,64 @@ const pendingAmount =
           margin: "20px auto",
         }}
       >
+
         {/* ✅ DASHBOARD CARDS */}
 
-<Row
-  gutter={[16, 16]}
-  style={{
-    marginBottom: 25,
-  }}
->
+        <Row
+          gutter={[16, 16]}
+          style={{
+            marginBottom: 25,
+          }}
+        >
 
-  <Col xs={24} sm={12} md={6}>
+          <Col xs={24} sm={12} md={6}>
 
-    <Card>
-      <Statistic
-        title="Total Invoices"
-        value={totalInvoices}
-      />
-    </Card>
+            <Card>
+              <Statistic
+                title="Total Invoices"
+                value={totalInvoices}
+              />
+            </Card>
 
-  </Col>
+          </Col>
 
-  <Col xs={24} sm={12} md={6}>
+          <Col xs={24} sm={12} md={6}>
 
-    <Card>
-      <Statistic
-        title="Total Revenue"
-        value={totalRevenue}
-        prefix="₹"
-      />
-    </Card>
+            <Card>
+              <Statistic
+                title="Total Revenue"
+                value={totalRevenue}
+                prefix="₹"
+              />
+            </Card>
 
-  </Col>
+          </Col>
 
-  <Col xs={24} sm={12} md={6}>
+          <Col xs={24} sm={12} md={6}>
 
-    <Card>
-      <Statistic
-        title="Paid Amount"
-        value={paidAmount}
-        prefix="₹"
-      />
-    </Card>
+            <Card>
+              <Statistic
+                title="Paid Amount"
+                value={paidAmount}
+                prefix="₹"
+              />
+            </Card>
 
-  </Col>
+          </Col>
 
-  <Col xs={24} sm={12} md={6}>
+          <Col xs={24} sm={12} md={6}>
 
-    <Card>
-      <Statistic
-        title="Pending Amount"
-        value={pendingAmount}
-        prefix="₹"
-      />
-    </Card>
+            <Card>
+              <Statistic
+                title="Pending Amount"
+                value={pendingAmount}
+                prefix="₹"
+              />
+            </Card>
 
-  </Col>
+          </Col>
 
-</Row>
+        </Row>
 
         <Title level={3}>
           Create Invoice
