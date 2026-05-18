@@ -199,18 +199,24 @@ if (invalidItem) {
         fetchInvoices();
       }
 
-    } catch (err) {
+    }  catch (err) {
 
-      message.error(
-        err?.response?.data?.error ||
-        "Failed"
-      );
+  console.log(err);
 
-    } finally {
+  const errorMessage =
 
-      setLoading(false);
-    }
-  };
+    err?.response?.data?.error
+
+    ||
+
+    "Failed to create invoice";
+
+  message.error(errorMessage);
+
+} finally {
+
+  setLoading(false);
+}
 
   // ✅ UPDATE STATUS
   const updateStatus = async (
