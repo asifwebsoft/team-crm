@@ -759,7 +759,10 @@ const COLORS = [
     }}
   >
 
-    <ResponsiveContainer>
+    <ResponsiveContainer
+        width="100%"
+        height={300}
+      >
 
       <PieChart>
 
@@ -985,17 +988,28 @@ const COLORS = [
 
         </Row>
 
-        <div
-            style={{
-              overflowX: "auto",
+         <div
+          style={{
+            width: "100%",
+            overflowX: "auto",
+          }}
+        >
+
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
             }}
-          >
-            <Table
-              columns={columns}
-              dataSource={data}
-              scroll={{ x: 1000 }}
-            />
-          </div>
+            scroll={{
+              x: 1400,
+            }}
+            size="small"
+          />
+
+        </div>
 
       </Card>
 
