@@ -979,14 +979,17 @@ const COLORS = [
 
         </Row>
 
-        <Table
-          columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          pagination={{
-            pageSize: 5
-          }}
-        />
+        <div
+            style={{
+              overflowX: "auto",
+            }}
+          >
+            <Table
+              columns={columns}
+              dataSource={data}
+              scroll={{ x: 1000 }}
+            />
+          </div>
 
       </Card>
 

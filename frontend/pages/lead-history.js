@@ -185,12 +185,12 @@ const filteredData = data.filter(
         </Title>
 
         <Row
-  gutter={[16, 16]}
-  style={{
-    marginBottom: 20,
-    marginTop: 20,
-  }}
->
+          gutter={[16, 16]}
+          style={{
+            marginBottom: 20,
+            marginTop: 20,
+          }}
+        >
 
   <Col xs={24} md={12}>
 
@@ -231,7 +231,13 @@ const filteredData = data.filter(
   </Col>
 
 </Row>
+      <div
 
+          style={{
+                overflowX: "auto",
+              }}
+      
+      >
         <Table
           columns={columns}
           dataSource={filteredData}
@@ -241,6 +247,7 @@ const filteredData = data.filter(
             pageSize: 10,
           }}
         />
+        </div>
 
       </Card>
 
