@@ -86,6 +86,8 @@ export default function Signup() {
       });
   };
 
+  console.log("ERROR STATE =>", errors);
+
   return (
 
     <div
