@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Input,
   Button,
-  Card,
+ Card,
   message,
 } from "antd";
 
@@ -24,6 +24,18 @@ export default function AddStaff() {
     useState(false);
 
   const [isMobile, setIsMobile] =
+    useState(false);
+
+  // 🔥 ERRORS
+  const [errors, setErrors] =
+    useState({});
+
+  const [passwordError,
+    setPasswordError] =
+    useState(false);
+
+  const [showRules,
+    setShowRules] =
     useState(false);
 
   // 🔥 RESPONSIVE CHECK
@@ -56,6 +68,9 @@ export default function AddStaff() {
 
   // 🔥 SUBMIT
   const handleSubmit = () => {
+
+    // RESET ERRORS
+    setErrors({});
 
     // 🔥 BASIC VALIDATION
     if (
@@ -93,16 +108,57 @@ export default function AddStaff() {
           password: "",
         });
 
+        setErrors({});
+
+        setPasswordError(false);
+
       })
 
       .catch((err) => {
 
-        console.log(err);
+        console.log(err.response?.data);
 
-        message.error(
-          err.response?.data?.error ||
-            "Failed to add staff"
+        const backendErrors =
+          err.response?.data || {};
+
+        // 🔥 SAVE ERRORS
+        setErrors(
+          JSON.parse(
+            JSON.stringify(
+              backendErrors
+            )
+          )
         );
+
+        // 🔥 PASSWORD UI
+        if (backendErrors.password) {
+
+          setPasswordError(true);
+
+          setShowRules(true);
+
+        }
+
+        // 🔥 TOAST
+        const firstError =
+          Object.values(
+            backendErrors
+          )[0];
+
+        if (
+          Array.isArray(firstError)
+        ) {
+
+          message.error(
+            firstError[0]
+          );
+
+        } else {
+
+          message.error(
+            "Failed to add staff"
+          );
+        }
 
       })
 
@@ -180,11 +236,30 @@ export default function AddStaff() {
             }
 
             style={{
-              marginBottom: 14,
+              marginBottom: 5,
               height: 45,
               borderRadius: 8,
+
+              border:
+                errors.full_name
+                  ? "1px solid red"
+                  : "",
             }}
           />
+
+          {errors.full_name && (
+
+            <div
+              style={{
+                color: "red",
+                fontSize: 12,
+                marginBottom: 10,
+              }}
+            >
+              {errors.full_name[0]}
+            </div>
+
+          )}
 
           {/* 🔥 EMAIL */}
           <Input
@@ -201,11 +276,30 @@ export default function AddStaff() {
             }
 
             style={{
-              marginBottom: 14,
+              marginBottom: 5,
               height: 45,
               borderRadius: 8,
+
+              border:
+                errors.email
+                  ? "1px solid red"
+                  : "",
             }}
           />
+
+          {errors.email && (
+
+            <div
+              style={{
+                color: "red",
+                fontSize: 12,
+                marginBottom: 10,
+              }}
+            >
+              {errors.email[0]}
+            </div>
+
+          )}
 
           {/* 🔥 MOBILE */}
           <Input
@@ -222,11 +316,30 @@ export default function AddStaff() {
             }
 
             style={{
-              marginBottom: 14,
+              marginBottom: 5,
               height: 45,
               borderRadius: 8,
+
+              border:
+                errors.mobile
+                  ? "1px solid red"
+                  : "",
             }}
           />
+
+          {errors.mobile && (
+
+            <div
+              style={{
+                color: "red",
+                fontSize: 12,
+                marginBottom: 10,
+              }}
+            >
+              {errors.mobile[0]}
+            </div>
+
+          )}
 
           {/* 🔥 PASSWORD */}
           <Input.Password
@@ -234,20 +347,66 @@ export default function AddStaff() {
 
             value={form.password}
 
-            onChange={(e) =>
+            onChange={(e) => {
+
               setForm({
                 ...form,
                 password:
                   e.target.value,
-              })
-            }
+              });
+
+              setPasswordError(false);
+
+            }}
 
             style={{
-              marginBottom: 18,
+              marginBottom: 5,
               height: 45,
               borderRadius: 8,
+
+              border:
+                passwordError
+                  ? "1px solid red"
+                  : "",
             }}
           />
+
+          {errors.password && (
+
+            <div
+              style={{
+                color: "red",
+                fontSize: 12,
+                marginBottom: 10,
+              }}
+            >
+              {errors.password[0]}
+            </div>
+
+          )}
+
+          {/* 🔥 PASSWORD RULES */}
+          {showRules && (
+
+            <div
+              style={{
+                fontSize: 12,
+                color: "#f30b0b",
+                marginBottom: 15,
+              }}
+            >
+              Password must contain:
+              <br />
+              • Minimum 8 characters
+              <br />
+              • 1 Capital letter
+              <br />
+              • 1 Number
+              <br />
+              • 1 Special character
+            </div>
+
+          )}
 
           {/* 🔥 BUTTON */}
           <Button
@@ -276,6 +435,5 @@ export default function AddStaff() {
       </div>
 
     </MainLayout>
-
   );
 }
