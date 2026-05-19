@@ -64,7 +64,7 @@ export default function Signup() {
         console.log("FINAL ERRORS =>", backendErrors);
 
         // 🔥 SAVE ERRORS
-        setErrors(backendErrors);
+        setErrors(JSON.parse(JSON.stringify(backendErrors)));
 
         // 🔥 PASSWORD UI
         if (backendErrors.password) {
