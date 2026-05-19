@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, Button, Card } from "antd";
+import { Input, Button, Card, message } from "antd";
 import { useRouter } from "next/router";
 import API from "../services/api";
 
@@ -12,7 +12,33 @@ export default function Login() {
     password: "",
   });
 
+  // 🔥 ERROR STATES
+  const [errors, setErrors] = useState({});
+
   const handleLogin = () => {
+
+    // 🔥 RESET ERRORS
+    setErrors({});
+
+    // 🔥 EMPTY VALIDATION
+    if (!form.email || !form.password) {
+
+      const newErrors = {};
+
+      if (!form.email) {
+        newErrors.email = "Email is required";
+      }
+
+      if (!form.password) {
+        newErrors.password = "Password is required";
+      }
+
+      setErrors(newErrors);
+
+      message.error("Please fill all fields");
+
+      return;
+    }
 
     API.post("/accounts/login/", form)
 
@@ -41,9 +67,21 @@ export default function Login() {
 
       .catch((err) => {
 
-        console.log(err);
+        console.log(err.response?.data);
 
-        alert("Invalid email or password");
+        let backendError = "Invalid email or password";
+
+        if (err.response?.data?.error) {
+          backendError = err.response.data.error;
+        }
+
+        // 🔥 SHOW ERROR BELOW INPUTS
+        setErrors({
+          email: backendError,
+          password: backendError,
+        });
+
+        message.error(backendError);
 
       });
 
@@ -67,9 +105,16 @@ export default function Login() {
         }}
       >
 
+        {/* EMAIL */}
         <Input
           placeholder="Email"
-          style={{ marginBottom: 10 }}
+          value={form.email}
+          style={{
+            marginBottom: 5,
+            border: errors.email
+              ? "1px solid red"
+              : "",
+          }}
           onChange={(e) =>
             setForm({
               ...form,
@@ -78,9 +123,28 @@ export default function Login() {
           }
         />
 
+        {errors.email && (
+          <div
+            style={{
+              color: "red",
+              fontSize: 12,
+              marginBottom: 10,
+            }}
+          >
+            {errors.email}
+          </div>
+        )}
+
+        {/* PASSWORD */}
         <Input.Password
           placeholder="Password"
-          style={{ marginBottom: 10 }}
+          value={form.password}
+          style={{
+            marginBottom: 5,
+            border: errors.password
+              ? "1px solid red"
+              : "",
+          }}
           onChange={(e) =>
             setForm({
               ...form,
@@ -88,6 +152,18 @@ export default function Login() {
             })
           }
         />
+
+        {errors.password && (
+          <div
+            style={{
+              color: "red",
+              fontSize: 12,
+              marginBottom: 10,
+            }}
+          >
+            {errors.password}
+          </div>
+        )}
 
         <Button
           type="primary"
