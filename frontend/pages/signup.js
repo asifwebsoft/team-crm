@@ -49,42 +49,46 @@ export default function Signup() {
 
       .catch((err) => {
 
-        console.log(err.response.data);
+  console.log("FULL ERROR =>", err.response?.data);
 
-        const backendErrors =
-          err.response?.data?.serializer_error ||
-          err.response?.data ||
-          {};
+  // 🔥 EXTRACT REAL ERRORS
+  let backendErrors = {};
 
-        // 🔥 SAVE ERRORS
-        setErrors(backendErrors);
+  if (err.response?.data?.serializer_error) {
+    backendErrors = err.response.data.serializer_error;
+  }
+  else if (err.response?.data) {
+    backendErrors = err.response.data;
+  }
 
-        // 🔥 PASSWORD UI
-        if (backendErrors.password) {
-          setPasswordError(true);
-          setShowRules(true);
-        }
+  console.log("FINAL ERRORS =>", backendErrors);
 
-        // 🔥 FIRST ERROR MESSAGE
-        let firstError = "Signup failed";
+  // 🔥 SAVE ERRORS
+  setErrors(backendErrors);
 
-        for (const key in backendErrors) {
+  // 🔥 PASSWORD UI
+  if (backendErrors.password) {
+    setPasswordError(true);
+    setShowRules(true);
+  }
 
-          if (Array.isArray(backendErrors[key])) {
-            firstError = backendErrors[key][0];
-            break;
-          }
+  // 🔥 FIRST ERROR MESSAGE
+  let firstError = "Signup failed";
 
-          if (typeof backendErrors[key] === "string") {
-            firstError = backendErrors[key];
-            break;
-          }
-        }
+  Object.keys(backendErrors).forEach((key) => {
 
-        message.error(firstError);
+    if (
+      Array.isArray(backendErrors[key]) &&
+      backendErrors[key].length > 0
+    ) {
+      firstError = backendErrors[key][0];
+    }
 
-      });
-  };
+  });
+
+  message.error(firstError);
+
+});
 
   console.log("ERROR STATE =>", errors);
 
