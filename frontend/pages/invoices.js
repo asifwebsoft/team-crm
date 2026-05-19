@@ -532,142 +532,148 @@ const COLORS = [
   // ✅ TABLE COLUMNS
 
   const columns = [
-    {
-      title: "Invoice No",
-      dataIndex: "invoice_number",
-    },
-    {
-      title: "Customer",
-      dataIndex: "customer_name",
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-    },
-    {
-      title: "Amount",
-      dataIndex: "total_amount",
-      render: (amount) =>
-        `₹${amount}`,
-    },
 
-    // ✅ STATUS
+  {
+    title: "Invoice No",
+    dataIndex: "invoice_number",
+    width: 180,
+  },
 
-    {
-      title: "Status",
-      dataIndex: "status",
+  {
+    title: "Customer",
+    dataIndex: "customer_name",
+    width: 200,
+  },
 
-      render: (
-        status,
-        record
-      ) => {
+  {
+    title: "Phone",
+    dataIndex: "phone",
+    width: 150,
+  },
 
-        let color = "orange";
+  {
+    title: "Amount",
+    dataIndex: "total_amount",
+    width: 140,
 
-        if (status === "paid") {
-          color = "green";
-        }
+    render: (amount) =>
+      `₹${amount}`,
+  },
 
-        if (status === "partial") {
-          color = "blue";
-        }
+  {
+    title: "Status",
+    dataIndex: "status",
+    width: 180,
 
-        if (status === "cancelled") {
-          color = "red";
-        }
+    render: (
+      status,
+      record
+    ) => {
 
-        // ✅ STAFF VIEW
+      let color = "orange";
 
-        if (role === "staff") {
+      if (status === "paid") {
+        color = "green";
+      }
 
-          return (
-            <Tag color={color}>
-              {status.toUpperCase()}
-            </Tag>
-          );
-        }
+      if (status === "partial") {
+        color = "blue";
+      }
 
-        // ✅ ADMIN & MANAGER
+      if (status === "cancelled") {
+        color = "red";
+      }
+
+      if (role === "staff") {
 
         return (
-
-          <Select
-            value={status}
-            style={{ width: 120 }}
-            onChange={(value) =>
-              updateStatus(
-                record.id,
-                value
-              )
-            }
-            options={[
-              {
-                label: "Pending",
-                value: "pending",
-              },
-              {
-                label: "Paid",
-                value: "paid",
-              },
-              {
-                label: "Partial",
-                value: "partial",
-              },
-              {
-                label: "Cancelled",
-                value: "cancelled",
-              },
-            ]}
-          />
+          <Tag color={color}>
+            {status.toUpperCase()}
+          </Tag>
         );
-      },
+      }
+
+      return (
+
+        <Select
+          value={status}
+          style={{ width: 140 }}
+          onChange={(value) =>
+            updateStatus(
+              record.id,
+              value
+            )
+          }
+          options={[
+            {
+              label: "Pending",
+              value: "pending",
+            },
+            {
+              label: "Paid",
+              value: "paid",
+            },
+            {
+              label: "Partial",
+              value: "partial",
+            },
+            {
+              label: "Cancelled",
+              value: "cancelled",
+            },
+          ]}
+        />
+      );
     },
+  },
 
-    {
-      title: "Created By",
-      dataIndex: "created_by",
-    },
+  {
+    title: "Created By",
+    dataIndex: "created_by",
+    width: 180,
+  },
 
-    {
-      title: "Date",
-      dataIndex: "created_at",
-    },
+  {
+    title: "Date",
+    dataIndex: "created_at",
+    width: 220,
+  },
 
-    {
-  title: "Action",
+  {
+    title: "Action",
+    width: 180,
 
-  render: (_, record) => (
+    render: (_, record) => (
 
-    <Space>
-
-      <Button
-        type="link"
-        onClick={() =>
-          window.location.href =
-            `/invoice-detail?id=${record.id}`
-        }
-      >
-        View
-      </Button>
-
-      {role !== "staff" && (
+      <Space>
 
         <Button
           type="link"
           onClick={() =>
-            openEditModal(record)
+            window.location.href =
+              `/invoice-detail?id=${record.id}`
           }
         >
-          Edit
+          View
         </Button>
 
-      )}
+        {role !== "staff" && (
 
-    </Space>
-  ),
-},
-  ];
+          <Button
+            type="link"
+            onClick={() =>
+              openEditModal(record)
+            }
+          >
+            Edit
+          </Button>
 
+        )}
+
+      </Space>
+    ),
+  },
+];
   return (
     <MainLayout>
 

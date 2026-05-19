@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
   Card,
   Typography,
@@ -18,18 +19,14 @@ const { Title } = Typography;
 
 export default function LeadHistory() {
 
-  const [data, setData] =
-    useState([]);
+  const [data, setData] = useState([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const [searchText,
-    setSearchText] =
+  const [searchText, setSearchText] =
     useState("");
 
-    const [dateFilter,
-    setDateFilter] =
+  const [dateFilter, setDateFilter] =
     useState("");
 
   // ✅ LOAD HISTORY
@@ -59,62 +56,63 @@ export default function LeadHistory() {
     } finally {
 
       setLoading(false);
+
     }
   };
 
   // ✅ FILTERED DATA
 
-const filteredData = data.filter(
-  (item) => {
+  const filteredData = data.filter(
+    (item) => {
 
-    const matchesSearch =
+      const matchesSearch =
 
-      item.lead_name
-        ?.toLowerCase()
-        .includes(
-          searchText.toLowerCase()
-        )
+        item.lead_name
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          )
 
-      ||
+        ||
 
-      item.notes
-        ?.toLowerCase()
-        .includes(
-          searchText.toLowerCase()
-        )
+        item.notes
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
+          )
 
-      ||
+        ||
 
-      item.created_by
-        ?.toLowerCase()
-        .includes(
-          searchText.toLowerCase()
-        );
-
-    // ✅ DATE FILTER
-
-    let matchesDate = true;
-
-    if (dateFilter === "today") {
-
-      const today =
-        new Date()
-          .toLocaleDateString(
-            "en-GB"
+        item.created_by
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
           );
 
-      matchesDate =
-        item.created_at.includes(
-          today.split("/").join("-")
-        );
-    }
+      // ✅ DATE FILTER
 
-    return (
-      matchesSearch &&
-      matchesDate
-    );
-  }
-);
+      let matchesDate = true;
+
+      if (dateFilter === "today") {
+
+        const today =
+          new Date()
+            .toLocaleDateString(
+              "en-GB"
+            );
+
+        matchesDate =
+          item.created_at?.includes(
+            today.split("/").join("-")
+          );
+      }
+
+      return (
+        matchesSearch &&
+        matchesDate
+      );
+    }
+  );
 
   // ✅ TABLE COLUMNS
 
@@ -123,29 +121,30 @@ const filteredData = data.filter(
     {
       title: "Lead",
       dataIndex: "lead_name",
+      width: 180,
     },
-
-    
 
     {
       title: "Phone",
       dataIndex: "phone",
+      width: 140,
     },
 
     {
       title: "Notes",
       dataIndex: "notes",
+      width: 300,
     },
 
     {
       title: "Next Follow-up",
-      dataIndex:
-        "next_followup_date",
+      dataIndex: "next_followup_date",
+
+      width: 180,
 
       render: (date) => (
 
-        date
-          ?
+        date ?
 
           <Tag color="blue">
             {date}
@@ -160,11 +159,13 @@ const filteredData = data.filter(
     {
       title: "Updated By",
       dataIndex: "created_by",
+      width: 180,
     },
 
     {
       title: "Updated At",
       dataIndex: "created_at",
+      width: 220,
     },
 
   ];
@@ -192,56 +193,70 @@ const filteredData = data.filter(
           }}
         >
 
-  <Col xs={24} md={12}>
+          <Col xs={24} md={12}>
 
-    <Input
-      placeholder="Search lead, notes or employee"
-      value={searchText}
-      onChange={(e) =>
-        setSearchText(
-          e.target.value
-        )
-      }
-    />
+            <Input
+              placeholder="Search lead, notes or employee"
+              value={searchText}
+              onChange={(e) =>
+                setSearchText(
+                  e.target.value
+                )
+              }
+            />
 
-  </Col>
+          </Col>
 
-  <Col xs={24} md={12}>
+          <Col xs={24} md={12}>
 
-    <Select
-      style={{
-        width: "100%",
-      }}
-      placeholder="Filter by date"
-      value={
-        dateFilter || undefined
-      }
-      onChange={(value) =>
-        setDateFilter(value)
-      }
-      allowClear
-    >
+            <Select
+              style={{
+                width: "100%",
+              }}
+              placeholder="Filter by date"
+              value={
+                dateFilter || undefined
+              }
+              onChange={(value) =>
+                setDateFilter(value)
+              }
+              allowClear
+            >
 
-      <Select.Option value="today">
-        Today
-      </Select.Option>
+              <Select.Option value="today">
+                Today
+              </Select.Option>
 
-    </Select>
+            </Select>
 
-  </Col>
+          </Col>
 
-</Row>
-      <div
-        style={{
-          overflowX: "auto",
-        }}
-      >
-        <Table
-          columns={columns}
-          dataSource={data}
-          scroll={{ x: 1000 }}
-        />
-      </div>
+        </Row>
+
+        {/* ✅ RESPONSIVE TABLE */}
+
+        <div
+          style={{
+            width: "100%",
+            overflowX: "auto",
+          }}
+        >
+
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            loading={loading}
+            rowKey="id"
+            pagination={{
+              pageSize: 10,
+            }}
+            scroll={{
+              x: 1200,
+            }}
+            size="small"
+          />
+
+        </div>
 
       </Card>
 
