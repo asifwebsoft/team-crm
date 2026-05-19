@@ -13,10 +13,18 @@ export default function Signup() {
     mobile: "",
     password: "",
   });
+
+  const [errors, setErrors] = useState({});
+
   const [passwordError, setPasswordError] = useState(false);
-  const [showRules, setShowRules] = useState(false)
+
+  const [showRules, setShowRules] = useState(false);
 
   const handleSignup = () => {
+
+    // 🔥 RESET ERRORS
+    setErrors({});
+    setPasswordError(false);
 
     if (
       !form.full_name ||
@@ -29,6 +37,7 @@ export default function Signup() {
     }
 
     API.post("/accounts/admin-signup/", form)
+
       .then(() => {
 
         message.success("Company Admin Created");
@@ -37,28 +46,37 @@ export default function Signup() {
         router.push("/login");
 
       })
-     .catch((err) => {
 
-  console.log(err);
+      .catch((err) => {
 
-  // 🔥 password validation error
-  if (err.response?.data?.password) {
+        console.log(err);
 
-    setPasswordError(true);
-    setShowRules(true);
+        const backendErrors = err.response?.data;
 
-    message.error(
-      err.response.data.password[0]
-    );
+        // 🔥 SAVE ALL ERRORS
+        setErrors(backendErrors || {});
 
-  } else {
+        // 🔥 PASSWORD RED BORDER
+        if (backendErrors?.password) {
+          setPasswordError(true);
+          setShowRules(true);
+        }
 
-    message.error("Signup failed");
-  }
-});
+        // 🔥 SHOW FIRST ERROR MESSAGE
+        const firstError =
+          backendErrors?.full_name?.[0] ||
+          backendErrors?.email?.[0] ||
+          backendErrors?.mobile?.[0] ||
+          backendErrors?.password?.[0] ||
+          "Signup failed";
+
+        message.error(firstError);
+
+      });
   };
 
   return (
+
     <div
       style={{
         display: "flex",
@@ -68,6 +86,7 @@ export default function Signup() {
         background: "#f5f5f5",
       }}
     >
+
       <Card
         title="Create Company Account"
         style={{
@@ -76,83 +95,178 @@ export default function Signup() {
         }}
       >
 
+        {/* FULL NAME */}
         <Input
           placeholder="Full Name"
-          style={{ marginBottom: 12 }}
           value={form.full_name}
-          onChange={(e) =>
+          style={{
+            marginBottom: 5,
+            border: errors.full_name
+              ? "1px solid red"
+              : "",
+          }}
+          onChange={(e) => {
+
             setForm({
               ...form,
               full_name: e.target.value,
-            })
-          }
+            });
+
+            setErrors({
+              ...errors,
+              full_name: "",
+            });
+
+          }}
         />
 
+        {errors.full_name && (
+          <div
+            style={{
+              color: "red",
+              fontSize: 12,
+              marginBottom: 10,
+            }}
+          >
+            {errors.full_name[0]}
+          </div>
+        )}
+
+        {/* EMAIL */}
         <Input
           placeholder="Email"
-          style={{ marginBottom: 12 }}
           value={form.email}
-          onChange={(e) =>
+          style={{
+            marginBottom: 5,
+            border: errors.email
+              ? "1px solid red"
+              : "",
+          }}
+          onChange={(e) => {
+
             setForm({
               ...form,
               email: e.target.value,
-            })
-          }
+            });
+
+            setErrors({
+              ...errors,
+              email: "",
+            });
+
+          }}
         />
 
+        {errors.email && (
+          <div
+            style={{
+              color: "red",
+              fontSize: 12,
+              marginBottom: 10,
+            }}
+          >
+            {errors.email[0]}
+          </div>
+        )}
+
+        {/* MOBILE */}
         <Input
           placeholder="Mobile"
-          style={{ marginBottom: 12 }}
           value={form.mobile}
-          onChange={(e) =>
+          style={{
+            marginBottom: 5,
+            border: errors.mobile
+              ? "1px solid red"
+              : "",
+          }}
+          onChange={(e) => {
+
             setForm({
               ...form,
               mobile: e.target.value,
-            })
-          }
+            });
+
+            setErrors({
+              ...errors,
+              mobile: "",
+            });
+
+          }}
         />
 
-       <Input.Password
-  placeholder="Password"
-  value={form.password}
-  style={{
-    marginBottom: 12,
-    border: passwordError
-      ? "1px solid red"
-      : "",
-  }}
-  onChange={(e) => {
+        {errors.mobile && (
+          <div
+            style={{
+              color: "red",
+              fontSize: 12,
+              marginBottom: 10,
+            }}
+          >
+            {errors.mobile[0]}
+          </div>
+        )}
 
-    setForm({
-      ...form,
-      password: e.target.value,
-    });
+        {/* PASSWORD */}
+        <Input.Password
+          placeholder="Password"
+          value={form.password}
+          style={{
+            marginBottom: 5,
+            border:
+              passwordError || errors.password
+                ? "1px solid red"
+                : "",
+          }}
+          onChange={(e) => {
 
-    // 🔥 remove red border while typing
-    setPasswordError(false);
+            setForm({
+              ...form,
+              password: e.target.value,
+            });
 
-  }}
-/>
+            setPasswordError(false);
 
-{showRules && (
-  <div
-    style={{
-      fontSize: 12,
-      color: "#f30b0b",
-      marginBottom: 15,
-    }}
-  >
-    Password must contain:
-    <br />
-    • Minimum 8 characters
-    <br />
-    • 1 Capital letter
-    <br />
-    • 1 Number
-    <br />
-    • 1 Special character
-  </div>
-)}
+            setErrors({
+              ...errors,
+              password: "",
+            });
+
+          }}
+        />
+
+        {errors.password && (
+          <div
+            style={{
+              color: "red",
+              fontSize: 12,
+              marginBottom: 10,
+            }}
+          >
+            {errors.password[0]}
+          </div>
+        )}
+
+        {/* PASSWORD RULES */}
+        {showRules && (
+          <div
+            style={{
+              fontSize: 12,
+              color: "#f30b0b",
+              marginBottom: 15,
+            }}
+          >
+            Password must contain:
+            <br />
+            • Minimum 8 characters
+            <br />
+            • 1 Capital letter
+            <br />
+            • 1 Number
+            <br />
+            • 1 Special character
+          </div>
+        )}
+
         <Button
           type="primary"
           block
@@ -181,6 +295,7 @@ export default function Signup() {
         </div>
 
       </Card>
+
     </div>
   );
 }
