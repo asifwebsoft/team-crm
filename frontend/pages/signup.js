@@ -51,7 +51,10 @@ export default function Signup() {
 
         console.log(err.response.data);
 
-        const backendErrors = err.response?.data || {};
+        const backendErrors =
+          err.response?.data?.serializer_error ||
+          err.response?.data ||
+          {};
 
         // 🔥 SAVE ERRORS
         setErrors(backendErrors);
