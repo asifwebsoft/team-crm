@@ -232,22 +232,16 @@ const filteredData = data.filter(
 
 </Row>
       <div
-
-          style={{
-                overflowX: "auto",
-              }}
-      
+        style={{
+          overflowX: "auto",
+        }}
       >
         <Table
           columns={columns}
-          dataSource={filteredData}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            pageSize: 10,
-          }}
+          dataSource={data}
+          scroll={{ x: 1000 }}
         />
-        </div>
+      </div>
 
       </Card>
 
