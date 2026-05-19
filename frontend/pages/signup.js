@@ -137,6 +137,9 @@ export default function Signup() {
 
           }}
         />
+        <pre>
+          {JSON.stringify(errors, null, 2)}
+        </pre>
 
         {errors.full_name && (
           <div
