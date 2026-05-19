@@ -131,7 +131,7 @@ export default function Signup() {
           }}
         />
 
-        {errors.full_name && (
+        {errors?.full_name?.length > 0 && (
           <div
             style={{
               color: "red",
@@ -139,9 +139,7 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {Array.isArray(errors.full_name)
-              ? errors.full_name[0]
-              : errors.full_name}
+            {errors.full_name[0]}
           </div>
         )}
 
@@ -170,7 +168,7 @@ export default function Signup() {
           }}
         />
 
-        {errors.email && (
+        {errors?.email?.length > 0 && (
           <div
             style={{
               color: "red",
@@ -178,9 +176,7 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {Array.isArray(errors.email)
-              ? errors.email[0]
-              : errors.email}
+            {errors.email[0]}
           </div>
         )}
 
@@ -209,7 +205,7 @@ export default function Signup() {
           }}
         />
 
-        {errors.mobile && (
+        {errors?.mobile?.length > 0 && (
           <div
             style={{
               color: "red",
@@ -217,9 +213,7 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {Array.isArray(errors.mobile)
-              ? errors.mobile[0]
-              : errors.mobile}
+            {errors.mobile[0]}
           </div>
         )}
 
@@ -251,7 +245,7 @@ export default function Signup() {
           }}
         />
 
-        {errors.password && (
+        {errors?.password?.length > 0 && (
           <div
             style={{
               color: "red",
@@ -259,9 +253,7 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {Array.isArray(errors.password)
-              ? errors.password[0]
-              : errors.password}
+            {errors.password[0]}
           </div>
         )}
 
