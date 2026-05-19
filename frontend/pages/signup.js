@@ -125,10 +125,7 @@ export default function Signup() {
               full_name: e.target.value,
             });
 
-            setErrors({
-              ...errors,
-              full_name: "",
-            });
+            
 
           }}
         />
@@ -162,10 +159,7 @@ export default function Signup() {
               email: e.target.value,
             });
 
-            setErrors({
-              ...errors,
-              email: "",
-            });
+            
 
           }}
         />
@@ -199,10 +193,7 @@ export default function Signup() {
               mobile: e.target.value,
             });
 
-            setErrors({
-              ...errors,
-              mobile: "",
-            });
+            
 
           }}
         />
@@ -239,10 +230,7 @@ export default function Signup() {
 
             setPasswordError(false);
 
-            setErrors({
-              ...errors,
-              password: "",
-            });
+            
 
           }}
         />
