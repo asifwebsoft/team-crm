@@ -51,24 +51,32 @@ export default function Signup() {
 
         console.log(err);
 
-        const backendErrors = err.response?.data;
+        const backendErrors = err.response?.data || {};
 
-        // 🔥 SAVE ALL ERRORS
-        setErrors(backendErrors || {});
+        // 🔥 SAVE ERRORS
+        setErrors(backendErrors);
 
-        // 🔥 PASSWORD RED BORDER
-        if (backendErrors?.password) {
+        // 🔥 PASSWORD UI
+        if (backendErrors.password) {
           setPasswordError(true);
           setShowRules(true);
         }
 
-        // 🔥 SHOW FIRST ERROR MESSAGE
-        const firstError =
-          backendErrors?.full_name?.[0] ||
-          backendErrors?.email?.[0] ||
-          backendErrors?.mobile?.[0] ||
-          backendErrors?.password?.[0] ||
-          "Signup failed";
+        // 🔥 FIRST ERROR MESSAGE
+        let firstError = "Signup failed";
+
+        for (const key in backendErrors) {
+
+          if (Array.isArray(backendErrors[key])) {
+            firstError = backendErrors[key][0];
+            break;
+          }
+
+          if (typeof backendErrors[key] === "string") {
+            firstError = backendErrors[key];
+            break;
+          }
+        }
 
         message.error(firstError);
 
@@ -128,7 +136,9 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {errors.full_name[0]}
+            {Array.isArray(errors.full_name)
+              ? errors.full_name[0]
+              : errors.full_name}
           </div>
         )}
 
@@ -165,7 +175,9 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {errors.email[0]}
+            {Array.isArray(errors.email)
+              ? errors.email[0]
+              : errors.email}
           </div>
         )}
 
@@ -202,7 +214,9 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {errors.mobile[0]}
+            {Array.isArray(errors.mobile)
+              ? errors.mobile[0]
+              : errors.mobile}
           </div>
         )}
 
@@ -242,7 +256,9 @@ export default function Signup() {
               marginBottom: 10,
             }}
           >
-            {errors.password[0]}
+            {Array.isArray(errors.password)
+              ? errors.password[0]
+              : errors.password}
           </div>
         )}
 
