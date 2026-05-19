@@ -49,7 +49,7 @@ export default function Signup() {
 
       .catch((err) => {
 
-        console.log(err);
+        console.log(err.response.data);
 
         const backendErrors = err.response?.data || {};
 
