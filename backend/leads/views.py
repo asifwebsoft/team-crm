@@ -33,24 +33,57 @@ def get_leads(user):
 
 
 # ✅ CREATE
+# ✅ CREATE
 class CreateLeadView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+
         lead = Lead.objects.create(
+
             title=request.data.get("title"),
-            customer_name=request.data.get("customer_name"),
+
+            customer_name=request.data.get(
+                "customer_name"
+            ),
+
             phone=request.data.get("phone"),
+
             notes=request.data.get("notes"),
-            followup_date=request.data.get("followup_date") or None,
+
+            followup_date=request.data.get(
+                "followup_date"
+            ) or None,
+
             assigned_to=request.user,
+
             company=request.user.company
         )
-        return Response({"id": lead.id})
 
+        # ✅ CREATE HISTORY
 
-# ✅ DASHBOARD
-from datetime import date
+        LeadFollowupHistory.objects.create(
+
+            lead=lead,
+
+            customer_name=lead.customer_name,
+
+            phone=lead.phone,
+
+            notes=lead.notes,
+
+            next_followup_date=
+                lead.followup_date,
+
+            created_by=request.user,
+
+            company=request.user.company
+        )
+
+        return Response({
+            "id": lead.id
+        })
 
 class DashboardView(APIView):
 
@@ -438,6 +471,7 @@ class ManagerDashboardView(APIView):
             "today": leads.filter(followup_date=today).count()
         })
     
+# ADD LEADS
 class AddLeadFollowupView(APIView):
 
     permission_classes = [
@@ -471,16 +505,23 @@ class AddLeadFollowupView(APIView):
             elif request.user.role == "manager":
 
                 is_team_lead = False
+
                 if (
-                  lead.assigned_to
-                  and lead.assigned_to.manager
+                    lead.assigned_to
+                    and lead.assigned_to.manager
                 ):
 
-                    is_team_lead =  (
+                    is_team_lead = (
 
-                        lead.assigned_to.manager == request.user
-                    
+                        lead.assigned_to.manager
+                        == request.user
+
                     )
+
+                if (
+                    lead.assigned_to != request.user
+                    and not is_team_lead
+                ):
 
                     return Response(
                         {
@@ -513,21 +554,21 @@ class AddLeadFollowupView(APIView):
 
             LeadFollowupHistory.objects.create(
 
-                    lead=lead,
+                lead=lead,
 
-                    customer_name=lead.customer_name,
+                customer_name=lead.customer_name,
 
-                    phone=lead.phone,
+                phone=lead.phone,
 
-                    notes=notes,
+                notes=notes,
 
-                    next_followup_date=
-                        next_followup_date,
+                next_followup_date=
+                    next_followup_date,
 
-                    created_by=request.user,
+                created_by=request.user,
 
-                    company=request.user.company
-                )
+                company=request.user.company
+            )
 
             return Response({
                 "message": "Follow-up added successfully"
@@ -550,8 +591,6 @@ class AddLeadFollowupView(APIView):
                 },
                 status=400
             )
-        
-
 # ✅ LEAD HISTORY
 class LeadHistoryView(APIView):
 
@@ -608,7 +647,7 @@ class LeadHistoryView(APIView):
                 "id": h.id,
 
                 "lead_name":
-                    h.lead.customer_name,
+                    h.customer_name,
 
                 "phone":
                     h.phone,
