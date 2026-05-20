@@ -27,14 +27,27 @@ class CompanySerializer(serializers.ModelSerializer):
 
         if not re.match(r'^[6-9]\d{9}$', value):
             raise serializers.ValidationError(
-                "Enter valid 10 digit mobile number."
+                "Enter valid mobile number."
             )
 
         return value
 
     def validate_email(self, value):
 
-        return value.lower().strip()
+        value = value.lower().strip()
+
+        existing = Company.objects.filter(
+            email=value
+        ).exclude(
+            owner=self.context['request'].user
+        )
+
+        if existing.exists():
+            raise serializers.ValidationError(
+                "Email already exists."
+            )
+
+        return value
 
     def validate_gstin(self, value):
 
@@ -48,6 +61,17 @@ class CompanySerializer(serializers.ModelSerializer):
         if not re.match(gstin_regex, value):
             raise serializers.ValidationError(
                 "Invalid GSTIN number."
+            )
+
+        existing = Company.objects.filter(
+            gstin=value
+        ).exclude(
+            owner=self.context['request'].user
+        )
+
+        if existing.exists():
+            raise serializers.ValidationError(
+                "GSTIN already exists."
             )
 
         return value

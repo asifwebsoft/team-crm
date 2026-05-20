@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Company
 from .serializers import CompanySerializer
 
+import random
+
 
 class CreateCompanyView(APIView):
 
@@ -19,13 +21,19 @@ class CreateCompanyView(APIView):
             )
 
         serializer = CompanySerializer(
-            data=request.data
+            data=request.data,
+            context={"request": request}
         )
 
         if serializer.is_valid():
 
+            code = "CMP" + str(
+                random.randint(10000, 99999)
+            )
+
             company = serializer.save(
-                owner=request.user
+                owner=request.user,
+                company_code=code
             )
 
             request.user.company = company
@@ -35,7 +43,34 @@ class CreateCompanyView(APIView):
                 "message": "Company created"
             })
 
-        print(serializer.errors)
+        return Response(
+            serializer.errors,
+            status=400
+        )
+
+
+class UpdateCompanyView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+
+        company = request.user.company
+
+        serializer = CompanySerializer(
+            company,
+            data=request.data,
+            partial=True,
+            context={"request": request}
+        )
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response({
+                "message": "Company updated"
+            })
 
         return Response(
             serializer.errors,
