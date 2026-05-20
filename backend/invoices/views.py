@@ -421,19 +421,71 @@ class InvoiceDetailView(APIView):
                 })
 
             data = {
-                "id": invoice.id,
-                "invoice_number": invoice.invoice_number,
-                "customer_name": invoice.customer_name,
-                "phone": invoice.phone,
-                "address": invoice.address,
-                "status": invoice.status,
-                "total_amount": invoice.total_amount,
-                "created_by": invoice.created_by.full_name,
-                "created_at": invoice.created_at.strftime(
-                    "%d-%m-%Y %I:%M %p"
-                ),
-                "items": items,
-            }
+
+    "id": invoice.id,
+
+    "invoice_number":
+        invoice.invoice_number,
+
+    "customer_name":
+        invoice.customer_name,
+
+    "phone":
+        invoice.phone,
+
+    "address":
+        invoice.address,
+
+    "status":
+        invoice.status,
+
+    "total_amount":
+        invoice.total_amount,
+
+    "created_by":
+        invoice.created_by.full_name,
+
+    "created_at":
+        invoice.created_at.strftime(
+            "%d-%m-%Y %I:%M %p"
+        ),
+
+    # ✅ COMPANY DETAILS
+
+    "company_name":
+        request.user.company.name,
+
+    "company_address":
+        getattr(
+            request.user.company,
+            "address",
+            ""
+        ),
+
+    "company_email":
+        getattr(
+            request.user.company,
+            "email",
+            ""
+        ),
+
+    "company_mobile":
+        getattr(
+            request.user.company,
+            "mobile",
+            ""
+        ),
+
+    "company_gstin":
+        getattr(
+            request.user.company,
+            "gstin",
+            ""
+        ),
+
+    "items":
+        items,
+}
 
             return Response(data)
 
