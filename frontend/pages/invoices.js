@@ -14,7 +14,8 @@ import {
   Row,
   Col,
   Statistic,
-  Modal
+  Modal,
+  Switch
 } from "antd";
 
 import {
@@ -79,6 +80,11 @@ export default function InvoicesPage() {
   const [editStatus,
     setEditStatus] =
     useState("pending");
+
+  const [
+    applyGST,
+    setApplyGST
+  ] = useState(false);
 
   // ✅ USER ROLE
 
@@ -273,15 +279,26 @@ if (phone.length > 12) {
     setLoading(true);
 
     const response = await API.post(
-      "/invoices/create/",
-      {
-        customer_name: customerName,
-        phone,
-        address,
-        status: "pending",
-        items,
-      }
-    );
+  "/invoices/create/",
+  {
+
+    customer_name:
+      customerName,
+
+    phone,
+
+    address,
+
+    status: "pending",
+
+    items,
+
+    // ✅ GST FLAG
+
+    apply_gst:
+      applyGST,
+  }
+);
 
     if (response.status === 201) {
 
@@ -905,6 +922,32 @@ const COLORS = [
           <Title level={4}>
             Total: ₹{totalAmount}
           </Title>
+
+          <div
+  style={{
+    marginBottom: 20,
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  }}
+>
+
+  <Switch
+    checked={applyGST}
+    onChange={(checked) =>
+      setApplyGST(checked)
+    }
+  />
+
+  <span
+    style={{
+      fontWeight: 500,
+    }}
+  >
+    Apply GST
+  </span>
+
+</div>
 
           <Button
             type="primary"

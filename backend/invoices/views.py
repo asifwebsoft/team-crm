@@ -420,34 +420,59 @@ class InvoiceDetailView(APIView):
                     "subtotal": item.subtotal,
                 })
 
+            # ✅ GST CALCULATION
+
+            subtotal = invoice.total_amount
+
+            cgst = round(
+                (subtotal * 9) / 100,
+                2
+            )
+
+            sgst = round(
+                (subtotal * 9) / 100,
+                2
+            )
+
+            grand_total = round(
+                subtotal + cgst + sgst,
+                2
+            )
+
             data = {
 
-    "id": invoice.id,
+            "id": invoice.id,
 
-    "invoice_number":
-        invoice.invoice_number,
+            "invoice_number":
+                invoice.invoice_number,
 
-    "customer_name":
-        invoice.customer_name,
+            "cgst": cgst,
 
-    "phone":
-        invoice.phone,
+            "sgst": sgst,
 
-    "address":
-        invoice.address,
+            "grand_total": grand_total,
 
-    "status":
-        invoice.status,
+            "customer_name":
+                invoice.customer_name,
 
-    "total_amount":
-        invoice.total_amount,
+            "phone":
+                invoice.phone,
 
-    "created_by":
-        invoice.created_by.full_name,
+            "address":
+                invoice.address,
 
-    "created_at":
-        invoice.created_at.strftime(
-            "%d-%m-%Y %I:%M %p"
+            "status":
+                invoice.status,
+
+            "total_amount":
+                invoice.total_amount,
+
+            "created_by":
+                invoice.created_by.full_name,
+
+            "created_at":
+                invoice.created_at.strftime(
+                    "%d-%m-%Y %I:%M %p"
         ),
 
     # ✅ COMPANY DETAILS

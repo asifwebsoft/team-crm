@@ -521,24 +521,136 @@ export default function InvoiceDetailPage() {
 
             {/* TOTAL */}
 
-            <div
-              style={{
-                marginTop: 30,
-                textAlign: "right",
-              }}
-            >
+<div
+  style={{
+    marginTop: 30,
+    display: "flex",
+    justifyContent: "flex-end",
+  }}
+>
 
-              <Title
-                level={3}
-                style={{
-                  color: "#1677ff",
-                }}
-              >
-                Grand Total:
-                ₹{invoice.total_amount}
-              </Title>
+  <div
+    style={{
+      width: 320,
+    }}
+  >
 
-            </div>
+    {/* SUBTOTAL */}
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent:
+          "space-between",
+        marginBottom: 10,
+      }}
+    >
+
+      <Text strong>
+        Subtotal
+      </Text>
+
+      <Text>
+        ₹
+        {invoice.total_amount}
+      </Text>
+
+    </div>
+
+    {/* GST SECTION */}
+
+    {invoice.cgst > 0 && (
+
+      <>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            marginBottom: 10,
+          }}
+        >
+
+          <Text strong>
+            CGST (9%)
+          </Text>
+
+          <Text>
+            ₹{invoice.cgst}
+          </Text>
+
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            marginBottom: 10,
+          }}
+        >
+
+          <Text strong>
+            SGST (9%)
+          </Text>
+
+          <Text>
+            ₹{invoice.sgst}
+          </Text>
+
+        </div>
+
+      </>
+
+    )}
+
+    <Divider
+      style={{
+        margin: "12px 0",
+      }}
+    />
+
+    {/* GRAND TOTAL */}
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent:
+          "space-between",
+      }}
+    >
+
+      <Title
+        level={4}
+        style={{
+          margin: 0,
+          color: "#1677ff",
+        }}
+      >
+        Grand Total
+      </Title>
+
+      <Title
+        level={4}
+        style={{
+          margin: 0,
+          color: "#1677ff",
+        }}
+      >
+        ₹
+        {invoice.grand_total
+          ||
+          invoice.total_amount}
+      </Title>
+
+    </div>
+
+  </div>
+
+</div>
+
+            
 
             <Divider />
 
