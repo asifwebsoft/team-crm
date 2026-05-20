@@ -75,7 +75,7 @@ class LeadFollowupHistory(models.Model):
 
     def __str__(self):
 
-        return (
-            f"{self.lead.name} - "
-            f"{self.created_by.full_name}"
-        )
+            return (
+                f"{self.lead.customer_name} - "
+                f"{self.created_by.full_name}"
+            )

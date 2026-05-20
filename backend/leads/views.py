@@ -470,17 +470,17 @@ class AddLeadFollowupView(APIView):
 
             elif request.user.role == "manager":
 
-                is_team_lead = (
-                    lead.assigned_to.manager ==
-                    request.user
-                    if lead.assigned_to.manager
-                    else False
-                )
-
+                is_team_lead = False
                 if (
-                    lead.assigned_to != request.user
-                    and not is_team_lead
+                  lead.assigned_to
+                  and lead.assigned_to.manager
                 ):
+
+                    is_team_lead =  (
+
+                        lead.assigned_to.manager == request.user
+                    
+                    )
 
                     return Response(
                         {
@@ -512,12 +512,22 @@ class AddLeadFollowupView(APIView):
             # ✅ CREATE HISTORY
 
             LeadFollowupHistory.objects.create(
-                lead=lead,
-                notes=notes,
-                next_followup_date=next_followup_date,
-                created_by=request.user,
-                company=request.user.company
-            )
+
+                    lead=lead,
+
+                    customer_name=lead.customer_name,
+
+                    phone=lead.phone,
+
+                    notes=notes,
+
+                    next_followup_date=
+                        next_followup_date,
+
+                    created_by=request.user,
+
+                    company=request.user.company
+                )
 
             return Response({
                 "message": "Follow-up added successfully"
