@@ -81,10 +81,11 @@ export default function InvoicesPage() {
     setEditStatus] =
     useState("pending");
 
-  const [
-    applyGST,
-    setApplyGST
-  ] = useState(false);
+  const [cgst, setCgst] =
+  useState("");
+
+  const [sgst, setSgst] =
+    useState("");
 
   // ✅ USER ROLE
 
@@ -292,6 +293,10 @@ if (phone.length > 12) {
     status: "pending",
 
     items,
+
+    cgst,
+
+    sgst,
 
     // ✅ GST FLAG
 
@@ -923,6 +928,41 @@ const COLORS = [
             Total: ₹{totalAmount}
           </Title>
 
+          <Row
+              gutter={[16, 16]}
+              style={{
+                marginTop: 10,
+              }}
+            >
+
+              <Col xs={24} md={12}>
+
+                <Input
+                  type="number"
+                  placeholder="CGST Amount (Optional)"
+                  value={cgst}
+                  onChange={(e) =>
+                    setCgst(e.target.value)
+                  }
+                />
+
+              </Col>
+
+              <Col xs={24} md={12}>
+
+                <Input
+                  type="number"
+                  placeholder="SGST Amount (Optional)"
+                  value={sgst}
+                  onChange={(e) =>
+                    setSgst(e.target.value)
+                  }
+                />
+
+              </Col>
+
+            </Row>
+
           <div
   style={{
     marginBottom: 20,
@@ -932,12 +972,7 @@ const COLORS = [
   }}
 >
 
-  <Switch
-    checked={applyGST}
-    onChange={(checked) =>
-      setApplyGST(checked)
-    }
-  />
+  
 
   <span
     style={{
