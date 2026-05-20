@@ -21,7 +21,8 @@ export default function LeadHistory() {
 
   const [data, setData] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
   const [searchText, setSearchText] =
     useState("");
@@ -87,6 +88,14 @@ export default function LeadHistory() {
           ?.toLowerCase()
           .includes(
             searchText.toLowerCase()
+          )
+
+        ||
+
+        item.phone
+          ?.toLowerCase()
+          .includes(
+            searchText.toLowerCase()
           );
 
       // ✅ DATE FILTER
@@ -119,25 +128,66 @@ export default function LeadHistory() {
   const columns = [
 
     {
-      title: "Lead",
+      title: "Customer Name",
+
       dataIndex: "lead_name",
-      width: 180,
+
+      width: 220,
+
+      render: (text) => (
+
+        <div
+          style={{
+            minWidth: 180,
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+            lineHeight: "20px",
+          }}
+        >
+          {text || "-"}
+        </div>
+      ),
     },
 
     {
       title: "Phone",
+
       dataIndex: "phone",
-      width: 140,
+
+      width: 150,
+
+      render: (text) => (
+
+        <span>
+          {text || "-"}
+        </span>
+      ),
     },
 
     {
       title: "Notes",
+
       dataIndex: "notes",
-      width: 300,
+
+      width: 320,
+
+      render: (text) => (
+
+        <div
+          style={{
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+            lineHeight: "20px",
+          }}
+        >
+          {text || "-"}
+        </div>
+      ),
     },
 
     {
       title: "Next Follow-up",
+
       dataIndex: "next_followup_date",
 
       width: 180,
@@ -158,14 +208,30 @@ export default function LeadHistory() {
 
     {
       title: "Updated By",
+
       dataIndex: "created_by",
+
       width: 180,
+
+      render: (text) => (
+        <span>
+          {text || "-"}
+        </span>
+      ),
     },
 
     {
       title: "Updated At",
+
       dataIndex: "created_at",
+
       width: 220,
+
+      render: (text) => (
+        <span>
+          {text || "-"}
+        </span>
+      ),
     },
 
   ];
@@ -196,13 +262,14 @@ export default function LeadHistory() {
           <Col xs={24} md={12}>
 
             <Input
-              placeholder="Search lead, notes or employee"
+              placeholder="Search lead, notes, phone or employee"
               value={searchText}
               onChange={(e) =>
                 setSearchText(
                   e.target.value
                 )
               }
+              allowClear
             />
 
           </Col>
@@ -213,13 +280,17 @@ export default function LeadHistory() {
               style={{
                 width: "100%",
               }}
+
               placeholder="Filter by date"
+
               value={
                 dateFilter || undefined
               }
+
               onChange={(value) =>
                 setDateFilter(value)
               }
+
               allowClear
             >
 
@@ -244,15 +315,21 @@ export default function LeadHistory() {
 
           <Table
             columns={columns}
+
             dataSource={filteredData}
+
             loading={loading}
+
             rowKey="id"
+
             pagination={{
               pageSize: 10,
             }}
+
             scroll={{
-              x: 1200,
+              x: 1300,
             }}
+
             size="small"
           />
 
