@@ -317,39 +317,38 @@ export default function InvoiceDetailPage() {
                 <Col xs={24} md={16}>
 
                   <Title
-                    level={2}
-                    style={{
-                      margin: 0,
-                      color: "#1677ff",
-                    }}
-                  >
-                    Multi Service Pvt Ltd
-                  </Title>
+                      level={2}
+                      style={{
+                        margin: 0,
+                        color: "#1677ff",
+                      }}
+                    >
+                      {invoice.company_name || "Company Name"}
+                    </Title>
 
                   <Text>
-                    Lucknow,
-                    Uttar Pradesh
+                    {invoice.company_address}
                   </Text>
 
                   <br />
 
                   <Text>
                     Email:
-                    support@multiservice.com
+                    {invoice.company_email}
                   </Text>
 
                   <br />
 
                   <Text>
                     Mobile:
-                    9876543210
+                    {invoice.company_mobile}
                   </Text>
 
                   <br />
 
                   <Text strong>
                     GSTIN:
-                    09ABCDE1234F1Z5
+                    {invoice.company_gstin}
                   </Text>
 
                 </Col>
