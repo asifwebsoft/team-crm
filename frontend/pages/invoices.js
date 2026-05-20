@@ -300,8 +300,7 @@ if (phone.length > 12) {
 
     // ✅ GST FLAG
 
-    apply_gst:
-      applyGST,
+  
   }
 );
 
