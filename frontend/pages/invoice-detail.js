@@ -327,27 +327,28 @@ export default function InvoiceDetailPage() {
                     </Title>
 
                   <Text>
+                    Address:{" "}
                     {invoice.company_address}
                   </Text>
 
                   <br />
 
                   <Text>
-                    Email:
+                    Email:{" "}
                     {invoice.company_email}
                   </Text>
 
                   <br />
 
                   <Text>
-                    Mobile:
+                    Mobile:{" "}
                     {invoice.company_mobile}
                   </Text>
 
                   <br />
 
                   <Text strong>
-                    GSTIN:
+                    GSTIN:{" "}
                     {invoice.company_gstin}
                   </Text>
 
