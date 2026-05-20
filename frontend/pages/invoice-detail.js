@@ -430,18 +430,18 @@ export default function InvoiceDetailPage() {
 
                     <Text>
                       <strong>
-                        Mobile:
-                      </strong>
-                      {" "}
-                      {invoice.phone}
-                    </Text>
-
-                    <Text>
-                      <strong>
                         Address:
                       </strong>
                       {" "}
                       {invoice.address}
+                    </Text>
+
+                    <Text>
+                      <strong>
+                        Mobile:
+                      </strong>
+                      {" "}
+                      {invoice.phone}
                     </Text>
 
                   </Space>
