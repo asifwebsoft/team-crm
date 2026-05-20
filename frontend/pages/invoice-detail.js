@@ -15,7 +15,6 @@ import {
 import MainLayout from "../components/Layout";
 import API from "../services/api";
 
-
 const { Title, Text } = Typography;
 
 export default function InvoiceDetailPage() {
@@ -24,9 +23,11 @@ export default function InvoiceDetailPage() {
 
   const { id } = router.query;
 
-  const [invoice, setInvoice] = useState(null);
+  const [invoice, setInvoice] =
+    useState(null);
 
   // ✅ FETCH INVOICE
+
   const fetchInvoice = async () => {
 
     try {
@@ -46,100 +47,123 @@ export default function InvoiceDetailPage() {
   useEffect(() => {
 
     if (id) {
+
       fetchInvoice();
     }
 
   }, [id]);
 
   // ✅ PRINT ONLY INVOICE
+
   const handlePrint = () => {
 
-    const printContent = document.getElementById(
-      "invoice-print-area"
-    ).innerHTML;
+    const printContent =
+      document.getElementById(
+        "invoice-print-area"
+      ).innerHTML;
 
-    const originalContent = document.body.innerHTML;
+    const originalContent =
+      document.body.innerHTML;
 
-    document.body.innerHTML = printContent;
+    document.body.innerHTML =
+      printContent;
 
     window.print();
 
-    document.body.innerHTML = originalContent;
+    document.body.innerHTML =
+      originalContent;
 
     window.location.reload();
   };
 
-  // ✅ Download PDF
-  const handleDownloadPDF = async () => {
+  // ✅ DOWNLOAD PDF
 
-  const jsPDF = (
-    await import("jspdf")
-  ).default;
+  const handleDownloadPDF =
+    async () => {
 
-  const html2canvas = (
-    await import("html2canvas")
-  ).default;
+      const jsPDF = (
+        await import("jspdf")
+      ).default;
 
-  const input = document.getElementById(
-    "invoice-print-area"
-  );
+      const html2canvas = (
+        await import("html2canvas")
+      ).default;
 
-  const canvas = await html2canvas(input);
+      const input =
+        document.getElementById(
+          "invoice-print-area"
+        );
 
-  const imgData = canvas.toDataURL(
-    "image/png"
-  );
+      const canvas =
+        await html2canvas(input);
 
-  const pdf = new jsPDF(
-    "p",
-    "mm",
-    "a4"
-  );
+      const imgData =
+        canvas.toDataURL(
+          "image/png"
+        );
 
-  const pdfWidth =
-    pdf.internal.pageSize.getWidth();
+      const pdf = new jsPDF(
+        "p",
+        "mm",
+        "a4"
+      );
 
-  const pdfHeight =
-    (canvas.height * pdfWidth) /
-    canvas.width;
+      const pdfWidth =
+        pdf.internal.pageSize
+          .getWidth();
 
-  pdf.addImage(
-    imgData,
-    "PNG",
-    0,
-    0,
-    pdfWidth,
-    pdfHeight
-  );
+      const pdfHeight =
+        (canvas.height * pdfWidth)
+        / canvas.width;
 
-  pdf.save(
-    `${invoice.invoice_number}.pdf`
-  );
-};
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        0,
+        pdfWidth,
+        pdfHeight
+      );
+
+      pdf.save(
+        `${invoice.invoice_number}.pdf`
+      );
+    };
 
   // ✅ TABLE COLUMNS
+
   const columns = [
+
     {
       title: "Product",
       dataIndex: "product_name",
     },
+
     {
       title: "Qty",
       dataIndex: "quantity",
     },
+
     {
       title: "Price",
       dataIndex: "price",
-      render: (price) => `₹${price}`,
+
+      render: (price) =>
+        `₹${price}`,
     },
+
     {
       title: "Subtotal",
       dataIndex: "subtotal",
-      render: (subtotal) => `₹${subtotal}`,
+
+      render: (subtotal) =>
+        `₹${subtotal}`,
     },
+
   ];
 
   // ✅ LOADING
+
   if (!invoice) {
 
     return (
@@ -161,14 +185,22 @@ export default function InvoiceDetailPage() {
   }
 
   // ✅ STATUS COLOR
+
   let statusColor = "orange";
 
   if (invoice.status === "paid") {
+
     statusColor = "green";
   }
 
   if (invoice.status === "partial") {
+
     statusColor = "blue";
+  }
+
+  if (invoice.status === "cancelled") {
+
+    statusColor = "red";
   }
 
   return (
@@ -197,10 +229,14 @@ export default function InvoiceDetailPage() {
           {/* BACK */}
 
           <button
-            onClick={() => router.push("/invoices")}
+            onClick={() =>
+              router.push("/invoices")
+            }
+
             style={{
               padding: "10px 18px",
-              border: "1px solid #d9d9d9",
+              border:
+                "1px solid #d9d9d9",
               borderRadius: 6,
               background: "#fff",
               cursor: "pointer",
@@ -210,10 +246,11 @@ export default function InvoiceDetailPage() {
             ← Back
           </button>
 
-          {/* SAVE PDF */}
+          {/* DOWNLOAD */}
 
           <button
             onClick={handleDownloadPDF}
+
             style={{
               padding: "10px 18px",
               border: "none",
@@ -231,6 +268,7 @@ export default function InvoiceDetailPage() {
 
           <button
             onClick={handlePrint}
+
             style={{
               padding: "10px 18px",
               border: "none",
@@ -252,68 +290,109 @@ export default function InvoiceDetailPage() {
 
           <Card
             bordered={false}
+
             style={{
               borderRadius: 14,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+              boxShadow:
+                "0 2px 10px rgba(0,0,0,0.08)",
             }}
           >
 
-            {/* HEADER */}
+            {/* ✅ COMPANY HEADER */}
 
-            <Row
-              justify="space-between"
-              align="middle"
-              gutter={[20, 20]}
+            <div
+              style={{
+                marginBottom: 30,
+                borderBottom:
+                  "2px solid #ddd",
+                paddingBottom: 20,
+              }}
             >
 
-              <Col>
+              <Row
+                justify="space-between"
+                gutter={[20, 20]}
+              >
 
-                <Title
-                  level={2}
-                  style={{
-                    marginBottom: 0,
-                    color: "#1677ff",
-                  }}
-                >
-                  CRM Invoice
-                </Title>
-
-                <Text type="secondary">
-                  Professional Billing Invoice
-                </Text>
-
-              </Col>
-
-              <Col>
-
-                <div
-                  style={{
-                    textAlign: "right",
-                  }}
-                >
+                <Col xs={24} md={16}>
 
                   <Title
-                    level={4}
+                    level={2}
                     style={{
-                      marginBottom: 5,
+                      margin: 0,
+                      color: "#1677ff",
                     }}
                   >
-                    Invoice #{invoice.invoice_number}
+                    Multi Service Pvt Ltd
                   </Title>
 
                   <Text>
-                    Date: {invoice.created_at}
+                    Lucknow,
+                    Uttar Pradesh
                   </Text>
 
-                </div>
+                  <br />
 
-              </Col>
+                  <Text>
+                    Email:
+                    support@multiservice.com
+                  </Text>
 
-            </Row>
+                  <br />
 
-            <Divider />
+                  <Text>
+                    Mobile:
+                    9876543210
+                  </Text>
 
-            {/* CUSTOMER DETAILS */}
+                  <br />
+
+                  <Text strong>
+                    GSTIN:
+                    09ABCDE1234F1Z5
+                  </Text>
+
+                </Col>
+
+                <Col xs={24} md={8}>
+
+                  <div
+                    style={{
+                      textAlign: "right",
+                    }}
+                  >
+
+                    <Title
+                      level={4}
+                      style={{
+                        marginBottom: 5,
+                      }}
+                    >
+                      Invoice
+                    </Title>
+
+                    <Text>
+                      Invoice #:
+                      {invoice.invoice_number}
+                    </Text>
+
+                    <br />
+
+                    <Text>
+                      Date:
+                      {" "}
+                      {invoice.created_at}
+                    </Text>
+
+                  </div>
+
+                </Col>
+
+              </Row>
+
+            </div>
+
+            {/* ✅ CUSTOMER DETAILS */}
 
             <Row gutter={[20, 20]}>
 
@@ -323,6 +402,7 @@ export default function InvoiceDetailPage() {
 
                 <Card
                   size="small"
+
                   style={{
                     borderRadius: 10,
                     background: "#fafafa",
@@ -337,21 +417,30 @@ export default function InvoiceDetailPage() {
                         margin: 0,
                       }}
                     >
-                      Customer Details
+                      Bill To
                     </Title>
 
                     <Text>
-                      <strong>Name:</strong>{" "}
+                      <strong>
+                        Name:
+                      </strong>
+                      {" "}
                       {invoice.customer_name}
                     </Text>
 
                     <Text>
-                      <strong>Phone:</strong>{" "}
+                      <strong>
+                        Mobile:
+                      </strong>
+                      {" "}
                       {invoice.phone}
                     </Text>
 
                     <Text>
-                      <strong>Address:</strong>{" "}
+                      <strong>
+                        Address:
+                      </strong>
+                      {" "}
                       {invoice.address}
                     </Text>
 
@@ -367,6 +456,7 @@ export default function InvoiceDetailPage() {
 
                 <Card
                   size="small"
+
                   style={{
                     borderRadius: 10,
                     background: "#fafafa",
@@ -385,14 +475,18 @@ export default function InvoiceDetailPage() {
                     </Title>
 
                     <Text>
-                      <strong>Created By:</strong>{" "}
+                      <strong>
+                        Created By:
+                      </strong>
+                      {" "}
                       {invoice.created_by}
                     </Text>
 
                     <div>
 
                       <Tag color={statusColor}>
-                        {invoice.status.toUpperCase()}
+                        {invoice.status
+                          .toUpperCase()}
                       </Tag>
 
                     </div>
@@ -419,6 +513,7 @@ export default function InvoiceDetailPage() {
               pagination={false}
               rowKey="product_name"
               bordered
+
               style={{
                 marginTop: 20,
               }}
@@ -439,7 +534,8 @@ export default function InvoiceDetailPage() {
                   color: "#1677ff",
                 }}
               >
-                Grand Total: ₹{invoice.total_amount}
+                Grand Total:
+                ₹{invoice.total_amount}
               </Title>
 
             </div>
@@ -456,7 +552,8 @@ export default function InvoiceDetailPage() {
             >
 
               <Text type="secondary">
-                Thank you for your business.
+                Thank you for your
+                business.
               </Text>
 
             </div>
