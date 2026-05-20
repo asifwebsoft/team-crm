@@ -114,7 +114,7 @@ export default function Topbar() {
         }}
       >
 
-        {company ? `${company} CRM` : "CRM"}
+        {company ? `${company}` : "CRM"}
 
       </div>
 
