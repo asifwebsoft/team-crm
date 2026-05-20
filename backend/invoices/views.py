@@ -472,7 +472,7 @@ class InvoiceDetailView(APIView):
     "company_mobile":
         getattr(
             request.user.company,
-            "mobile",
+            "contact_number",
             ""
         ),
 
