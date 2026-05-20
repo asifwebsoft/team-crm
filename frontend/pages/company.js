@@ -66,10 +66,10 @@ export default function Company() {
 
     } catch (err) {
 
-      if (err.response?.data) {
-        setErrors(err.response.data);
+        console.log(err.response.data);
+
+        setErrors(err.response.data || {});
       }
-    }
   };
 
   const inputStyle = (field) => ({

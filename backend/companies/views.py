@@ -18,9 +18,9 @@ class CreateCompanyView(APIView):
                 status=403
             )
 
-        data = request.data.copy()
-
-        serializer = CompanySerializer(data=data)
+        serializer = CompanySerializer(
+            data=request.data
+        )
 
         if serializer.is_valid():
 
@@ -28,13 +28,14 @@ class CreateCompanyView(APIView):
                 owner=request.user
             )
 
-            # ADMIN COMPANY ASSIGN
             request.user.company = company
             request.user.save()
 
             return Response({
                 "message": "Company created"
             })
+
+        print(serializer.errors)
 
         return Response(
             serializer.errors,
