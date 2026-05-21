@@ -505,7 +505,7 @@ class ResetPasswordView(APIView):
             token = request.data.get(
                 "token"
             )
-            print("UID =>", uid)
+            print("UID =>", uidb64)
             print("TOKEN =>", token)
 
             password = request.data.get(
