@@ -487,6 +487,8 @@ class ResetPasswordView(APIView):
             token = request.data.get(
                 "token"
             )
+            print("UID =>", uid)
+            print("TOKEN =>", token)
 
             password = request.data.get(
                 "password"
@@ -502,11 +504,15 @@ class ResetPasswordView(APIView):
                     status=400
                 )
 
-            uid = force_str(
-                urlsafe_base64_decode(
-                    uidb64
+            decoded_uid = force_str(
+                    urlsafe_base64_decode(uid)
                 )
-            )
+
+            print("DECODED UID =>", decoded_uid)
+
+            user = User.objects.get(
+                    pk=decoded_uid
+                )
 
             user = User.objects.get(
                 pk=uid
@@ -558,56 +564,98 @@ class ResetPasswordView(APIView):
 
     def post(self, request):
 
-        uid = request.data.get("uid")
-
-        token = request.data.get("token")
-
-        password = request.data.get(
-            "password"
-        )
-
         try:
 
-            uid = force_str(
-                urlsafe_base64_decode(uid)
+            uidb64 = request.data.get(
+                "uid"
             )
 
-            user = User.objects.get(pk=uid)
+            token = request.data.get(
+                "token"
+            )
 
-        except Exception:
+            password = request.data.get(
+                "password"
+            )
+
+            print("UID =>", uidb64)
+
+            print("TOKEN =>", token)
+
+            if not password:
+
+                return Response(
+                    {
+                        "error":
+                        "Password required"
+                    },
+                    status=400
+                )
+
+            # ✅ DECODE UID
+
+            decoded_uid = force_str(
+                urlsafe_base64_decode(
+                    uidb64
+                )
+            )
+
+            print(
+                "DECODED UID =>",
+                decoded_uid
+            )
+
+            # ✅ GET USER
+
+            user = User.objects.get(
+                pk=decoded_uid
+            )
+
+            # ✅ TOKEN CHECK
+
+            token_valid = (
+                default_token_generator
+                .check_token(
+                    user,
+                    token
+                )
+            )
+
+            print(
+                "TOKEN VALID =>",
+                token_valid
+            )
+
+            if not token_valid:
+
+                return Response(
+                    {
+                        "error":
+                        "Invalid or expired token"
+                    },
+                    status=400
+                )
+
+            # ✅ RESET PASSWORD
+
+            user.set_password(
+                password
+            )
+
+            user.save()
 
             return Response(
                 {
-                    "error":
-                    "Invalid user"
-                },
-                status=400
+                    "message":
+                    "Password reset successful"
+                }
             )
 
-        # ✅ TOKEN CHECK
-
-        if not default_token_generator.check_token(
-            user,
-            token
-        ):
+        except Exception as e:
 
             return Response(
                 {
-                    "error":
-                    "Invalid or expired token"
+                    "error": str(e)
                 },
                 status=400
             )
-
-        # ✅ PASSWORD RESET
-
-        user.set_password(password)
-
-        user.save()
-
-        return Response(
-            {
-                "message":
-                "Password reset successful"
-            }
-        )

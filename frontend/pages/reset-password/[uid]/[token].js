@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
 
 import {
-  useState
+  useState,
+  useEffect
 } from "react";
 
 import {
@@ -20,11 +21,11 @@ export default function ResetPassword() {
 
   const router = useRouter();
 
+  const [uid, setUid] =
+    useState("");
 
-  const uid = router.query.uid || "";
-
-  const token =
-   router.query.token || "";
+  const [token, setToken] =
+    useState("");
 
   const [password, setPassword] =
     useState("");
@@ -36,6 +37,33 @@ export default function ResetPassword() {
 
   const [loading, setLoading] =
     useState(false);
+
+  // ✅ GET UID & TOKEN
+
+  useEffect(() => {
+
+    if (router.isReady) {
+
+      setUid(
+        String(router.query.uid || "")
+      );
+
+      setToken(
+        String(router.query.token || "")
+      );
+
+      console.log(
+        "UID =>",
+        router.query.uid
+      );
+
+      console.log(
+        "TOKEN =>",
+        router.query.token
+      );
+    }
+
+  }, [router.isReady]);
 
   // ✅ RESET PASSWORD
 
@@ -82,10 +110,10 @@ export default function ResetPassword() {
         await API.post(
           "/accounts/reset-password/",
           {
-            uid: String(uid),
-            token: String(token),
+            uid,
+            token,
             password,
-        }
+          }
         );
 
       message.success(
