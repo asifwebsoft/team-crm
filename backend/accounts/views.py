@@ -485,10 +485,21 @@ class ResetPasswordView(APIView):
             token = request.data.get(
                 "token"
             )
+            
 
             password = request.data.get(
                 "password"
             )
+
+            if not password:
+
+                return Response(
+                    {
+                        "error":
+                        "Password required"
+                    },
+                    status=400
+                )
 
             uid = force_str(
                 urlsafe_base64_decode(

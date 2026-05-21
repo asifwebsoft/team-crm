@@ -1,8 +1,7 @@
 import { useRouter } from "next/router";
 
 import {
-  useState,
-  useEffect
+  useState
 } from "react";
 
 import {
@@ -29,7 +28,8 @@ export default function ResetPassword() {
   const [password, setPassword] =
     useState("");
 
-  const [confirmPassword,
+  const [
+    confirmPassword,
     setConfirmPassword
   ] = useState("");
 
@@ -39,6 +39,13 @@ export default function ResetPassword() {
   // ✅ RESET PASSWORD
 
   const handleReset = async () => {
+
+    if (!uid || !token) {
+
+      return message.error(
+        "Invalid reset link"
+      );
+    }
 
     try {
 
@@ -94,11 +101,16 @@ export default function ResetPassword() {
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+        err.response?.data
+      );
 
       message.error(
-        err?.response?.data?.error
+
+        err.response?.data?.error
+
         ||
+
         "Reset failed"
       );
 
