@@ -523,18 +523,14 @@ class ResetPasswordView(APIView):
                 )
 
             decoded_uid = force_str(
-                    urlsafe_base64_decode(uidb64)
-                )
+                        urlsafe_base64_decode(uidb64)
+                    )
 
             print("DECODED UID =>", decoded_uid)
 
             user = User.objects.get(
-                    pk=decoded_uid
-                )
-
-            user = User.objects.get(
-                pk=uidb64
-            )
+                        pk=decoded_uid
+                    )
 
             # ✅ TOKEN CHECK
 
