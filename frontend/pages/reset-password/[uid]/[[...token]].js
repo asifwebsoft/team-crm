@@ -44,22 +44,38 @@ export default function ResetPassword() {
 
     if (router.isReady) {
 
+      const uidValue =
+        router.query.uid || "";
+
+      let tokenValue =
+        router.query.token || "";
+
+      // ✅ HANDLE ARRAY TOKEN
+
+      if (
+        Array.isArray(tokenValue)
+      ) {
+
+        tokenValue =
+          tokenValue.join("/");
+      }
+
       setUid(
-        String(router.query.uid || "")
+        String(uidValue)
       );
 
       setToken(
-        String(router.query.token || "")
+        String(tokenValue)
       );
 
       console.log(
         "UID =>",
-        router.query.uid
+        uidValue
       );
 
       console.log(
         "TOKEN =>",
-        router.query.token
+        tokenValue
       );
     }
 
@@ -120,8 +136,6 @@ export default function ResetPassword() {
         response.data.message
       );
 
-      // ✅ REDIRECT LOGIN
-
       setTimeout(() => {
 
         router.push("/login");
@@ -178,8 +192,6 @@ export default function ResetPassword() {
           Reset Password
         </Title>
 
-        {/* NEW PASSWORD */}
-
         <Input.Password
           placeholder="New Password"
           value={password}
@@ -193,8 +205,6 @@ export default function ResetPassword() {
           }}
         />
 
-        {/* CONFIRM PASSWORD */}
-
         <Input.Password
           placeholder="Confirm Password"
           value={confirmPassword}
@@ -207,8 +217,6 @@ export default function ResetPassword() {
             marginBottom: 20,
           }}
         />
-
-        {/* BUTTON */}
 
         <Button
           type="primary"
