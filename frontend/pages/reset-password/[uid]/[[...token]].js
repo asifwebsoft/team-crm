@@ -47,17 +47,22 @@ export default function ResetPassword() {
       const uidValue =
         router.query.uid || "";
 
-      let tokenValue =
-        router.query.token || "";
-
-      // ✅ HANDLE ARRAY TOKEN
+      // ✅ FIX TOKEN
+      let tokenValue = "";
 
       if (
-        Array.isArray(tokenValue)
+        Array.isArray(
+          router.query.token
+        )
       ) {
 
         tokenValue =
-          tokenValue.join("/");
+          router.query.token.join("");
+
+      } else {
+
+        tokenValue =
+          router.query.token || "";
       }
 
       setUid(
@@ -232,3 +237,4 @@ export default function ResetPassword() {
     </div>
   );
 }
+
