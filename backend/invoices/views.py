@@ -201,9 +201,9 @@ class CreateInvoiceView(APIView):
 
                 total_amount=0,
 
-                cgst=cgst_amount,
+                cgst=0,
 
-                sgst=sgst_amount,
+                sgst=0,
 
                 grand_total=0
             )
@@ -271,9 +271,21 @@ class CreateInvoiceView(APIView):
                     sgst_amount
                 )
 
-            invoice.total_amount = total_amount
+            invoice.total_amount = (
+                total_amount
+            )
 
-            invoice.grand_total = grand_total
+            invoice.cgst = (
+                cgst_amount
+            )
+
+            invoice.sgst = (
+                sgst_amount
+            )
+
+            invoice.grand_total = (
+                grand_total
+            )
 
             invoice.save()
 
