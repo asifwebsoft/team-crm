@@ -14,10 +14,12 @@ from django.utils.http import (
     urlsafe_base64_encode,
     urlsafe_base64_decode
 )
+
 from django.utils.encoding import (
     force_bytes,
     force_str
 )
+from urllib.parse import quote
 
 User = get_user_model()
 
@@ -394,7 +396,9 @@ class DeleteStaffView(APIView):
         
 
 # ✅ FORGOT PASSWORD
-# ✅ FORGOT PASSWORD
+from urllib.parse import quote
+
+
 class ForgotPasswordView(APIView):
 
     def post(self, request):
@@ -419,10 +423,18 @@ class ForgotPasswordView(APIView):
                     status=404
                 )
 
+            # ✅ GENERATE TOKEN
+
             token = (
                 default_token_generator
                 .make_token(user)
             )
+
+            # ✅ ENCODE TOKEN
+
+            safe_token = quote(token)
+
+            # ✅ GENERATE UID
 
             uid = (
                 urlsafe_base64_encode(
@@ -434,7 +446,12 @@ class ForgotPasswordView(APIView):
 
             reset_link = (
                 f"https://team-crm-roan.vercel.app"
-                f"/reset-password/{uid}/{token}"
+                f"/reset-password/{uid}/{safe_token}"
+            )
+
+            print(
+                "RESET LINK =>",
+                reset_link
             )
 
             # ✅ SEND EMAIL
@@ -471,6 +488,7 @@ class ForgotPasswordView(APIView):
                 },
                 status=400
             )
+
 
 
 # ✅ RESET PASSWORD
@@ -560,102 +578,3 @@ class ResetPasswordView(APIView):
                 status=400
             )
     
-class ResetPasswordView(APIView):
-
-    def post(self, request):
-
-        try:
-
-            uidb64 = request.data.get(
-                "uid"
-            )
-
-            token = request.data.get(
-                "token"
-            )
-
-            password = request.data.get(
-                "password"
-            )
-
-            print("UID =>", uidb64)
-
-            print("TOKEN =>", token)
-
-            if not password:
-
-                return Response(
-                    {
-                        "error":
-                        "Password required"
-                    },
-                    status=400
-                )
-
-            # ✅ DECODE UID
-
-            decoded_uid = force_str(
-                urlsafe_base64_decode(
-                    uidb64
-                )
-            )
-
-            print(
-                "DECODED UID =>",
-                decoded_uid
-            )
-
-            # ✅ GET USER
-
-            user = User.objects.get(
-                pk=decoded_uid
-            )
-
-            # ✅ TOKEN CHECK
-
-            token_valid = (
-                default_token_generator
-                .check_token(
-                    user,
-                    token
-                )
-            )
-
-            print(
-                "TOKEN VALID =>",
-                token_valid
-            )
-
-            if not token_valid:
-
-                return Response(
-                    {
-                        "error":
-                        "Invalid or expired token"
-                    },
-                    status=400
-                )
-
-            # ✅ RESET PASSWORD
-
-            user.set_password(
-                password
-            )
-
-            user.save()
-
-            return Response(
-                {
-                    "message":
-                    "Password reset successful"
-                }
-            )
-
-        except Exception as e:
-
-            return Response(
-                {
-                    "error": str(e)
-                },
-                status=400
-            )
