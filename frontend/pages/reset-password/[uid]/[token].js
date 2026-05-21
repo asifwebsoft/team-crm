@@ -20,10 +20,12 @@ export default function ResetPassword() {
 
   const router = useRouter();
 
-  const {
-    uid,
-    token
-  } = router.query;
+  const router = useRouter();
+
+  const uid = router.query.uid || "";
+
+  const token =
+   router.query.token || "";
 
   const [password, setPassword] =
     useState("");
@@ -81,10 +83,10 @@ export default function ResetPassword() {
         await API.post(
           "/accounts/reset-password/",
           {
-            uid,
-            token,
+            uid: String(uid),
+            token: String(token),
             password,
-          }
+        }
         );
 
       message.success(
