@@ -394,6 +394,7 @@ class DeleteStaffView(APIView):
         
 
 # ✅ FORGOT PASSWORD
+# ✅ FORGOT PASSWORD
 class ForgotPasswordView(APIView):
 
     def post(self, request):
@@ -432,11 +433,8 @@ class ForgotPasswordView(APIView):
             # ✅ FRONTEND RESET LINK
 
             reset_link = (
-
-                reset_link = (
-                    f"https://team-crm-roan.vercel.app"
-                    f"/reset-password/{uid}/{token}"
-                )
+                f"https://team-crm-roan.vercel.app"
+                f"/reset-password/{uid}/{token}"
             )
 
             # ✅ SEND EMAIL
@@ -462,6 +460,88 @@ class ForgotPasswordView(APIView):
                 {
                     "message":
                     "Reset link sent successfully"
+                }
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
+            )
+
+
+# ✅ RESET PASSWORD
+class ResetPasswordView(APIView):
+
+    def post(self, request):
+
+        try:
+
+            uidb64 = request.data.get(
+                "uid"
+            )
+
+            token = request.data.get(
+                "token"
+            )
+
+            password = request.data.get(
+                "password"
+            )
+
+            if not password:
+
+                return Response(
+                    {
+                        "error":
+                        "Password required"
+                    },
+                    status=400
+                )
+
+            uid = force_str(
+                urlsafe_base64_decode(
+                    uidb64
+                )
+            )
+
+            user = User.objects.get(
+                pk=uid
+            )
+
+            # ✅ TOKEN CHECK
+
+            if not (
+                default_token_generator
+                .check_token(
+                    user,
+                    token
+                )
+            ):
+
+                return Response(
+                    {
+                        "error":
+                        "Invalid or expired token"
+                    },
+                    status=400
+                )
+
+            # ✅ RESET PASSWORD
+
+            user.set_password(
+                password
+            )
+
+            user.save()
+
+            return Response(
+                {
+                    "message":
+                    "Password reset successful"
                 }
             )
 
