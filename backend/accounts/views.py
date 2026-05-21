@@ -10,8 +10,14 @@ from .serializers import SignupSerializer
 from .models import LoginActivity
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
+from django.utils.http import (
+    urlsafe_base64_encode,
+    urlsafe_base64_decode
+)
+from django.utils.encoding import (
+    force_bytes,
+    force_str
+)
 
 User = get_user_model()
 
@@ -392,30 +398,146 @@ class ForgotPasswordView(APIView):
 
     def post(self, request):
 
-        email = request.data.get("email")
+        try:
 
-        user = User.objects.filter(email=email).first()
-
-        if not user:
-            return Response(
-                {"error": "Email not found"},
-                status=404
+            email = request.data.get(
+                "email"
             )
 
-        token = default_token_generator.make_token(user)
+            user = User.objects.filter(
+                email=email
+            ).first()
 
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
+            if not user:
 
-        reset_link = f"http://localhost:3000/reset-password/{uid}/{token}"
+                return Response(
+                    {
+                        "error":
+                        "Email not found"
+                    },
+                    status=404
+                )
 
-        send_mail(
-            "Reset Your Password",
-            f"Click here to reset password:\n{reset_link}",
-            "noreply@crm.com",
-            [email],
-            fail_silently=False,
-        )
+            token = (
+                default_token_generator
+                .make_token(user)
+            )
 
-        return Response({
-            "message": "Reset link sent to email"
-        })
+            uid = (
+                urlsafe_base64_encode(
+                    force_bytes(user.pk)
+                )
+            )
+
+            # ✅ FRONTEND RESET LINK
+
+            reset_link = (
+
+                f"https://team-crm-roan.vercel.app/"
+                f"reset-password/{uid}/{token}"
+            )
+
+            # ✅ SEND EMAIL
+
+            send_mail(
+
+                "Reset Your Password",
+
+                (
+                    "Click the link below "
+                    "to reset your password:\n\n"
+                    f"{reset_link}"
+                ),
+
+                "noreply@crm.com",
+
+                [email],
+
+                fail_silently=False,
+            )
+
+            return Response(
+                {
+                    "message":
+                    "Reset link sent successfully"
+                }
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
+            )
+    
+class ResetPasswordView(APIView):
+
+    def post(self, request):
+
+        try:
+
+            uidb64 = request.data.get(
+                "uid"
+            )
+
+            token = request.data.get(
+                "token"
+            )
+
+            password = request.data.get(
+                "password"
+            )
+
+            uid = force_str(
+                urlsafe_base64_decode(
+                    uidb64
+                )
+            )
+
+            user = User.objects.get(
+                pk=uid
+            )
+
+            # ✅ TOKEN CHECK
+
+            if not (
+                default_token_generator
+                .check_token(
+                    user,
+                    token
+                )
+            ):
+
+                return Response(
+                    {
+                        "error":
+                        "Invalid or expired token"
+                    },
+                    status=400
+                )
+
+            # ✅ RESET PASSWORD
+
+            user.set_password(
+                password
+            )
+
+            user.save()
+
+            return Response(
+                {
+                    "message":
+                    "Password reset successful"
+                }
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
+            )
