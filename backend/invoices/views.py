@@ -458,11 +458,15 @@ class InvoiceDetailView(APIView):
 
             if request.user.role == "staff":
 
-                if invoice.created_by != request.user:
+                if (
+                    invoice.created_by
+                    != request.user
+                ):
 
                     return Response(
                         {
-                            "error": "Permission denied"
+                            "error":
+                            "Permission denied"
                         },
                         status=403
                     )
@@ -472,126 +476,156 @@ class InvoiceDetailView(APIView):
             elif request.user.role == "manager":
 
                 is_team_invoice = (
-                    invoice.created_by.manager ==
-                    request.user
+
+                    invoice.created_by.manager
+                    == request.user
+
                     if invoice.created_by.manager
+
                     else False
                 )
 
                 if (
-                    invoice.created_by != request.user
+
+                    invoice.created_by
+                    != request.user
+
                     and not is_team_invoice
+
                 ):
 
                     return Response(
                         {
-                            "error": "Permission denied"
+                            "error":
+                            "Permission denied"
                         },
                         status=403
                     )
+
+            # ✅ ITEMS
 
             items = []
 
             for item in invoice.items.all():
 
                 items.append({
-                    "product_name": item.product_name,
-                    "quantity": item.quantity,
-                    "price": item.price,
-                    "subtotal": item.subtotal,
+
+                    "product_name":
+                        item.product_name,
+
+                    "quantity":
+                        item.quantity,
+
+                    "price":
+                        item.price,
+
+                    "subtotal":
+                        item.subtotal,
                 })
 
-            # ✅ GST CALCULATION
+            # ✅ GST VALUES
 
-            subtotal = invoice.total_amount
-
-            cgst = round(
-                (subtotal * 9) / 100,
-                2
+            subtotal = (
+                invoice.total_amount
             )
 
-            sgst = round(
-                (subtotal * 9) / 100,
-                2
+            cgst = (
+                invoice.cgst
             )
 
-            grand_total = round(
-                subtotal + cgst + sgst,
-                2
+            sgst = (
+                invoice.sgst
             )
+
+            grand_total = (
+
+                invoice.grand_total
+
+                or
+
+                subtotal
+            )
+
+            # ✅ RESPONSE DATA
 
             data = {
 
-            "id": invoice.id,
+                "id":
+                    invoice.id,
 
-            "invoice_number":
-                invoice.invoice_number,
+                "invoice_number":
+                    invoice.invoice_number,
 
-            "cgst": cgst,
+                "customer_name":
+                    invoice.customer_name,
 
-            "sgst": sgst,
+                "phone":
+                    invoice.phone,
 
-            "grand_total": grand_total,
+                "address":
+                    invoice.address,
 
-            "customer_name":
-                invoice.customer_name,
+                "status":
+                    invoice.status,
 
-            "phone":
-                invoice.phone,
+                "total_amount":
+                    invoice.total_amount,
 
-            "address":
-                invoice.address,
+                "cgst":
+                    cgst,
 
-            "status":
-                invoice.status,
+                "sgst":
+                    sgst,
 
-            "total_amount":
-                invoice.total_amount,
+                "grand_total":
+                    grand_total,
 
-            "created_by":
-                invoice.created_by.full_name,
+                "created_by":
+                    invoice.created_by.full_name,
 
-            "created_at":
-                invoice.created_at.strftime(
-                    "%d-%m-%Y %I:%M %p"
-        ),
+                "created_at":
+                    invoice.created_at.strftime(
+                        "%d-%m-%Y %I:%M %p"
+                    ),
 
-    # ✅ COMPANY DETAILS
+                # ✅ COMPANY DETAILS
 
-    "company_name":
-        request.user.company.name,
+                "company_name":
+                    request.user.company.name,
 
-    "company_address":
-        getattr(
-            request.user.company,
-            "address",
-            ""
-        ),
+                "company_address":
+                    getattr(
+                        request.user.company,
+                        "address",
+                        ""
+                    ),
 
-    "company_email":
-        getattr(
-            request.user.company,
-            "email",
-            ""
-        ),
+                "company_email":
+                    getattr(
+                        request.user.company,
+                        "email",
+                        ""
+                    ),
 
-    "company_mobile":
-        getattr(
-            request.user.company,
-            "contact_number",
-            ""
-        ),
+                "company_mobile":
+                    getattr(
+                        request.user.company,
+                        "contact_number",
+                        ""
+                    ),
 
-    "company_gstin":
-        getattr(
-            request.user.company,
-            "gstin",
-            ""
-        ),
+                "company_gstin":
+                    getattr(
+                        request.user.company,
+                        "gstin",
+                        ""
+                    ),
 
-    "items":
-        items,
-}
+                # ✅ ITEMS
+
+                "items":
+                    items,
+            }
 
             return Response(data)
 
@@ -599,9 +633,19 @@ class InvoiceDetailView(APIView):
 
             return Response(
                 {
-                    "error": "Invoice not found"
+                    "error":
+                    "Invoice not found"
                 },
                 status=404
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
             )
 
 class UpdateInvoiceView(APIView):
