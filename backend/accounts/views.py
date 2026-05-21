@@ -433,8 +433,10 @@ class ForgotPasswordView(APIView):
 
             reset_link = (
 
-                f"https://team-crm-roan.vercel.app/"
-                f"reset-password/{uid}/{token}"
+                reset_link = (
+                    f"https://team-crm-roan.vercel.app"
+                    f"/reset-password/{uid}/{token}"
+                )
             )
 
             # ✅ SEND EMAIL
