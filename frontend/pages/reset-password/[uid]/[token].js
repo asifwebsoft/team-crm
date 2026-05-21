@@ -20,7 +20,6 @@ export default function ResetPassword() {
 
   const router = useRouter();
 
-  const router = useRouter();
 
   const uid = router.query.uid || "";
 
