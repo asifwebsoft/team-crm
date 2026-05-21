@@ -44,6 +44,24 @@ class Invoice(models.Model):
         default=0
     )
 
+    cgst = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+
+    sgst = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+
+    grand_total = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,

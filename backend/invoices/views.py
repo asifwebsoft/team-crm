@@ -75,7 +75,8 @@ class CreateInvoiceView(APIView):
 
                 return Response(
                     {
-                        "error": "At least one product required"
+                        "error":
+                        "At least one product required"
                     },
                     status=400
                 )
@@ -109,7 +110,8 @@ class CreateInvoiceView(APIView):
 
                     return Response(
                         {
-                            "error": "Product name required"
+                            "error":
+                            "Product name required"
                         },
                         status=400
                     )
@@ -118,7 +120,8 @@ class CreateInvoiceView(APIView):
 
                     return Response(
                         {
-                            "error": "Quantity must be greater than 0"
+                            "error":
+                            "Quantity must be greater than 0"
                         },
                         status=400
                     )
@@ -127,7 +130,8 @@ class CreateInvoiceView(APIView):
 
                     return Response(
                         {
-                            "error": "Price must be greater than 0"
+                            "error":
+                            "Price must be greater than 0"
                         },
                         status=400
                     )
@@ -142,7 +146,9 @@ class CreateInvoiceView(APIView):
 
             if last_invoice:
 
-                next_id = last_invoice.id + 1
+                next_id = (
+                    last_invoice.id + 1
+                )
 
             else:
 
@@ -152,22 +158,57 @@ class CreateInvoiceView(APIView):
                 f"INV-{next_id:04d}"
             )
 
+            # ✅ GST VALUES
+
+            cgst = float(
+                data.get(
+                    "cgst",
+                    0
+                ) or 0
+            )
+
+            sgst = float(
+                data.get(
+                    "sgst",
+                    0
+                ) or 0
+            )
+
             # ✅ CREATE INVOICE
 
             invoice = Invoice.objects.create(
-                invoice_number=invoice_number,
-                customer_name=customer_name,
+
+                invoice_number=
+                    invoice_number,
+
+                customer_name=
+                    customer_name,
+
                 phone=phone,
+
                 address=address,
+
                 status=data.get(
                     "status",
                     "pending"
                 ),
-                created_by=request.user,
-                company=request.user.company
+
+                created_by=
+                    request.user,
+
+                company=
+                    request.user.company,
+
+                total_amount=0,
+
+                cgst=cgst,
+
+                sgst=sgst,
+
+                grand_total=0
             )
 
-            # ✅ CREATE INVOICE ITEMS
+            # ✅ CREATE ITEMS
 
             for item in items:
 
@@ -185,41 +226,81 @@ class CreateInvoiceView(APIView):
                     )
                 )
 
-                subtotal = quantity * price
+                subtotal = (
+                    quantity * price
+                )
 
                 total_amount += subtotal
 
                 InvoiceItem.objects.create(
+
                     invoice=invoice,
-                    product_name=item.get(
-                        "product_name"
-                    ),
+
+                    product_name=
+                        item.get(
+                            "product_name"
+                        ),
+
                     quantity=quantity,
+
                     price=price,
+
                     subtotal=subtotal
                 )
 
+            # ✅ FINAL TOTALS
+
+            grand_total = (
+                total_amount +
+                cgst +
+                sgst
+            )
+
             invoice.total_amount = total_amount
+
+            invoice.grand_total = grand_total
 
             invoice.save()
 
             return Response(
+
                 {
-                    "message": "Invoice created successfully",
-                    "invoice_id": invoice.id,
-                    "invoice_number": invoice.invoice_number,
-                    "total_amount": invoice.total_amount
+                    "message":
+                        "Invoice created successfully",
+
+                    "invoice_id":
+                        invoice.id,
+
+                    "invoice_number":
+                        invoice.invoice_number,
+
+                    "total_amount":
+                        invoice.total_amount,
+
+                    "cgst":
+                        invoice.cgst,
+
+                    "sgst":
+                        invoice.sgst,
+
+                    "grand_total":
+                        invoice.grand_total,
                 },
-                status=status.HTTP_201_CREATED
+
+                status=
+                    status.HTTP_201_CREATED
             )
 
         except Exception as e:
 
             return Response(
+
                 {
                     "error": str(e)
                 },
-                status=status.HTTP_400_BAD_REQUEST
+
+                status=
+                    status.HTTP_400_BAD_REQUEST
             )
 
 
