@@ -21,6 +21,7 @@ from django.utils.encoding import (
 )
 from urllib.parse import quote
 
+
 User = get_user_model()
 
 
@@ -396,9 +397,6 @@ class DeleteStaffView(APIView):
         
 
 # ✅ FORGOT PASSWORD
-from urllib.parse import quote
-
-
 class ForgotPasswordView(APIView):
 
     def post(self, request):
@@ -430,10 +428,6 @@ class ForgotPasswordView(APIView):
                 .make_token(user)
             )
 
-            # ✅ ENCODE TOKEN
-
-            safe_token = quote(token)
-
             # ✅ GENERATE UID
 
             uid = (
@@ -442,11 +436,13 @@ class ForgotPasswordView(APIView):
                 )
             )
 
-            # ✅ FRONTEND RESET LINK
+            # ✅ RESET LINK
 
             reset_link = (
+
                 f"https://team-crm-roan.vercel.app"
-                f"/reset-password/{uid}/{safe_token}"
+
+                f"/reset-password/{uid}/{token}"
             )
 
             print(
@@ -461,8 +457,7 @@ class ForgotPasswordView(APIView):
                 "Reset Your Password",
 
                 (
-                    "Click the link below "
-                    "to reset your password:\n\n"
+                    "Reset Password Link:\n\n"
                     f"{reset_link}"
                 ),
 
