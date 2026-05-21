@@ -521,6 +521,8 @@ export default function InvoiceDetailPage() {
 
             {/* TOTAL */}
 
+          {/* TOTAL */}
+
 <div
   style={{
     marginTop: 30,
@@ -557,53 +559,55 @@ export default function InvoiceDetailPage() {
 
     </div>
 
-    {/* GST SECTION */}
+    {/* CGST */}
 
-    {invoice.cgst > 0 && (
+    {Number(invoice.cgst) > 0 && (
 
-      <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          marginBottom: 10,
+        }}
+      >
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            marginBottom: 10,
-          }}
-        >
+        <Text strong>
+          CGST
+        </Text>
 
-          <Text strong>
-            CGST (9%)
-          </Text>
+        <Text>
+          ₹{invoice.cgst}
+        </Text>
 
-          <Text>
-            ₹{invoice.cgst}
-          </Text>
-
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent:
-              "space-between",
-            marginBottom: 10,
-          }}
-        >
-
-          <Text strong>
-            SGST (9%)
-          </Text>
-
-          <Text>
-            ₹{invoice.sgst}
-          </Text>
-
-        </div>
-
-      </>
+      </div>
 
     )}
+
+    {/* SGST */}
+
+    {Number(invoice.sgst) > 0 && (
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          marginBottom: 10,
+        }}
+      >
+
+        <Text strong>
+          SGST
+        </Text>
+
+        <Text>
+          ₹{invoice.sgst}
+        </Text>
+
+        </div>
+
+      )}
 
     <Divider
       style={{
@@ -648,8 +652,7 @@ export default function InvoiceDetailPage() {
 
   </div>
 
-</div>
-
+  </div>
             
 
             <Divider />
