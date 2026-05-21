@@ -201,9 +201,9 @@ class CreateInvoiceView(APIView):
 
                 total_amount=0,
 
-                cgst=cgst,
+                cgst=cgst_amount,
 
-                sgst=sgst,
+                sgst=sgst_amount,
 
                 grand_total=0
             )
@@ -248,13 +248,28 @@ class CreateInvoiceView(APIView):
                     subtotal=subtotal
                 )
 
-            # ✅ FINAL TOTALS
+           
 
-            grand_total = (
-                total_amount +
-                cgst +
-                sgst
-            )
+            # ✅ GST AMOUNTS
+
+                cgst_amount = (
+                    total_amount * cgst
+                ) / 100
+
+                sgst_amount = (
+                    total_amount * sgst
+                ) / 100
+
+                # ✅ GRAND TOTAL
+
+                grand_total = (
+
+                    total_amount +
+
+                    cgst_amount +
+
+                    sgst_amount
+                )
 
             invoice.total_amount = total_amount
 
