@@ -17,6 +17,7 @@ setuptools = "*"
 cashfree-pg = "*"
 django = "*"
 djangorestframework = "*"
+resend = "*"
 
 [dev-packages]
 
