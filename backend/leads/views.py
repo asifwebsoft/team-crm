@@ -109,33 +109,60 @@ class DashboardView(APIView):
 
         return Response({
 
-            "total_leads": leads.count(),
+    "total_leads": leads.count(),
 
-            "today_followups": [
-                {
-                    "id": l.id,
-                    "name": l.customer_name,
-                }
-                for l in today_followups
-            ],
+    "today_followups": [
 
-            "upcoming_followups": [
-                {
-                    "id": l.id,
-                    "name": l.customer_name,
-                }
-                for l in upcoming_followups
-            ],
+        {
+            "id": l.id,
 
-            "overdue_followups": [
-                {
-                    "id": l.id,
-                    "name": l.customer_name,
-                }
-                for l in overdue_followups
-            ],
+            "name": l.customer_name,
 
-        })
+            "phone": l.phone,
+
+            "date": str(
+                l.followup_date
+            ),
+        }
+
+        for l in today_followups
+    ],
+
+    "upcoming_followups": [
+
+        {
+            "id": l.id,
+
+            "name": l.customer_name,
+
+            "phone": l.phone,
+
+            "date": str(
+                l.followup_date
+            ),
+        }
+
+        for l in upcoming_followups
+    ],
+
+    "overdue_followups": [
+
+        {
+            "id": l.id,
+
+            "name": l.customer_name,
+
+            "phone": l.phone,
+
+            "date": str(
+                l.followup_date
+            ),
+        }
+
+        for l in overdue_followups
+    ],
+
+})
 
 # ✅ MY LEADS
 class MyLeadsView(APIView):
