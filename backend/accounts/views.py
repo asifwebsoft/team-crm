@@ -399,8 +399,7 @@ class DeleteStaffView(APIView):
             return Response({"error": "User not found"}, status=404)
         
 
-# ✅ FORGOT PASSWORD
-```python id="g7p2xw"
+
 # ✅ FORGOT PASSWORD
 
 class ForgotPasswordView(APIView):
