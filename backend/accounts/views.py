@@ -21,6 +21,8 @@ from django.utils.encoding import (
     force_str
 )
 from urllib.parse import quote
+import resend
+import os
 
 
 User = get_user_model()
@@ -457,21 +459,39 @@ class ForgotPasswordView(APIView):
 
             # ✅ SEND EMAIL
 
-            send_mail(
+            resend.api_key = os.getenv(
+                "RESEND_API_KEY"
+            )
 
-                "Reset Your Password",
+            resend.Emails.send({
 
-                (
-                    "Reset Password Link:\n\n"
-                    f"{reset_link}"
-                ),
+                "from":
+                "onboarding@resend.dev",
 
-                "noreply@crm.com",
-
+                "to":
                 [email],
 
-                fail_silently=False,
-            )
+                "subject":
+                "Reset Your Password",
+
+                "html":
+                f"""
+
+                <h2>
+                Reset Password
+                </h2>
+
+                <p>
+                Click below to reset
+                your password:
+                </p>
+
+                <a href="{reset_link}">
+                Reset Password
+                </a>
+
+                """
+            })
 
             return Response(
                 {
@@ -509,9 +529,8 @@ class ResetPasswordView(APIView):
             token = base64.urlsafe_b64decode(
                 token.encode()
             ).decode()
+
             
-            print("UID =>", uidb64)
-            print("TOKEN =>", token)
 
             password = request.data.get(
                 "password"
@@ -531,7 +550,7 @@ class ResetPasswordView(APIView):
                         urlsafe_base64_decode(uidb64)
                     )
 
-            print("DECODED UID =>", decoded_uid)
+            
 
             user = User.objects.get(
                         pk=decoded_uid

@@ -73,15 +73,7 @@ export default function ResetPassword() {
         String(tokenValue)
       );
 
-      console.log(
-        "UID =>",
-        uidValue
-      );
-
-      console.log(
-        "TOKEN =>",
-        tokenValue
-      );
+      
     }
 
   }, [router.isReady]);
