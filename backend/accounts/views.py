@@ -463,6 +463,11 @@ class ForgotPasswordView(APIView):
                 "RESEND_API_KEY"
             )
 
+            print(
+                "RESEND KEY =>",
+                os.getenv("RESEND_API_KEY")
+            )
+
             resend.Emails.send({
 
                 "from":
