@@ -13,8 +13,6 @@ import {
   message
 } from "antd";
 
-import API from "../../../services/api";
-
 const { Title } = Typography;
 
 export default function ResetPassword() {
@@ -47,7 +45,6 @@ export default function ResetPassword() {
       const uidValue =
         router.query.uid || "";
 
-      // ✅ FIX TOKEN
       let tokenValue = "";
 
       if (
@@ -72,8 +69,6 @@ export default function ResetPassword() {
       setToken(
         String(tokenValue)
       );
-
-      
     }
 
   }, [router.isReady]);
@@ -119,39 +114,57 @@ export default function ResetPassword() {
 
       setLoading(true);
 
+      // ✅ RESET PASSWORD API
+
       const response =
-        await API.post(
-          "/accounts/reset-password/",
+        await fetch(
+
+          "https://team-crm-backend.onrender.com/api/accounts/reset-password/",
+
           {
-            uid,
-            token,
-            password,
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+              "application/json",
+            },
+
+            body: JSON.stringify({
+              uid,
+              token,
+              password,
+            }),
           }
         );
 
-      message.success(
-        response.data.message
-      );
+      const data =
+        await response.json();
 
-      setTimeout(() => {
+      if (response.ok) {
 
-        router.push("/login");
+        message.success(
+          data.message
+        );
 
-      }, 1500);
+        setTimeout(() => {
+
+          router.push("/login");
+
+        }, 1500);
+
+      } else {
+
+        message.error(
+          data.error
+          ||
+          "Reset failed"
+        );
+      }
 
     } catch (err) {
 
-      console.log(
-        err.response?.data
-      );
-
       message.error(
-
-        err.response?.data?.error
-
-        ||
-
-        "Reset failed"
+        "Server error"
       );
 
     } finally {
@@ -229,4 +242,3 @@ export default function ResetPassword() {
     </div>
   );
 }
-
