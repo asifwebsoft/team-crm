@@ -10,6 +10,7 @@ from .serializers import SignupSerializer
 from .models import LoginActivity
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
+import base64
 from django.utils.http import (
     urlsafe_base64_encode,
     urlsafe_base64_decode
@@ -423,10 +424,14 @@ class ForgotPasswordView(APIView):
 
             # ✅ GENERATE TOKEN
 
-            token = (
+            raw_token = (
                 default_token_generator
                 .make_token(user)
             )
+
+            token = base64.urlsafe_b64encode(
+                raw_token.encode()
+            ).decode()
 
             # ✅ GENERATE UID
 
@@ -500,6 +505,11 @@ class ResetPasswordView(APIView):
             token = request.data.get(
                 "token"
             )
+
+            token = base64.urlsafe_b64decode(
+                token.encode()
+            ).decode()
+            
             print("UID =>", uidb64)
             print("TOKEN =>", token)
 
