@@ -4,6 +4,8 @@ import {
   Row,
   Col,
   Card,
+  Modal,
+  Button
 } from "antd";
 
 import API from "../services/api";
@@ -11,6 +13,16 @@ import API from "../services/api";
 import MainLayout from "../components/Layout";
 
 export default function Dashboard() {
+
+  const [
+    followupModal,
+    setFollowupModal
+  ] = useState(false);
+
+  const [
+    todayFollowups,
+    setTodayFollowups
+  ] = useState([]);
 
   const [data, setData] = useState({});
 
@@ -71,6 +83,19 @@ export default function Dashboard() {
 
         setData(res.data);
 
+        if (
+        res.data.today_followups
+        &&
+          res.data.today_followups.length > 0
+        ) {
+
+          setTodayFollowups(
+            res.data.today_followups
+          );
+
+          setFollowupModal(true);
+        }
+
       })
 
       .catch((err) => {
@@ -100,6 +125,8 @@ export default function Dashboard() {
         }
 
       });
+
+      
 
   }, []);
 
@@ -398,6 +425,97 @@ export default function Dashboard() {
         )}
 
       </div>
+
+      <Modal
+
+          title="Today's Followups"
+
+          open={followupModal}
+
+          footer={null}
+
+          onCancel={() =>
+            setFollowupModal(false)
+          }
+
+          width={
+            isMobile
+              ? "95%"
+              : 650
+          }
+        >
+
+          {
+
+            todayFollowups.map((item) => (
+
+              <div
+
+                key={item.id}
+
+                style={{
+
+                  border:
+                    "1px solid #eee",
+
+                  borderRadius: 12,
+
+                  padding: 12,
+
+                  marginBottom: 12,
+
+                  background: "#fafafa",
+                }}
+              >
+
+                <p>
+                  <strong>
+                    Customer:
+                  </strong>
+
+                  {" "}
+
+                  {item.name}
+                </p>
+
+                <p>
+                  <strong>
+                    Phone:
+                  </strong>
+
+                  {" "}
+
+                  {item.phone}
+                </p>
+
+                <p>
+                  <strong>
+                    Followup Date:
+                  </strong>
+
+                  {" "}
+
+                  {item.date}
+                </p>
+
+              </div>
+            ))
+          }
+
+          <Button
+
+            type="primary"
+
+            block
+
+            onClick={() =>
+              setFollowupModal(false)
+            }
+          >
+            Close
+          </Button>
+
+        </Modal>
 
     </MainLayout>
 
