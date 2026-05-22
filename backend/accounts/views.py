@@ -400,6 +400,9 @@ class DeleteStaffView(APIView):
         
 
 # ✅ FORGOT PASSWORD
+```python id="g7p2xw"
+# ✅ FORGOT PASSWORD
+
 class ForgotPasswordView(APIView):
 
     def post(self, request):
@@ -457,7 +460,7 @@ class ForgotPasswordView(APIView):
                 reset_link
             )
 
-            # ✅ SEND EMAIL
+            # ✅ RESEND API
 
             resend.api_key = os.getenv(
                 "RESEND_API_KEY"
@@ -468,35 +471,23 @@ class ForgotPasswordView(APIView):
                 os.getenv("RESEND_API_KEY")
             )
 
+            # ✅ SEND EMAIL
             resend.Emails.send({
 
-                "from":
-                "onboarding@resend.dev",
+    "from":
+    "onboarding@resend.dev",
 
-                "to":
-                [email],
+    "to":
+    [email],
 
-                "subject":
-                "Reset Your Password",
+    "subject":
+    "Reset Your Password",
 
-                "html":
-                f"""
-
-                <h2>
-                Reset Password
-                </h2>
-
-                <p>
-                Click below to reset
-                your password:
-                </p>
-
-                <a href="{reset_link}">
-                Reset Password
-                </a>
-
-                """
-            })
+    "html":
+    f"<h2>Reset Password</h2>"
+    f"<p>Click below to reset your password:</p>"
+    f"<a href='{reset_link}'>Reset Password</a>"
+})
 
             return Response(
                 {
@@ -514,9 +505,8 @@ class ForgotPasswordView(APIView):
                 status=400
             )
 
-
-
 # ✅ RESET PASSWORD
+
 class ResetPasswordView(APIView):
 
     def post(self, request):
@@ -531,11 +521,13 @@ class ResetPasswordView(APIView):
                 "token"
             )
 
-            token = base64.urlsafe_b64decode(
-                token.encode()
-            ).decode()
+            # ✅ DECODE TOKEN
 
-            
+            token = (
+                base64.urlsafe_b64decode(
+                    token.encode()
+                ).decode()
+            )
 
             password = request.data.get(
                 "password"
@@ -551,15 +543,19 @@ class ResetPasswordView(APIView):
                     status=400
                 )
 
-            decoded_uid = force_str(
-                        urlsafe_base64_decode(uidb64)
-                    )
+            # ✅ DECODE UID
 
-            
+            decoded_uid = force_str(
+                urlsafe_base64_decode(
+                    uidb64
+                )
+            )
+
+            # ✅ GET USER
 
             user = User.objects.get(
-                        pk=decoded_uid
-                    )
+                pk=decoded_uid
+            )
 
             # ✅ TOKEN CHECK
 
@@ -602,4 +598,4 @@ class ResetPasswordView(APIView):
                 },
                 status=400
             )
-    
+
