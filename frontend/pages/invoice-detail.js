@@ -10,6 +10,7 @@ import {
   Col,
   Divider,
   Space,
+  Button,
 } from "antd";
 
 import MainLayout from "../components/Layout";
@@ -18,6 +19,64 @@ import API from "../services/api";
 const { Title, Text } = Typography;
 
 export default function InvoiceDetailPage() {
+
+  const shareOnWhatsApp = () => {
+
+  if (!invoice) return;
+
+  let productsText = "";
+
+  invoice.items.forEach((item) => {
+
+    productsText +=
+      `• ${item.product_name}
+Qty: ${item.quantity}
+Price: ₹${item.price}
+Total: ₹${item.subtotal}
+
+`;
+  });
+
+  const message = `
+
+🧾 Invoice Details
+
+Invoice No:
+${invoice.invoice_number}
+
+Customer:
+${invoice.customer_name}
+
+Phone:
+${invoice.phone}
+
+Products:
+${productsText}
+
+Subtotal:
+₹${invoice.total_amount}
+
+CGST:
+₹${invoice.cgst}
+
+SGST:
+₹${invoice.sgst}
+
+Grand Total:
+₹${invoice.grand_total}
+
+Thank you for your business.
+`;
+
+  const whatsappUrl =
+
+    `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+  window.open(
+    whatsappUrl,
+    "_blank"
+  );
+};
 
   const router = useRouter();
 
@@ -129,6 +188,13 @@ export default function InvoiceDetailPage() {
         `${invoice.invoice_number}.pdf`
       );
     };
+
+   <Button
+  type="primary"
+  onClick={shareOnWhatsApp}
+>
+  Share on WhatsApp
+</Button>
 
   // ✅ TABLE COLUMNS
 
