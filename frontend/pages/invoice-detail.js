@@ -11,72 +11,15 @@ import {
   Divider,
   Space,
   Button,
+  Text,
 } from "antd";
 
 import MainLayout from "../components/Layout";
 import API from "../services/api";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function InvoiceDetailPage() {
-
-  const shareOnWhatsApp = () => {
-
-  if (!invoice) return;
-
-  let productsText = "";
-
-  invoice.items.forEach((item) => {
-
-    productsText +=
-      `• ${item.product_name}
-Qty: ${item.quantity}
-Price: ₹${item.price}
-Total: ₹${item.subtotal}
-
-`;
-  });
-
-  const message = `
-
-🧾 Invoice Details
-
-Invoice No:
-${invoice.invoice_number}
-
-Customer:
-${invoice.customer_name}
-
-Phone:
-${invoice.phone}
-
-Products:
-${productsText}
-
-Subtotal:
-₹${invoice.total_amount}
-
-CGST:
-₹${invoice.cgst}
-
-SGST:
-₹${invoice.sgst}
-
-Grand Total:
-₹${invoice.grand_total}
-
-Thank you for your business.
-`;
-
-  const whatsappUrl =
-
-    `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-  window.open(
-    whatsappUrl,
-    "_blank"
-  );
-};
 
   const router = useRouter();
 
@@ -112,7 +55,70 @@ Thank you for your business.
 
   }, [id]);
 
-  // ✅ PRINT ONLY INVOICE
+  // ✅ WHATSAPP SHARE
+
+  const shareOnWhatsApp = () => {
+
+    if (!invoice) return;
+
+    let productsText = "";
+
+    invoice.items.forEach((item) => {
+
+      productsText +=
+        `• ${item.product_name}
+
+Qty: ${item.quantity}
+
+Price: ₹${item.price}
+
+Total: ₹${item.subtotal}
+
+`;
+    });
+
+    const cleanPhone =
+      invoice.phone.replace(/\D/g, "");
+
+    const message = `
+
+🧾 Invoice Details
+
+Invoice No:
+${invoice.invoice_number}
+
+Customer:
+${invoice.customer_name}
+
+Products:
+${productsText}
+
+Subtotal:
+₹${invoice.total_amount}
+
+CGST:
+₹${invoice.cgst}
+
+SGST:
+₹${invoice.sgst}
+
+Grand Total:
+₹${invoice.grand_total}
+
+Thank you for your business.
+`;
+
+    const whatsappUrl =
+
+      `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+    window.open(
+      whatsappUrl,
+      "_blank"
+    );
+  };
+
+  // ✅ PRINT
 
   const handlePrint = () => {
 
@@ -189,20 +195,18 @@ Thank you for your business.
       );
     };
 
-   <Button
-  type="primary"
-  onClick={shareOnWhatsApp}
->
-  Share on WhatsApp
-</Button>
-
-  // ✅ TABLE COLUMNS
+  // ✅ TABLE
 
   const columns = [
 
     {
       title: "Product",
       dataIndex: "product_name",
+    },
+
+    {
+      title: "Unit",
+      dataIndex: "unit",
     },
 
     {
@@ -225,7 +229,6 @@ Thank you for your business.
       render: (subtotal) =>
         `₹${subtotal}`,
     },
-
   ];
 
   // ✅ LOADING
@@ -281,7 +284,7 @@ Thank you for your business.
         }}
       >
 
-        {/* ACTION BUTTONS */}
+        {/* ACTIONS */}
 
         <div
           style={{
@@ -292,61 +295,40 @@ Thank you for your business.
           }}
         >
 
-          {/* BACK */}
-
-          <button
+          <Button
             onClick={() =>
               router.push("/invoices")
             }
-
-            style={{
-              padding: "10px 18px",
-              border:
-                "1px solid #d9d9d9",
-              borderRadius: 6,
-              background: "#fff",
-              cursor: "pointer",
-              fontWeight: 500,
-            }}
           >
-            ← Back
-          </button>
+            Back
+          </Button>
 
-          {/* DOWNLOAD */}
+          <Button
+            type="primary"
+            onClick={shareOnWhatsApp}
+          >
+            Share on WhatsApp
+          </Button>
 
-          <button
-            onClick={handleDownloadPDF}
-
+          <Button
             style={{
-              padding: "10px 18px",
-              border: "none",
-              borderRadius: 6,
               background: "#22c55e",
               color: "#fff",
-              cursor: "pointer",
-              fontWeight: 600,
             }}
+            onClick={handleDownloadPDF}
           >
             Download PDF
-          </button>
+          </Button>
 
-          {/* PRINT */}
-
-          <button
-            onClick={handlePrint}
-
+          <Button
             style={{
-              padding: "10px 18px",
-              border: "none",
-              borderRadius: 6,
               background: "#1677ff",
               color: "#fff",
-              cursor: "pointer",
-              fontWeight: 600,
             }}
+            onClick={handlePrint}
           >
             Print Invoice
-          </button>
+          </Button>
 
         </div>
 
@@ -354,161 +336,96 @@ Thank you for your business.
 
         <div id="invoice-print-area">
 
-          <Card
-            bordered={false}
+          <Card>
 
-            style={{
-              borderRadius: 14,
-              boxShadow:
-                "0 2px 10px rgba(0,0,0,0.08)",
-            }}
-          >
+            {/* HEADER */}
 
-            {/* ✅ COMPANY HEADER */}
-
-            <div
-              style={{
-                marginBottom: 30,
-                borderBottom:
-                  "2px solid #ddd",
-                paddingBottom: 20,
-              }}
+            <Row
+              justify="space-between"
+              gutter={[20, 20]}
             >
 
-              <Row
-                justify="space-between"
-                gutter={[20, 20]}
-              >
+              <Col xs={24} md={16}>
 
-                <Col xs={24} md={16}>
-
-                  <Title
-                      level={2}
-                      style={{
-                        margin: 0,
-                        color: "#1677ff",
-                      }}
-                    >
-                      {invoice.company_name || "Company Name"}
-                    </Title>
-
-                  <Text>
-                    Address:{" "}
-                    {invoice.company_address}
-                  </Text>
-
-                  <br />
-
-                  <Text>
-                    Email:{" "}
-                    {invoice.company_email}
-                  </Text>
-
-                  <br />
-
-                  <Text>
-                    Mobile:{" "}
-                    {invoice.company_mobile}
-                  </Text>
-
-                  <br />
-
-                  <Text strong>
-                    GSTIN:{" "}
-                    {invoice.company_gstin}
-                  </Text>
-
-                </Col>
-
-                <Col xs={24} md={8}>
-
-                  <div
-                    style={{
-                      textAlign: "right",
-                    }}
-                  >
-
-                    <Title
-                      level={4}
-                      style={{
-                        marginBottom: 5,
-                      }}
-                    >
-                      Invoice
-                    </Title>
-
-                    <Text>
-                      Invoice #:
-                      {invoice.invoice_number}
-                    </Text>
-
-                    <br />
-
-                    <Text>
-                      Date:
-                      {" "}
-                      {invoice.created_at}
-                    </Text>
-
-                  </div>
-
-                </Col>
-
-              </Row>
-
-            </div>
-
-            {/* ✅ CUSTOMER DETAILS */}
-
-            <Row gutter={[20, 20]}>
-
-              {/* CUSTOMER */}
-
-              <Col xs={24} md={12}>
-
-                <Card
-                  size="small"
-
+                <Title
+                  level={2}
                   style={{
-                    borderRadius: 10,
-                    background: "#fafafa",
+                    margin: 0,
+                    color: "#1677ff",
+                  }}
+                >
+                  {invoice.company_name
+                    ||
+                    "Company Name"}
+                </Title>
+
+                <div>
+                  {invoice.company_address}
+                </div>
+
+                <div>
+                  {invoice.company_email}
+                </div>
+
+                <div>
+                  {invoice.company_mobile}
+                </div>
+
+              </Col>
+
+              <Col xs={24} md={8}>
+
+                <div
+                  style={{
+                    textAlign: "right",
                   }}
                 >
 
+                  <Title level={4}>
+                    Invoice
+                  </Title>
+
+                  <div>
+                    #{invoice.invoice_number}
+                  </div>
+
+                  <div>
+                    {invoice.created_at}
+                  </div>
+
+                </div>
+
+              </Col>
+
+            </Row>
+
+            <Divider />
+
+            {/* CUSTOMER */}
+
+            <Row gutter={[20, 20]}>
+
+              <Col xs={24} md={12}>
+
+                <Card size="small">
+
                   <Space direction="vertical">
 
-                    <Title
-                      level={5}
-                      style={{
-                        margin: 0,
-                      }}
-                    >
+                    <Title level={5}>
                       Bill To
                     </Title>
 
-                    <Text>
-                      <strong>
-                        Name:
-                      </strong>
-                      {" "}
+                    <div>
                       {invoice.customer_name}
-                    </Text>
+                    </div>
 
-                    <Text>
-                      <strong>
-                        Address:
-                      </strong>
-                      {" "}
+                    <div>
                       {invoice.address}
-                    </Text>
+                    </div>
 
-                    <Text>
-                      <strong>
-                        Mobile:
-                      </strong>
-                      {" "}
+                    <div>
                       {invoice.phone}
-                    </Text>
+                    </div>
 
                   </Space>
 
@@ -516,46 +433,26 @@ Thank you for your business.
 
               </Col>
 
-              {/* INVOICE INFO */}
-
               <Col xs={24} md={12}>
 
-                <Card
-                  size="small"
-
-                  style={{
-                    borderRadius: 10,
-                    background: "#fafafa",
-                  }}
-                >
+                <Card size="small">
 
                   <Space direction="vertical">
 
-                    <Title
-                      level={5}
-                      style={{
-                        margin: 0,
-                      }}
-                    >
+                    <Title level={5}>
                       Invoice Info
                     </Title>
 
-                    <Text>
-                      <strong>
-                        Created By:
-                      </strong>
+                    <div>
+                      Created By:
                       {" "}
                       {invoice.created_by}
-                    </Text>
-
-                    <div>
-
-                      <Tag color={statusColor}>
-                        {invoice.status
-                          .toUpperCase()}
-                      </Tag>
-
                     </div>
+
+                    <Tag color={statusColor}>
+                      {invoice.status
+                        .toUpperCase()}
+                    </Tag>
 
                   </Space>
 
@@ -576,166 +473,138 @@ Thank you for your business.
             <Table
               columns={columns}
               dataSource={invoice.items}
+              rowKey="id"
               pagination={false}
-              rowKey="product_name"
               bordered
-
-              style={{
-                marginTop: 20,
-              }}
             />
 
             {/* TOTAL */}
 
-          {/* TOTAL */}
+            <div
+              style={{
+                marginTop: 30,
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
 
-<div
-  style={{
-    marginTop: 30,
-    display: "flex",
-    justifyContent: "flex-end",
-  }}
->
+              <div
+                style={{
+                  width: 320,
+                }}
+              >
 
-  <div
-    style={{
-      width: 320,
-    }}
-  >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "space-between",
+                    marginBottom: 10,
+                  }}
+                >
 
-    {/* SUBTOTAL */}
+                  <strong>
+                    Subtotal
+                  </strong>
 
-    <div
-      style={{
-        display: "flex",
-        justifyContent:
-          "space-between",
-        marginBottom: 10,
-      }}
-    >
+                  <div>
+                    ₹{invoice.total_amount}
+                  </div>
 
-      <Text strong>
-        Subtotal
-      </Text>
+                </div>
 
-      <Text>
-        ₹
-        {invoice.total_amount}
-      </Text>
+                {Number(invoice.cgst) > 0 && (
 
-    </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent:
+                        "space-between",
+                      marginBottom: 10,
+                    }}
+                  >
 
-    {/* CGST */}
+                    <strong>
+                      CGST
+                    </strong>
 
-    {Number(invoice.cgst) > 0 && (
+                    <div>
+                      ₹{invoice.cgst}
+                    </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          marginBottom: 10,
-        }}
-      >
+                  </div>
 
-        <Text strong>
-          CGST
-        </Text>
+                )}
 
-        <Text>
-          ₹{invoice.cgst}
-        </Text>
+                {Number(invoice.sgst) > 0 && (
 
-      </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent:
+                        "space-between",
+                      marginBottom: 10,
+                    }}
+                  >
 
-    )}
+                    <strong>
+                      SGST
+                    </strong>
 
-    {/* SGST */}
+                    <div>
+                      ₹{invoice.sgst}
+                    </div>
 
-    {Number(invoice.sgst) > 0 && (
+                  </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          marginBottom: 10,
-        }}
-      >
+                )}
 
-        <Text strong>
-          SGST
-        </Text>
+                <Divider />
 
-        <Text>
-          ₹{invoice.sgst}
-        </Text>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent:
+                      "space-between",
+                  }}
+                >
 
-        </div>
+                  <Title
+                    level={4}
+                    style={{
+                      color: "#1677ff",
+                    }}
+                  >
+                    Grand Total
+                  </Title>
 
-      )}
+                  <Title
+                    level={4}
+                    style={{
+                      color: "#1677ff",
+                    }}
+                  >
+                    ₹
+                    {invoice.grand_total
+                      ||
+                      invoice.total_amount}
+                  </Title>
 
-    <Divider
-      style={{
-        margin: "12px 0",
-      }}
-    />
+                </div>
 
-    {/* GRAND TOTAL */}
+              </div>
 
-    <div
-      style={{
-        display: "flex",
-        justifyContent:
-          "space-between",
-      }}
-    >
-
-      <Title
-        level={4}
-        style={{
-          margin: 0,
-          color: "#1677ff",
-        }}
-      >
-        Grand Total
-      </Title>
-
-      <Title
-        level={4}
-        style={{
-          margin: 0,
-          color: "#1677ff",
-        }}
-      >
-        ₹
-        {invoice.grand_total
-          ||
-          invoice.total_amount}
-      </Title>
-
-    </div>
-
-  </div>
-
-  </div>
-            
+            </div>
 
             <Divider />
-
-            {/* FOOTER */}
 
             <div
               style={{
                 textAlign: "center",
-                marginTop: 20,
               }}
             >
 
-              <Text type="secondary">
-                Thank you for your
-                business.
-              </Text>
+              Thank you for your business.
 
             </div>
 
