@@ -12,5 +12,6 @@ urlpatterns = [
     path('api/subscription/', include('subscriptions.urls')),
     path('api/invoices/', include('invoices.urls')),
     path('api/token/refresh/', TokenRefreshView.as_view()),
+    path("api/inventory/", include("inventory.urls")),
    
 ]

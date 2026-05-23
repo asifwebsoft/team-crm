@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from companies.models import Company
 from leads.models import Lead
+from inventory.models import InventoryItem
 
 User = settings.AUTH_USER_MODEL
 
@@ -97,9 +98,23 @@ class InvoiceItem(models.Model):
         related_name="items"
     )
 
-    product_name = models.CharField(max_length=255)
+    product = models.ForeignKey(
+        InventoryItem,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
-    quantity = models.IntegerField(default=1)
+    quantity = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=1
+    )
+
+    unit = models.CharField(
+        max_length=20,
+        blank=True
+    )
 
     price = models.DecimalField(
         max_digits=10,
@@ -112,4 +127,6 @@ class InvoiceItem(models.Model):
     )
 
     def __str__(self):
-        return self.product_name
+        if self.product:
+            return self.product.product_name
+        return "Invoice Item"

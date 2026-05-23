@@ -874,17 +874,28 @@ const COLORS = [
               }}
             >
 
-              <Input
-                placeholder="Product Name"
-                value={item.product_name}
-                onChange={(e) =>
-                  handleChange(
-                    index,
-                    "product_name",
-                    e.target.value
-                  )
-                }
-              />
+              <Select
+                placeholder="Select Product"
+                onChange={(value, option) => {
+
+                  item.product = value
+
+                  item.unit = option.unit
+
+                  item.price = option.price
+                }}
+              >
+                {inventory.map((p) => (
+                  <Select.Option
+                    key={p.id}
+                    value={p.id}
+                    unit={p.unit}
+                    price={p.price}
+                  >
+                    {p.product_name}
+                  </Select.Option>
+                ))}
+              </Select>
 
               <Input
                 type="number"

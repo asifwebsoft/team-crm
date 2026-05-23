@@ -110,6 +110,10 @@ export default function Sidebar() {
         key: "/add-staff",
         icon: <UserAddOutlined />,
         label: "Add Staff",
+      },
+      {
+        key: "/inventory",
+        label: "Inventory Management"
       }
     );
   }
