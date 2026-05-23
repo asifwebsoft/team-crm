@@ -9,7 +9,8 @@ import {
   CalendarOutlined,
   UsergroupAddOutlined,
   LogoutOutlined,
-  MenuOutlined
+  MenuOutlined,
+  AppstoreOutlined
   
 } from "@ant-design/icons";
 
@@ -113,7 +114,8 @@ export default function Sidebar() {
       },
       {
         key: "/inventory",
-        label: "Inventory Management"
+        icon: <AppstoreOutlined />,
+        label: "Inventory Management",
       }
     );
   }
