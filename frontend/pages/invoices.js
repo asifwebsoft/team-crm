@@ -772,6 +772,25 @@ export default function InvoicesPage() {
 
               </Select>
 
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#888",
+                }}
+              >
+
+                Available Stock:
+                {
+
+                  inventory.find(
+                    (p) =>
+                      p.id === item.product
+                  )?.stock_quantity
+
+                }
+
+              </div>
+
               {/* ✅ UNIT */}
 
               <Input
@@ -784,21 +803,50 @@ export default function InvoicesPage() {
               {/* ✅ QTY */}
 
               <Input
-                type="number"
-                placeholder="Qty"
-                value={item.quantity}
-                style={{ width: 100 }}
+                  type="number"
+                  placeholder="Qty"
+                  value={item.quantity}
+                  style={{ width: 100 }}
 
-                onChange={(e) =>
-                  handleChange(
-                    index,
-                    "quantity",
-                    Number(
+                  onChange={(e) => {
+
+                    const qty = Number(
                       e.target.value
-                    )
-                  )
-                }
-              />
+                    );
+
+                    // ✅ PRODUCT FIND
+
+                    const selectedProduct =
+                      inventory.find(
+                        (p) =>
+                          p.id === item.product
+                      );
+
+                    // ✅ STOCK VALIDATION
+
+                    if (
+                      selectedProduct &&
+                      qty >
+                      Number(
+                        selectedProduct.stock_quantity
+                      )
+                    ) {
+
+                      message.warning(
+
+                        `Only ${selectedProduct.stock_quantity} stock available`
+                      );
+
+                      return;
+                    }
+
+                    handleChange(
+                      index,
+                      "quantity",
+                      qty
+                    );
+                  }}
+                />
 
               {/* ✅ PRICE */}
 
