@@ -98,6 +98,8 @@ class InvoiceItem(models.Model):
         related_name="items"
     )
 
+    # ✅ INVENTORY PRODUCT LINK
+
     product = models.ForeignKey(
         InventoryItem,
         on_delete=models.SET_NULL,
@@ -105,28 +107,55 @@ class InvoiceItem(models.Model):
         blank=True
     )
 
-    quantity = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=1
+    # ✅ PRODUCT SNAPSHOT
+    # Future me inventory rename/delete ho jaye
+    # tab bhi old invoice safe rahe
+
+    product_name = models.CharField(
+        max_length=255
     )
+
+    # ✅ UNIT SNAPSHOT
 
     unit = models.CharField(
         max_length=20,
         blank=True
     )
 
+    # ✅ QUANTITY
+
+    quantity = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=1
+    )
+
+    # ✅ PRICE
+
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2
     )
+
+    # ✅ SUBTOTAL
 
     subtotal = models.DecimalField(
         max_digits=10,
         decimal_places=2
     )
 
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
     def __str__(self):
+
+        if self.product_name:
+
+            return self.product_name
+
         if self.product:
+
             return self.product.product_name
+
         return "Invoice Item"

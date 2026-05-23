@@ -6,6 +6,7 @@ from django.db import models
 
 from .models import Invoice, InvoiceItem
 from .permissions import CanCreateInvoice
+from inventory.models import InventoryItem
 
 
 class CreateInvoiceView(APIView):
@@ -23,7 +24,7 @@ class CreateInvoiceView(APIView):
 
             items = data.get("items", [])
 
-            # ✅ VALIDATION
+            # ✅ CUSTOMER DETAILS
 
             customer_name = data.get(
                 "customer_name",
@@ -40,13 +41,14 @@ class CreateInvoiceView(APIView):
                 ""
             ).strip()
 
-            # ✅ REQUIRED FIELDS
+            # ✅ VALIDATION
 
             if not customer_name:
 
                 return Response(
                     {
-                        "error": "Customer name required"
+                        "error":
+                        "Customer name required"
                     },
                     status=400
                 )
@@ -55,7 +57,8 @@ class CreateInvoiceView(APIView):
 
                 return Response(
                     {
-                        "error": "Phone number required"
+                        "error":
+                        "Phone number required"
                     },
                     status=400
                 )
@@ -64,12 +67,11 @@ class CreateInvoiceView(APIView):
 
                 return Response(
                     {
-                        "error": "Address required"
+                        "error":
+                        "Address required"
                     },
                     status=400
                 )
-
-            # ✅ PRODUCTS REQUIRED
 
             if not items:
 
@@ -81,16 +83,13 @@ class CreateInvoiceView(APIView):
                     status=400
                 )
 
-            # ✅ PRODUCT VALIDATION
+            # ✅ VALIDATE ITEMS
 
             for item in items:
 
-                product_name = str(
-                    item.get(
-                        "product_name",
-                        ""
-                    )
-                ).strip()
+                product_id = item.get(
+                    "product"
+                )
 
                 quantity = int(
                     item.get(
@@ -106,12 +105,12 @@ class CreateInvoiceView(APIView):
                     )
                 )
 
-                if not product_name:
+                if not product_id:
 
                     return Response(
                         {
                             "error":
-                            "Product name required"
+                            "Product required"
                         },
                         status=400
                     )
@@ -136,9 +135,27 @@ class CreateInvoiceView(APIView):
                         status=400
                     )
 
+            # ✅ TOTAL
+
             total_amount = 0
 
-            # ✅ GENERATE INVOICE NUMBER
+            # ✅ GST %
+
+            cgst = float(
+                data.get(
+                    "cgst",
+                    0
+                ) or 0
+            )
+
+            sgst = float(
+                data.get(
+                    "sgst",
+                    0
+                ) or 0
+            )
+
+            # ✅ INVOICE NUMBER
 
             last_invoice = Invoice.objects.order_by(
                 "-id"
@@ -156,22 +173,6 @@ class CreateInvoiceView(APIView):
 
             invoice_number = (
                 f"INV-{next_id:04d}"
-            )
-
-            # ✅ GST VALUES
-
-            cgst = float(
-                data.get(
-                    "cgst",
-                    0
-                ) or 0
-            )
-
-            sgst = float(
-                data.get(
-                    "sgst",
-                    0
-                ) or 0
             )
 
             # ✅ CREATE INVOICE
@@ -212,6 +213,10 @@ class CreateInvoiceView(APIView):
 
             for item in items:
 
+                product_id = item.get(
+                    "product"
+                )
+
                 quantity = int(
                     item.get(
                         "quantity",
@@ -226,20 +231,57 @@ class CreateInvoiceView(APIView):
                     )
                 )
 
+                # ✅ INVENTORY PRODUCT
+
+                product = InventoryItem.objects.get(
+
+                    id=product_id,
+
+                    company=
+                        request.user.company
+                )
+
+                # ✅ STOCK CHECK
+
+                if (
+                    product.stock_quantity
+                    <
+                    quantity
+                ):
+
+                    return Response(
+                        {
+                            "error":
+                            f"{product.product_name} out of stock"
+                        },
+                        status=400
+                    )
+
                 subtotal = (
                     quantity * price
                 )
 
                 total_amount += subtotal
 
+                # ✅ REDUCE STOCK
+
+                product.stock_quantity -= quantity
+
+                product.save()
+
+                # ✅ CREATE ITEM
+
                 InvoiceItem.objects.create(
 
                     invoice=invoice,
 
+                    product=product,
+
                     product_name=
-                        item.get(
-                            "product_name"
-                        ),
+                        product.product_name,
+
+                    unit=
+                        product.unit,
 
                     quantity=quantity,
 
@@ -248,28 +290,28 @@ class CreateInvoiceView(APIView):
                     subtotal=subtotal
                 )
 
-           
+            # ✅ GST AMOUNT
 
-            # ✅ GST AMOUNTS
+            cgst_amount = (
+                total_amount * cgst
+            ) / 100
 
-                cgst_amount = (
-                    total_amount * cgst
-                ) / 100
+            sgst_amount = (
+                total_amount * sgst
+            ) / 100
 
-                sgst_amount = (
-                    total_amount * sgst
-                ) / 100
+            # ✅ GRAND TOTAL
 
-                # ✅ GRAND TOTAL
+            grand_total = (
 
-                grand_total = (
+                total_amount +
 
-                    total_amount +
+                cgst_amount +
 
-                    cgst_amount +
+                sgst_amount
+            )
 
-                    sgst_amount
-                )
+            # ✅ UPDATE INVOICE
 
             invoice.total_amount = (
                 total_amount
@@ -293,29 +335,39 @@ class CreateInvoiceView(APIView):
 
                 {
                     "message":
-                        "Invoice created successfully",
+                    "Invoice created successfully",
 
                     "invoice_id":
-                        invoice.id,
+                    invoice.id,
 
                     "invoice_number":
-                        invoice.invoice_number,
+                    invoice.invoice_number,
 
                     "total_amount":
-                        invoice.total_amount,
+                    invoice.total_amount,
 
                     "cgst":
-                        invoice.cgst,
+                    invoice.cgst,
 
                     "sgst":
-                        invoice.sgst,
+                    invoice.sgst,
 
                     "grand_total":
-                        invoice.grand_total,
+                    invoice.grand_total,
                 },
 
                 status=
-                    status.HTTP_201_CREATED
+                status.HTTP_201_CREATED
+            )
+
+        except InventoryItem.DoesNotExist:
+
+            return Response(
+                {
+                    "error":
+                    "Invalid inventory product"
+                },
+                status=400
             )
 
         except Exception as e:
@@ -327,7 +379,7 @@ class CreateInvoiceView(APIView):
                 },
 
                 status=
-                    status.HTTP_400_BAD_REQUEST
+                status.HTTP_400_BAD_REQUEST
             )
 
 
