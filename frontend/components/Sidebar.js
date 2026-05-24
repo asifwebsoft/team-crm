@@ -10,7 +10,8 @@ import {
   UsergroupAddOutlined,
   LogoutOutlined,
   MenuOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  InboxOutlined
   
 } from "@ant-design/icons";
 
@@ -116,6 +117,11 @@ export default function Sidebar() {
         key: "/inventory",
         icon: <AppstoreOutlined />,
         label: "Inventory Management",
+      },
+      {
+        key: "/purchase-entry",
+        icon: <InboxOutlined />,
+        label: "Purchase Entry",
       }
     );
   }
