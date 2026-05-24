@@ -6,6 +6,7 @@ from .serializers import (
     InventorySerializer,
     PurchaseEntrySerializer
 )
+from decimal import Decimal
 
 
 class InventoryListCreateView(APIView):
@@ -69,10 +70,12 @@ class PurchaseEntryView(APIView):
                     "product"
                 )
 
-            quantity = float(
-                request.data.get(
-                    "quantity",
-                    0
+            quantity = Decimal(
+                str(
+                    request.data.get(
+                        "quantity",
+                        0
+                    )
                 )
             )
 
@@ -104,7 +107,16 @@ class PurchaseEntryView(APIView):
 
             # ✅ STOCK INCREASE
 
-            product.stock_quantity += quantity
+            product.stock_quantity = (
+
+                Decimal(
+                    str(product.stock_quantity)
+                )
+
+                +
+
+                quantity
+            )
 
             product.save()
 
@@ -138,6 +150,7 @@ class PurchaseEntryView(APIView):
             )
 
         except Exception as e:
+            print("PURCHASE ERROR:", e)
 
             return Response(
                 {
