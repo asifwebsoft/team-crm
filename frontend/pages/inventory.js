@@ -48,6 +48,10 @@ export default function InventoryPage() {
   const [price,
     setPrice] =
     useState("");
+  
+  const [lowStockLimit,
+  setLowStockLimit] =
+  useState(10);
 
   // ✅ FETCH INVENTORY
 
@@ -124,6 +128,9 @@ export default function InventoryPage() {
             stockQuantity,
 
           price,
+
+          low_stock_limit:
+            lowStockLimit,
         }
       );
 
@@ -138,6 +145,8 @@ export default function InventoryPage() {
       setStockQuantity("");
 
       setPrice("");
+
+      setLowStockLimit(10);
 
       fetchInventory();
 
@@ -185,51 +194,115 @@ export default function InventoryPage() {
 
   const columns = [
 
-    {
-      title: "Product",
-      dataIndex: "product_name",
+  {
+    title: "Product",
+    dataIndex: "product_name",
+  },
+
+  {
+    title: "Unit",
+    dataIndex: "unit",
+
+    render: (unit) => (
+      <Tag color="blue">
+        {unit}
+      </Tag>
+    ),
+  },
+
+  {
+    title: "Stock",
+    dataIndex: "stock_quantity",
+
+    render: (stock) => {
+
+      return (
+        <span
+          style={{
+            fontWeight: 600,
+          }}
+        >
+          {stock}
+        </span>
+      );
     },
+  },
 
-    {
-      title: "Unit",
-      dataIndex: "unit",
+  // ✅ LOW STOCK ALERT
 
-      render: (unit) => (
-        <Tag color="blue">
-          {unit}
+  {
+    title: "Alert",
+
+    render: (_, record) => {
+
+      const isLowStock =
+
+        Number(
+          record.stock_quantity
+        )
+
+        <=
+
+        Number(
+          record.low_stock_limit
+        );
+
+      if (isLowStock) {
+
+        return (
+          <Tag color="red">
+            Low Stock
+          </Tag>
+        );
+      }
+
+      return (
+        <Tag color="green">
+          In Stock
         </Tag>
-      ),
+      );
     },
+  },
 
-    {
-      title: "Stock",
-      dataIndex: "stock_quantity",
+  {
+    title: "Price",
+    dataIndex: "price",
+
+    render: (price) =>
+      `₹${price}`,
+  },
+
+  {
+    title: "Low Stock Limit",
+
+    dataIndex:
+      "low_stock_limit",
+
+    render: (limit) => (
+
+      <Tag color="orange">
+        {limit}
+      </Tag>
+
+    ),
+  },
+
+  {
+    title: "Stock Value",
+
+    render: (_, record) => {
+
+      const total =
+        Number(
+          record.stock_quantity
+        )
+        *
+        Number(record.price);
+
+      return `₹${total}`;
     },
-
-    {
-      title: "Price",
-      dataIndex: "price",
-
-      render: (price) =>
-        `₹${price}`,
-    },
-
-    {
-      title: "Stock Value",
-
-      render: (_, record) => {
-
-        const total =
-          Number(
-            record.stock_quantity
-          )
-          *
-          Number(record.price);
-
-        return `₹${total}`;
-      },
-    },
-  ];
+  },
+];
 
   return (
 
@@ -361,6 +434,17 @@ export default function InventoryPage() {
                 )
               }
             />
+
+            <Input
+                type="number"
+                placeholder="Low Stock Alert Limit"
+                value={lowStockLimit}
+                onChange={(e) =>
+                  setLowStockLimit(
+                    e.target.value
+                  )
+                }
+              />
 
             <Button
               type="primary"
