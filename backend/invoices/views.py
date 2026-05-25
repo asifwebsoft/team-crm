@@ -206,7 +206,13 @@ class CreateInvoiceView(APIView):
 
                 sgst=0,
 
-                grand_total=0
+                grand_total=0,
+
+                # ✅ PAYMENT SYSTEM
+
+                paid_amount=0,
+
+                due_amount=0
             )
 
             # ✅ CREATE ITEMS
@@ -329,6 +335,14 @@ class CreateInvoiceView(APIView):
                 grand_total
             )
 
+            # ✅ PAYMENT INIT
+
+            invoice.paid_amount = 0
+
+            invoice.due_amount = (
+                grand_total
+            )
+
             invoice.save()
 
             return Response(
@@ -354,6 +368,12 @@ class CreateInvoiceView(APIView):
 
                     "grand_total":
                     invoice.grand_total,
+
+                    "paid_amount":
+                    invoice.paid_amount,
+
+                    "due_amount":
+                    invoice.due_amount,
                 },
 
                 status=
@@ -955,3 +975,126 @@ class CustomerLedgerView(APIView):
         return Response(
             list(customers.values())
         )
+    
+class AddInvoicePaymentView(APIView):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    def post(self, request, pk):
+
+        try:
+
+            invoice = Invoice.objects.get(
+                id=pk,
+                company=request.user.company
+            )
+
+            amount = float(
+                request.data.get(
+                    "amount",
+                    0
+                )
+            )
+
+            payment_method = request.data.get(
+                    "payment_method",
+                    "cash"
+                )
+
+            note = request.data.get(
+                "note",
+                ""
+            )
+
+            # ✅ VALIDATION
+
+            if amount <= 0:
+
+                return Response(
+                    {
+                        "error":
+                        "Invalid payment amount"
+                    },
+                    status=400
+                )
+
+            if amount > float(invoice.due_amount):
+
+                return Response(
+                    {
+                        "error":
+                        "Payment exceeds due amount"
+                    },
+                    status=400
+                )
+
+            # ✅ SAVE PAYMENT
+
+            InvoicePayment.objects.create(
+
+                invoice=invoice,
+
+                amount=amount,
+
+                payment_method=
+                    payment_method,
+
+                note=note,
+
+                created_by=
+                    request.user
+            )
+
+            # ✅ UPDATE INVOICE
+
+            invoice.paid_amount += amount
+
+            invoice.due_amount -= amount
+
+            # ✅ STATUS
+
+            if invoice.due_amount <= 0:
+
+                invoice.status = "paid"
+
+            else:
+
+                invoice.status = "partial"
+
+            invoice.save()
+
+            return Response({
+
+                "message":
+                    "Payment added successfully",
+
+                "paid_amount":
+                    invoice.paid_amount,
+
+                "due_amount":
+                    invoice.due_amount,
+
+                "status":
+                    invoice.status,
+            })
+
+        except Invoice.DoesNotExist:
+
+            return Response(
+                {
+                    "error":
+                    "Invoice not found"
+                },
+                status=404
+            )
+
+        except Exception as e:
+
+            return Response(
+                {
+                    "error": str(e)
+                },
+                status=400
+            )

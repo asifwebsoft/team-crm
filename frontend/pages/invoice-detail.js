@@ -11,7 +11,10 @@ import {
   Divider,
   Space,
   Button,
-  Text,
+  Modal,
+  Input,
+  Select,
+  message,
 } from "antd";
 
 import MainLayout from "../components/Layout";
@@ -28,6 +31,28 @@ export default function InvoiceDetailPage() {
   const [invoice, setInvoice] =
     useState(null);
 
+  // ✅ PAYMENT STATES
+
+  const [paymentModal,
+    setPaymentModal] =
+    useState(false);
+
+  const [paymentAmount,
+    setPaymentAmount] =
+    useState("");
+
+  const [paymentMethod,
+    setPaymentMethod] =
+    useState("cash");
+
+  const [paymentNote,
+    setPaymentNote] =
+    useState("");
+
+  const [paymentLoading,
+    setPaymentLoading] =
+    useState(false);
+
   // ✅ FETCH INVOICE
 
   const fetchInvoice = async () => {
@@ -43,6 +68,79 @@ export default function InvoiceDetailPage() {
     } catch (err) {
 
       console.log(err);
+    }
+  };
+
+  // ✅ ADD PAYMENT
+
+  const addPayment = async () => {
+
+    if (
+      !paymentAmount
+      ||
+      Number(paymentAmount) <= 0
+    ) {
+
+      message.error(
+        "Enter valid amount"
+      );
+
+      return;
+    }
+
+    try {
+
+      setPaymentLoading(true);
+
+      await API.post(
+
+        `/invoices/payment/${id}/`,
+
+        {
+
+          amount:
+            paymentAmount,
+
+          payment_method:
+            paymentMethod,
+
+          note:
+            paymentNote,
+        }
+      );
+
+      message.success(
+        "Payment added successfully"
+      );
+
+      setPaymentModal(false);
+
+      setPaymentAmount("");
+
+      setPaymentMethod("cash");
+
+      setPaymentNote("");
+
+      // ✅ REFRESH
+
+      fetchInvoice();
+
+    } catch (err) {
+
+      console.log(err);
+
+      message.error(
+
+        err?.response?.data?.error
+
+        ||
+
+        "Failed to add payment"
+      );
+
+    } finally {
+
+      setPaymentLoading(false);
     }
   };
 
@@ -80,7 +178,7 @@ Total: ₹${item.subtotal}
     const cleanPhone =
       invoice.phone.replace(/\D/g, "");
 
-    const message = `
+    const messageText = `
 
 🧾 Invoice Details
 
@@ -110,7 +208,7 @@ Thank you for your business.
 
     const whatsappUrl =
 
-      `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(message)}`;
+      `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(messageText)}`;
 
     window.open(
       whatsappUrl,
@@ -454,6 +552,65 @@ Thank you for your business.
                         .toUpperCase()}
                     </Tag>
 
+                    {/* PAYMENT INFO */}
+
+                    <div
+                      style={{
+                        marginTop: 15,
+                      }}
+                    >
+
+                      <p>
+
+                        <strong>
+                          Paid Amount:
+                        </strong>
+
+                        {" "}
+
+                        <Tag color="green">
+                          ₹{invoice.paid_amount || 0}
+                        </Tag>
+
+                      </p>
+
+                      <p>
+
+                        <strong>
+                          Due Amount:
+                        </strong>
+
+                        {" "}
+
+                        <Tag color="red">
+                          ₹{invoice.due_amount || 0}
+                        </Tag>
+
+                      </p>
+
+                      {invoice.status !== "paid" && (
+
+                        <Button
+
+                          type="primary"
+
+                          onClick={() =>
+                            setPaymentModal(true)
+                          }
+
+                          style={{
+                            marginTop: 10,
+                          }}
+                        >
+
+                          Add Payment
+
+                        </Button>
+
+                      )}
+
+                    </div>
+
                   </Space>
 
                 </Card>
@@ -613,6 +770,102 @@ Thank you for your business.
         </div>
 
       </div>
+
+      {/* PAYMENT MODAL */}
+
+      <Modal
+
+        title="Add Payment"
+
+        open={paymentModal}
+
+        onCancel={() =>
+          setPaymentModal(false)
+        }
+
+        footer={null}
+      >
+
+        <Input
+
+          type="number"
+
+          placeholder="Payment Amount"
+
+          value={paymentAmount}
+
+          onChange={(e) =>
+            setPaymentAmount(
+              e.target.value
+            )
+          }
+
+          style={{
+            marginBottom: 15,
+          }}
+        />
+
+        <Select
+
+          value={paymentMethod}
+
+          onChange={setPaymentMethod}
+
+          style={{
+            width: "100%",
+            marginBottom: 15,
+          }}
+        >
+
+          <Select.Option value="cash">
+            Cash
+          </Select.Option>
+
+          <Select.Option value="upi">
+            UPI
+          </Select.Option>
+
+          <Select.Option value="bank">
+            Bank Transfer
+          </Select.Option>
+
+        </Select>
+
+        <Input.TextArea
+
+          rows={3}
+
+          placeholder="Note"
+
+          value={paymentNote}
+
+          onChange={(e) =>
+            setPaymentNote(
+              e.target.value
+            )
+          }
+
+          style={{
+            marginBottom: 15,
+          }}
+        />
+
+        <Button
+
+          type="primary"
+
+          block
+
+          loading={paymentLoading}
+
+          onClick={addPayment}
+        >
+
+          Save Payment
+
+        </Button>
+
+      </Modal>
 
     </MainLayout>
   );
