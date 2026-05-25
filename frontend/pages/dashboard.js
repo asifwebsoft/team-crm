@@ -457,7 +457,7 @@ else if (
           <Row gutter={[16, 16]}>
 
             {/* SALES */}
-
+          {role !== "staff" && (
             <Col
               xs={24}
               sm={12}
@@ -489,9 +489,10 @@ else if (
               </Card>
 
             </Col>
+          )}
 
             {/* PENDING */}
-
+          {role === "admin" && (
             <Col
               xs={24}
               sm={12}
@@ -523,9 +524,10 @@ else if (
               </Card>
 
             </Col>
+          )}
 
             {/* INVENTORY */}
-
+          {role !== "staff" && (
             <Col
               xs={24}
               sm={12}
@@ -557,9 +559,10 @@ else if (
               </Card>
 
             </Col>
+          )}
 
             {/* LOW STOCK */}
-
+          {role !== "staff" && (
             <Col
               xs={24}
               sm={12}
@@ -591,6 +594,7 @@ else if (
               </Card>
 
             </Col>
+          )}
 
           </Row>
 
