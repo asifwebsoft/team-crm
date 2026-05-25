@@ -94,6 +94,21 @@ class DashboardView(APIView):
 
     def get(self, request):
 
+        # ✅ COMPANY SAFETY
+
+        if not hasattr(request.user, "company"):
+
+            return Response(
+                {
+                    "error": "No company"
+                },
+                status=400
+            )
+
+        company = request.user.company
+
+        # ✅ LEADS
+
         leads = get_leads(request.user)
 
         today = date.today()
@@ -113,115 +128,122 @@ class DashboardView(APIView):
         # ✅ TOTAL SALES
 
         total_sales = Invoice.objects.filter(
-            company=request.user.company
+            company=company
         ).aggregate(
             total=Sum("grand_total")
         )["total"] or 0
 
-
         # ✅ PENDING PAYMENTS
 
         pending_payments = Invoice.objects.filter(
-            company=request.user.company,
+            company=company,
             status="pending"
         ).aggregate(
             total=Sum("grand_total")
         )["total"] or 0
 
-
-        # ✅ INVENTORY VALUE
+        # ✅ INVENTORY ITEMS
 
         inventory_items = InventoryItem.objects.filter(
-            company=request.user.company
+            company=company
         )
+
+        # ✅ INVENTORY VALUE
 
         inventory_value = 0
 
         for item in inventory_items:
 
-            inventory_value += (
-                item.stock_quantity *
-                item.price
-            )
-
+            inventory_value += float(
+                item.stock_quantity
+            ) * float(item.price)
 
         # ✅ LOW STOCK COUNT
 
         low_stock_count = InventoryItem.objects.filter(
-            company=request.user.company,
+            company=company,
             stock_quantity__lte=
                 F("low_stock_limit")
         ).count()
 
+        # ✅ RESPONSE
+
         return Response({
 
-    
+            "total_leads":
+                leads.count(),
 
-    "total_leads": leads.count(),
+            "today_followups": [
 
-    "today_followups": [
+                {
+                    "id": l.id,
 
-        {
-            "id": l.id,
+                    "name":
+                        l.customer_name,
 
-            "name": l.customer_name,
+                    "phone":
+                        l.phone,
 
-            "phone": l.phone,
+                    "date": str(
+                        l.followup_date
+                    ),
+                }
 
-            "date": str(
-                l.followup_date
-            ),
-        }
+                for l in today_followups
+            ],
 
-        for l in today_followups
-    ],
+            "upcoming_followups": [
 
-    "upcoming_followups": [
+                {
+                    "id": l.id,
 
-        {
-            "id": l.id,
+                    "name":
+                        l.customer_name,
 
-            "name": l.customer_name,
+                    "phone":
+                        l.phone,
 
-            "phone": l.phone,
+                    "date": str(
+                        l.followup_date
+                    ),
+                }
 
-            "date": str(
-                l.followup_date
-            ),
-        }
+                for l in upcoming_followups
+            ],
 
-        for l in upcoming_followups
-    ],
+            "overdue_followups": [
 
-    "overdue_followups": [
+                {
+                    "id": l.id,
 
-        {
-            "id": l.id,
+                    "name":
+                        l.customer_name,
 
-            "name": l.customer_name,
+                    "phone":
+                        l.phone,
 
-            "phone": l.phone,
+                    "date": str(
+                        l.followup_date
+                    ),
+                }
 
-            "date": str(
-                l.followup_date
-            ),
-        }
+                for l in overdue_followups
+            ],
 
-        for l in overdue_followups
-    ],
+            # ✅ BUSINESS OVERVIEW
 
-    "total_sales": total_sales,
+            "total_sales":
+                total_sales,
 
-    "pending_payments":
-        pending_payments,
+            "pending_payments":
+                pending_payments,
 
-    "inventory_value":
-        inventory_value,
+            "inventory_value":
+                inventory_value,
 
-    "low_stock_count":
-        low_stock_count,
-
-})
+            "low_stock_count":
+                low_stock_count,
+        })
 
 # ✅ MY LEADS
 class MyLeadsView(APIView):

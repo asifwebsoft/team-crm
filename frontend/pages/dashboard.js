@@ -28,9 +28,29 @@ export default function Dashboard() {
 
   const [role, setRole] = useState(null);
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] =
+    useState(false);
+
+  // ✅ BUSINESS OVERVIEW STATES
+
+  const [totalSales,
+    setTotalSales] =
+    useState(0);
+
+  const [pendingPayments,
+    setPendingPayments] =
+    useState(0);
+
+  const [inventoryValue,
+    setInventoryValue] =
+    useState(0);
+
+  const [lowStockCount,
+    setLowStockCount] =
+    useState(0);
 
   // 🔥 AUTH + RESPONSIVE
+
   useEffect(() => {
 
     if (typeof window !== "undefined") {
@@ -42,19 +62,24 @@ export default function Dashboard() {
         localStorage.getItem("role");
 
       // 🔒 LOGIN CHECK
+
       if (!token) {
 
-        window.location.href = "/login";
+        window.location.href =
+          "/login";
 
       } else {
 
         setRole(userRole);
-
       }
 
       // 📱 MOBILE CHECK
+
       const checkScreen = () => {
-        setIsMobile(window.innerWidth < 768);
+
+        setIsMobile(
+          window.innerWidth < 768
+        );
       };
 
       checkScreen();
@@ -65,6 +90,7 @@ export default function Dashboard() {
       );
 
       return () => {
+
         window.removeEventListener(
           "resize",
           checkScreen
@@ -75,6 +101,7 @@ export default function Dashboard() {
   }, []);
 
   // 🔥 DASHBOARD API
+
   useEffect(() => {
 
     API.get("/leads/dashboard/")
@@ -83,10 +110,35 @@ export default function Dashboard() {
 
         setData(res.data);
 
+        // ✅ BUSINESS OVERVIEW
+
+        setTotalSales(
+          res.data.total_sales || 0
+        );
+
+        setPendingPayments(
+          res.data.pending_payments || 0
+        );
+
+        setInventoryValue(
+          res.data.inventory_value || 0
+        );
+
+        setLowStockCount(
+          res.data.low_stock_count || 0
+        );
+
+        // ✅ FOLLOWUPS
+
         if (
-        res.data.today_followups
-        &&
-          res.data.today_followups.length > 0
+
+          res.data.today_followups
+
+          &&
+
+          res.data.today_followups
+            .length > 0
+
         ) {
 
           setTodayFollowups(
@@ -104,6 +156,7 @@ export default function Dashboard() {
           err.response?.data?.error;
 
         // 🔥 SUBSCRIPTION
+
         if (
           error ===
           "No active subscription"
@@ -111,41 +164,49 @@ export default function Dashboard() {
 
           window.location.href =
             "/subscription";
-
         }
 
         // 🔥 COMPANY
+
         else if (
           error === "No company"
         ) {
 
           window.location.href =
             "/company";
-
         }
 
       });
 
-      
-
   }, []);
 
   // 🔥 LOADING
+
   if (role === null) return null;
 
   // 🔥 CARD STYLE
+
   const cardStyle = {
+
     borderRadius: 16,
+
     boxShadow:
       "0 4px 14px rgba(0,0,0,0.06)",
+
     border: "none",
+
     height: "100%",
   };
 
   // 🔥 CARD NUMBER STYLE
+
   const numberStyle = {
-    fontSize: isMobile ? 24 : 32,
+
+    fontSize:
+      isMobile ? 24 : 32,
+
     fontWeight: "bold",
+
     color: "#1677ff",
   };
 
@@ -155,27 +216,34 @@ export default function Dashboard() {
 
       <div
         style={{
-          padding: isMobile ? 5 : 10,
+          padding:
+            isMobile ? 5 : 10,
+
           overflowX: "hidden",
         }}
       >
 
         {/* 🔥 PAGE TITLE */}
+
         <h2
           style={{
             fontSize:
               isMobile ? 24 : 32,
+
             fontWeight: "bold",
+
             marginBottom: 20,
           }}
         >
           Dashboard
         </h2>
 
-        {/* 🔥 STATS */}
+        {/* 🔥 CRM STATS */}
+
         <Row gutter={[16, 16]}>
 
-          {/* TOTAL */}
+          {/* TOTAL LEADS */}
+
           <Col
             xs={24}
             sm={12}
@@ -183,9 +251,7 @@ export default function Dashboard() {
             lg={6}
           >
 
-            <Card
-              style={cardStyle}
-            >
+            <Card style={cardStyle}>
 
               <div
                 style={{
@@ -197,9 +263,7 @@ export default function Dashboard() {
                 Total Leads
               </div>
 
-              <div
-                style={numberStyle}
-              >
+              <div style={numberStyle}>
                 {data.total_leads || 0}
               </div>
 
@@ -208,6 +272,7 @@ export default function Dashboard() {
           </Col>
 
           {/* TODAY */}
+
           <Col
             xs={24}
             sm={12}
@@ -215,9 +280,7 @@ export default function Dashboard() {
             lg={6}
           >
 
-            <Card
-              style={cardStyle}
-            >
+            <Card style={cardStyle}>
 
               <div
                 style={{
@@ -235,8 +298,10 @@ export default function Dashboard() {
                   color: "#16a34a",
                 }}
               >
-                {data.today_followups
-                  ?.length || 0}
+                {
+                  data.today_followups
+                    ?.length || 0
+                }
               </div>
 
             </Card>
@@ -244,6 +309,7 @@ export default function Dashboard() {
           </Col>
 
           {/* UPCOMING */}
+
           <Col
             xs={24}
             sm={12}
@@ -251,9 +317,7 @@ export default function Dashboard() {
             lg={6}
           >
 
-            <Card
-              style={cardStyle}
-            >
+            <Card style={cardStyle}>
 
               <div
                 style={{
@@ -271,8 +335,10 @@ export default function Dashboard() {
                   color: "#f59e0b",
                 }}
               >
-                {data.upcoming_followups
-                  ?.length || 0}
+                {
+                  data.upcoming_followups
+                    ?.length || 0
+                }
               </div>
 
             </Card>
@@ -280,6 +346,7 @@ export default function Dashboard() {
           </Col>
 
           {/* OVERDUE */}
+
           <Col
             xs={24}
             sm={12}
@@ -287,9 +354,7 @@ export default function Dashboard() {
             lg={6}
           >
 
-            <Card
-              style={cardStyle}
-            >
+            <Card style={cardStyle}>
 
               <div
                 style={{
@@ -307,8 +372,10 @@ export default function Dashboard() {
                   color: "#dc2626",
                 }}
               >
-                {data.overdue_followups
-                  ?.length || 0}
+                {
+                  data.overdue_followups
+                    ?.length || 0
+                }
               </div>
 
             </Card>
@@ -317,7 +384,171 @@ export default function Dashboard() {
 
         </Row>
 
+        {/* ✅ BUSINESS OVERVIEW */}
+
+        <div
+          style={{
+            marginTop: 30,
+          }}
+        >
+
+          <h2
+            style={{
+              fontSize:
+                isMobile ? 22 : 28,
+
+              fontWeight: "bold",
+
+              marginBottom: 20,
+            }}
+          >
+            Business Overview
+          </h2>
+
+          <Row gutter={[16, 16]}>
+
+            {/* SALES */}
+
+            <Col
+              xs={24}
+              sm={12}
+              md={12}
+              lg={6}
+            >
+
+              <Card style={cardStyle}>
+
+                <div
+                  style={{
+                    fontSize: 15,
+                    color: "#666",
+                    marginBottom: 10,
+                  }}
+                >
+                  Total Sales
+                </div>
+
+                <div
+                  style={{
+                    ...numberStyle,
+                    color: "#16a34a",
+                  }}
+                >
+                  ₹{totalSales}
+                </div>
+
+              </Card>
+
+            </Col>
+
+            {/* PENDING */}
+
+            <Col
+              xs={24}
+              sm={12}
+              md={12}
+              lg={6}
+            >
+
+              <Card style={cardStyle}>
+
+                <div
+                  style={{
+                    fontSize: 15,
+                    color: "#666",
+                    marginBottom: 10,
+                  }}
+                >
+                  Pending Payments
+                </div>
+
+                <div
+                  style={{
+                    ...numberStyle,
+                    color: "#f59e0b",
+                  }}
+                >
+                  ₹{pendingPayments}
+                </div>
+
+              </Card>
+
+            </Col>
+
+            {/* INVENTORY */}
+
+            <Col
+              xs={24}
+              sm={12}
+              md={12}
+              lg={6}
+            >
+
+              <Card style={cardStyle}>
+
+                <div
+                  style={{
+                    fontSize: 15,
+                    color: "#666",
+                    marginBottom: 10,
+                  }}
+                >
+                  Inventory Value
+                </div>
+
+                <div
+                  style={{
+                    ...numberStyle,
+                    color: "#2563eb",
+                  }}
+                >
+                  ₹{inventoryValue}
+                </div>
+
+              </Card>
+
+            </Col>
+
+            {/* LOW STOCK */}
+
+            <Col
+              xs={24}
+              sm={12}
+              md={12}
+              lg={6}
+            >
+
+              <Card style={cardStyle}>
+
+                <div
+                  style={{
+                    fontSize: 15,
+                    color: "#666",
+                    marginBottom: 10,
+                  }}
+                >
+                  Low Stock Items
+                </div>
+
+                <div
+                  style={{
+                    ...numberStyle,
+                    color: "#dc2626",
+                  }}
+                >
+                  {lowStockCount}
+                </div>
+
+              </Card>
+
+            </Col>
+
+          </Row>
+
+        </div>
+
         {/* 👑 ADMIN */}
+
         {role === "admin" && (
 
           <Card
@@ -354,6 +585,7 @@ export default function Dashboard() {
         )}
 
         {/* 👨‍💼 MANAGER */}
+
         {role === "manager" && (
 
           <Card
@@ -390,6 +622,7 @@ export default function Dashboard() {
         )}
 
         {/* 👨‍💻 STAFF */}
+
         {role === "staff" && (
 
           <Card
@@ -426,98 +659,99 @@ export default function Dashboard() {
 
       </div>
 
+      {/* ✅ FOLLOWUP MODAL */}
+
       <Modal
 
-          title="Today's Followups"
+        title="Today's Followups"
 
-          open={followupModal}
+        open={followupModal}
 
-          footer={null}
+        footer={null}
 
-          onCancel={() =>
+        onCancel={() =>
+          setFollowupModal(false)
+        }
+
+        width={
+          isMobile
+            ? "95%"
+            : 650
+        }
+      >
+
+        {
+
+          todayFollowups.map((item) => (
+
+            <div
+
+              key={item.id}
+
+              style={{
+
+                border:
+                  "1px solid #eee",
+
+                borderRadius: 12,
+
+                padding: 12,
+
+                marginBottom: 12,
+
+                background: "#fafafa",
+              }}
+            >
+
+              <p>
+                <strong>
+                  Customer:
+                </strong>
+
+                {" "}
+
+                {item.name}
+              </p>
+
+              <p>
+                <strong>
+                  Phone:
+                </strong>
+
+                {" "}
+
+                {item.phone}
+              </p>
+
+              <p>
+                <strong>
+                  Followup Date:
+                </strong>
+
+                {" "}
+
+                {item.date}
+              </p>
+
+            </div>
+          ))
+        }
+
+        <Button
+
+          type="primary"
+
+          block
+
+          onClick={() =>
             setFollowupModal(false)
           }
-
-          width={
-            isMobile
-              ? "95%"
-              : 650
-          }
         >
+          Close
+        </Button>
 
-          {
-
-            todayFollowups.map((item) => (
-
-              <div
-
-                key={item.id}
-
-                style={{
-
-                  border:
-                    "1px solid #eee",
-
-                  borderRadius: 12,
-
-                  padding: 12,
-
-                  marginBottom: 12,
-
-                  background: "#fafafa",
-                }}
-              >
-
-                <p>
-                  <strong>
-                    Customer:
-                  </strong>
-
-                  {" "}
-
-                  {item.name}
-                </p>
-
-                <p>
-                  <strong>
-                    Phone:
-                  </strong>
-
-                  {" "}
-
-                  {item.phone}
-                </p>
-
-                <p>
-                  <strong>
-                    Followup Date:
-                  </strong>
-
-                  {" "}
-
-                  {item.date}
-                </p>
-
-              </div>
-            ))
-          }
-
-          <Button
-
-            type="primary"
-
-            block
-
-            onClick={() =>
-              setFollowupModal(false)
-            }
-          >
-            Close
-          </Button>
-
-        </Modal>
+      </Modal>
 
     </MainLayout>
-
   );
 }
