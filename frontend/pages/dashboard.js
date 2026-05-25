@@ -112,6 +112,15 @@ export default function Dashboard() {
 
         // ✅ BUSINESS OVERVIEW
 
+      // 👑 ADMIN
+      // Full access
+
+      if (
+          localStorage.getItem("role")
+          ===
+          "admin"
+        ) {
+
         setTotalSales(
           res.data.total_sales || 0
         );
@@ -127,6 +136,53 @@ export default function Dashboard() {
         setLowStockCount(
           res.data.low_stock_count || 0
         );
+      }
+
+      // 👨‍💼 MANAGER
+      // Limited access
+
+     else if (
+        localStorage.getItem("role")
+        ===
+        "manager"
+      ){
+
+        setTotalSales(
+          res.data.total_sales || 0
+        );
+
+        // ❌ hide pending payments
+
+        setPendingPayments(0);
+
+        // optional inventory view
+
+        setInventoryValue(
+          res.data.inventory_value || 0
+        );
+
+        setLowStockCount(
+          res.data.low_stock_count || 0
+        );
+      }
+
+      // 👨‍💻 STAFF
+      // Hide business analytics
+
+      else if (
+          localStorage.getItem("role")
+          ===
+          "staff"
+        ) {
+
+        setTotalSales(0);
+
+        setPendingPayments(0);
+
+        setInventoryValue(0);
+
+        setLowStockCount(0);
+      }
 
         // ✅ FOLLOWUPS
 
