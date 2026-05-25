@@ -458,18 +458,23 @@ Thank you for your business.
                 </Title>
 
                 <div>
-                  Address:(" ")
+                  Address:{" "}
                   {invoice.company_address}
                 </div>
 
                 <div>
-                  Email:(" ")
+                  Email:{" "}
                   {invoice.company_email}
                 </div>
 
                 <div>
-                  Mobile:(" ")
+                  Mobile:{" "}
                   {invoice.company_mobile}
+                </div>
+
+                <div>
+                  GSTIN:{" "}
+                  {invoice.company_gstin}
                 </div>
 
               </Col>
