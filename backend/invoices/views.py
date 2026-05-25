@@ -600,6 +600,32 @@ class InvoiceDetailView(APIView):
                         },
                         status=403
                     )
+                
+                # ✅ PAYMENTS
+
+                payments = []
+
+                for payment in invoice.payments.all():
+
+                            payments.append({
+
+                                "id":
+                                    payment.id,
+
+                                "amount":
+                                    payment.amount,
+
+                                "payment_method":
+                                    payment.payment_method,
+
+                                "note":
+                                    payment.note,
+
+                                "created_at":
+                                    payment.created_at.strftime(
+                                        "%d-%m-%Y %I:%M %p"
+                                    ),
+                            })
 
             # ✅ ITEMS
 
@@ -609,18 +635,21 @@ class InvoiceDetailView(APIView):
 
                 items.append({
 
-                    "product_name":
-                        item.product_name,
+                        "product_name":
+                            item.product_name,
 
-                    "quantity":
-                        item.quantity,
+                        "unit":
+                            item.unit,
 
-                    "price":
-                        item.price,
+                        "quantity":
+                            item.quantity,
 
-                    "subtotal":
-                        item.subtotal,
-                })
+                        "price":
+                            item.price,
+
+                        "subtotal":
+                            item.subtotal,
+                    })
 
             # ✅ GST VALUES
 
@@ -679,6 +708,12 @@ class InvoiceDetailView(APIView):
                 "grand_total":
                     grand_total,
 
+                "paid_amount":
+                    invoice.paid_amount,
+
+                "due_amount":
+                    invoice.due_amount,
+
                 "created_by":
                     invoice.created_by.full_name,
 
@@ -724,6 +759,9 @@ class InvoiceDetailView(APIView):
 
                 "items":
                     items,
+
+                "payments":
+                    payments,
             }
 
             return Response(data)
