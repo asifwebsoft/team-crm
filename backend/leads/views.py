@@ -6,6 +6,9 @@ from datetime import date
 from .models import Lead
 from accounts.models import User
 from .models import LeadFollowupHistory
+from invoices.models import Invoice
+from inventory.models import InventoryItem
+from django.db.models import Sum, F
 
 
 
@@ -107,7 +110,52 @@ class DashboardView(APIView):
             followup_date__lt=today
         ).exclude(status="closed")
 
+        # ✅ TOTAL SALES
+
+        total_sales = Invoice.objects.filter(
+            company=request.user.company
+        ).aggregate(
+            total=Sum("grand_total")
+        )["total"] or 0
+
+
+        # ✅ PENDING PAYMENTS
+
+        pending_payments = Invoice.objects.filter(
+            company=request.user.company,
+            status="pending"
+        ).aggregate(
+            total=Sum("grand_total")
+        )["total"] or 0
+
+
+        # ✅ INVENTORY VALUE
+
+        inventory_items = InventoryItem.objects.filter(
+            company=request.user.company
+        )
+
+        inventory_value = 0
+
+        for item in inventory_items:
+
+            inventory_value += (
+                item.stock_quantity *
+                item.price
+            )
+
+
+        # ✅ LOW STOCK COUNT
+
+        low_stock_count = InventoryItem.objects.filter(
+            company=request.user.company,
+            stock_quantity__lte=
+                F("low_stock_limit")
+        ).count()
+
         return Response({
+
+    
 
     "total_leads": leads.count(),
 
@@ -161,6 +209,17 @@ class DashboardView(APIView):
 
         for l in overdue_followups
     ],
+
+    "total_sales": total_sales,
+
+    "pending_payments":
+        pending_payments,
+
+    "inventory_value":
+        inventory_value,
+
+    "low_stock_count":
+        low_stock_count,
 
 })
 
