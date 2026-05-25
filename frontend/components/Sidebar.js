@@ -237,6 +237,8 @@ export default function Sidebar() {
             left: 0,
             top: 0,
             bottom: 0,
+            overflowY: "auto",
+            overflowX: "hidden",
           }}
         >
           {sidebarMenu}
