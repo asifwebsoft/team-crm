@@ -124,7 +124,7 @@ export default function Sidebar() {
         icon: <InboxOutlined />,
         label: "Purchase Entry",
       },
-      {
+       {
           key: "/customer-ledger",
           icon: <BookOutlined />,
           label: "Customer Ledger",
