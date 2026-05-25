@@ -110,79 +110,72 @@ export default function Dashboard() {
 
         setData(res.data);
 
-        // ✅ BUSINESS OVERVIEW
+// ✅ BUSINESS OVERVIEW ROLE BASED
 
-      // 👑 ADMIN
-      // Full access
+const currentRole =
+  localStorage.getItem("role");
 
-      if (
-          localStorage.getItem("role")
-          ===
-          "admin"
-        ) {
+// 👑 ADMIN
+// Full access
 
-        setTotalSales(
-          res.data.total_sales || 0
-        );
+if (currentRole === "admin") {
 
-        setPendingPayments(
-          res.data.pending_payments || 0
-        );
+  setTotalSales(
+    res.data.total_sales || 0
+  );
 
-        setInventoryValue(
-          res.data.inventory_value || 0
-        );
+  setPendingPayments(
+    res.data.pending_payments || 0
+  );
 
-        setLowStockCount(
-          res.data.low_stock_count || 0
-        );
-      }
+  setInventoryValue(
+    res.data.inventory_value || 0
+  );
 
-      // 👨‍💼 MANAGER
-      // Limited access
+  setLowStockCount(
+    res.data.low_stock_count || 0
+  );
+}
 
-     else if (
-        localStorage.getItem("role")
-        ===
-        "manager"
-      ){
+// 👨‍💼 MANAGER
+// Limited business access
 
-        setTotalSales(
-          res.data.total_sales || 0
-        );
+else if (
+  currentRole === "manager"
+) {
 
-        // ❌ hide pending payments
+  setTotalSales(
+    res.data.total_sales || 0
+  );
 
-        setPendingPayments(0);
+  // ❌ hidden for manager
 
-        // optional inventory view
+  setPendingPayments(0);
 
-        setInventoryValue(
-          res.data.inventory_value || 0
-        );
+  setInventoryValue(
+    res.data.inventory_value || 0
+  );
 
-        setLowStockCount(
-          res.data.low_stock_count || 0
-        );
-      }
+  setLowStockCount(
+    res.data.low_stock_count || 0
+  );
+}
 
-      // 👨‍💻 STAFF
-      // Hide business analytics
+// 👨‍💻 STAFF
+// Hide all business analytics
 
-      else if (
-          localStorage.getItem("role")
-          ===
-          "staff"
-        ) {
+else if (
+  currentRole === "staff"
+) {
 
-        setTotalSales(0);
+  setTotalSales(0);
 
-        setPendingPayments(0);
+  setPendingPayments(0);
 
-        setInventoryValue(0);
+  setInventoryValue(0);
 
-        setLowStockCount(0);
-      }
+  setLowStockCount(0);
+}
 
         // ✅ FOLLOWUPS
 
