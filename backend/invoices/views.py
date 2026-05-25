@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.db import models
-
+from decimal import Decimal
 from .models import Invoice, InvoiceItem
 from .permissions import CanCreateInvoice
 from inventory.models import InventoryItem
@@ -1020,6 +1020,9 @@ class CustomerLedgerView(APIView):
             list(customers.values())
         )
     
+
+
+
 class AddInvoicePaymentView(APIView):
 
     permission_classes = [
@@ -1035,10 +1038,14 @@ class AddInvoicePaymentView(APIView):
                 company=request.user.company
             )
 
-            amount = float(
-                request.data.get(
-                    "amount",
-                    0
+            amount = Decimal(
+
+                str(
+
+                    request.data.get(
+                        "amount",
+                        0
+                    )
                 )
             )
 
@@ -1064,7 +1071,7 @@ class AddInvoicePaymentView(APIView):
                     status=400
                 )
 
-            if amount > float(invoice.due_amount):
+            if amount > invoice.due_amount:
 
                 return Response(
                     {
@@ -1093,15 +1100,27 @@ class AddInvoicePaymentView(APIView):
 
             # ✅ UPDATE INVOICE
 
-            invoice.paid_amount += amount
+            invoice.paid_amount = (
 
-            invoice.due_amount -= amount
+                invoice.paid_amount
+                +
+                amount
+            )
 
-            # ✅ STATUS
+            invoice.due_amount = (
+
+                invoice.due_amount
+                -
+                amount
+            )
+
+            # ✅ STATUS UPDATE
 
             if invoice.due_amount <= 0:
 
                 invoice.status = "paid"
+
+                invoice.due_amount = 0
 
             else:
 
