@@ -4,7 +4,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.db import models
 from decimal import Decimal
-from .models import Invoice, InvoiceItem
+from .models import( 
+        Invoice, 
+        InvoiceItem,
+        InvoicePayment
+     )
 from .permissions import CanCreateInvoice
 from inventory.models import InventoryItem
 
