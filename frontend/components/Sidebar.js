@@ -11,7 +11,8 @@ import {
   LogoutOutlined,
   MenuOutlined,
   AppstoreOutlined,
-  InboxOutlined
+  InboxOutlined,
+  BookOutlined
   
 } from "@ant-design/icons";
 
@@ -122,7 +123,12 @@ export default function Sidebar() {
         key: "/purchase-entry",
         icon: <InboxOutlined />,
         label: "Purchase Entry",
-      }
+      },
+      {
+          key: "/customer-ledger",
+          icon: <BookOutlined />,
+          label: "Customer Ledger",
+        }
     );
   }
 

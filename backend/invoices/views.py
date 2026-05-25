@@ -885,3 +885,73 @@ class UpdateInvoiceView(APIView):
                 },
                 status=400
             )
+        
+class CustomerLedgerView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        company = request.user.company
+
+        invoices = Invoice.objects.filter(
+                company=company
+            )
+
+        customers = {}
+
+        for invoice in invoices:
+
+            name = invoice.customer_name
+
+            if name not in customers:
+
+                customers[name] = {
+
+                    "customer_name":
+                        name,
+
+                    "phone":
+                        invoice.phone,
+
+                    "total_amount": 0,
+
+                    "paid_amount": 0,
+
+                    "due_amount": 0,
+
+                    "invoice_count": 0,
+                }
+
+            grand_total = float(
+                    invoice.grand_total
+                    or 0
+                )
+
+            customers[name][
+                "total_amount"
+            ] += grand_total
+
+            customers[name][
+                "invoice_count"
+            ] += 1
+
+            # ✅ PAID
+
+            if invoice.status == "paid":
+
+                customers[name][
+                    "paid_amount"
+                ] += grand_total
+
+            # ✅ DUE
+
+            else:
+
+                customers[name][
+                    "due_amount"
+                ] += grand_total
+
+        return Response(
+            list(customers.values())
+        )

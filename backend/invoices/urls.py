@@ -5,7 +5,8 @@ from .views import (
     InvoiceListView,
     UpdateInvoiceStatusView,
     InvoiceDetailView,
-    UpdateInvoiceView
+    UpdateInvoiceView,
+    CustomerLedgerView
 )
 
 
@@ -34,5 +35,10 @@ urlpatterns = [
     "update/<int:pk>/",
     UpdateInvoiceView.as_view()
    ),
+
+   path(
+    "customer-ledger/",
+    CustomerLedgerView.as_view()
+    ),
 
 ]
