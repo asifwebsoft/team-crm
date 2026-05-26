@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django.db.models import Q
+from accounts.models import User
 from django.db import models
 from decimal import Decimal
 from .models import( 
@@ -1165,3 +1167,114 @@ class AddInvoicePaymentView(APIView):
                 },
                 status=400
             )
+
+
+class EmployeeSalesAnalyticsView(APIView):
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    def get(self, request):
+
+        user = request.user
+
+        invoices = Invoice.objects.filter(
+            company=user.company
+        )
+
+        # ✅ STAFF
+
+        if user.role == "staff":
+
+            invoices = invoices.filter(
+                created_by=user
+            )
+
+        # ✅ MANAGER
+
+        elif user.role == "manager":
+
+            team_users = User.objects.filter(
+                manager=user
+            )
+
+            invoices = invoices.filter(
+
+                Q(created_by=user)
+
+                |
+
+                Q(created_by__in=team_users)
+            )
+
+        # ✅ MONTH FILTER
+
+        month = request.GET.get(
+            "month"
+        )
+
+        year = request.GET.get(
+            "year"
+        )
+
+        if month and year:
+
+            invoices = invoices.filter(
+
+                created_at__month=month,
+
+                created_at__year=year
+            )
+
+        # ✅ EMPLOYEE DATA
+
+        employee_data = {}
+
+        for invoice in invoices:
+
+            employee = (
+                invoice.created_by
+            )
+
+            if not employee:
+                continue
+
+            employee_id = employee.id
+
+            if employee_id not in employee_data:
+
+                employee_data[
+                    employee_id
+                ] = {
+
+                    "employee_name":
+                        employee.full_name,
+
+                    "invoice_count":
+                        0,
+
+                    "total_sales":
+                        0,
+                }
+
+            employee_data[
+                employee_id
+            ][
+                "invoice_count"
+            ] += 1
+
+            employee_data[
+                employee_id
+            ][
+                "total_sales"
+            ] += float(
+                invoice.grand_total
+                or 0
+            )
+
+        return Response(
+            list(
+                employee_data.values()
+            )
+        )

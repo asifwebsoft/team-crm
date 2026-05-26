@@ -134,7 +134,12 @@ export default function Sidebar() {
           key: "/expenses",
           icon: <WalletOutlined />,
           label: "Expenses",
-        }
+        },
+        {
+          key: "/employee-sales",
+          icon: <LineChartOutlined />,
+          label: "Sales Analytics",
+        },
     );
   }
 
@@ -156,6 +161,15 @@ export default function Sidebar() {
           icon: <WalletOutlined />,
 
           label: "Expenses",
+        });
+
+        items.push({
+
+          key: "/employee-sales",
+
+          icon: <LineChartOutlined />,
+
+          label: "Sales Analytics",
         });
     
   }

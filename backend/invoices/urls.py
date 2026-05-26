@@ -7,7 +7,8 @@ from .views import (
     InvoiceDetailView,
     UpdateInvoiceView,
     CustomerLedgerView,
-    AddInvoicePaymentView
+    AddInvoicePaymentView,
+    EmployeeSalesAnalyticsView
 )
 
 
@@ -45,6 +46,11 @@ urlpatterns = [
     path(
     "payment/<int:pk>/",
     AddInvoicePaymentView.as_view()
+),
+
+path(
+    "employee-sales/",
+    EmployeeSalesAnalyticsView.as_view()
 ),
 
 ]
