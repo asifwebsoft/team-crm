@@ -643,6 +643,83 @@ Thank you for your business.
               bordered
             />
 
+            
+                {/* PAYMENT HISTORY */}
+
+                  {invoice.payments &&
+                  invoice.payments.length > 0 && (
+
+                    <>
+
+                      <Divider />
+
+                      <Title level={4}>
+                        Payment History
+                      </Title>
+
+                      <Table
+
+                        dataSource={
+                          invoice.payments
+                        }
+
+                        rowKey="id"
+
+                        pagination={false}
+
+                        bordered
+
+                        columns={[
+
+                          {
+                            title: "Date",
+
+                            dataIndex:
+                              "created_at",
+                          },
+
+                          {
+                            title: "Method",
+
+                            dataIndex:
+                              "payment_method",
+
+                            render: (method) => (
+
+                              <Tag color="blue">
+                                {method.toUpperCase()}
+                              </Tag>
+
+                            ),
+                          },
+
+                          {
+                            title: "Amount",
+
+                            dataIndex:
+                              "amount",
+
+                            render: (amount) => (
+
+                              <Tag color="green">
+                                ₹{amount}
+                              </Tag>
+
+                            ),
+                          },
+
+                          {
+                            title: "Note",
+
+                            dataIndex:
+                              "note",
+                          },
+                        ]}
+                      />
+
+                    </>
+                  )}
+
             {/* TOTAL */}
 
             <div
@@ -723,81 +800,6 @@ Thank you for your business.
                   </div>
 
                 )}
-                {/* PAYMENT HISTORY */}
-
-                  {invoice.payments &&
-                  invoice.payments.length > 0 && (
-
-                    <>
-
-                      <Divider />
-
-                      <Title level={4}>
-                        Payment History
-                      </Title>
-
-                      <Table
-
-                        dataSource={
-                          invoice.payments
-                        }
-
-                        rowKey="id"
-
-                        pagination={false}
-
-                        bordered
-
-                        columns={[
-
-                          {
-                            title: "Date",
-
-                            dataIndex:
-                              "created_at",
-                          },
-
-                          {
-                            title: "Method",
-
-                            dataIndex:
-                              "payment_method",
-
-                            render: (method) => (
-
-                              <Tag color="blue">
-                                {method.toUpperCase()}
-                              </Tag>
-
-                            ),
-                          },
-
-                          {
-                            title: "Amount",
-
-                            dataIndex:
-                              "amount",
-
-                            render: (amount) => (
-
-                              <Tag color="green">
-                                ₹{amount}
-                              </Tag>
-
-                            ),
-                          },
-
-                          {
-                            title: "Note",
-
-                            dataIndex:
-                              "note",
-                          },
-                        ]}
-                      />
-
-                    </>
-                  )}
 
                 <Divider />
 
