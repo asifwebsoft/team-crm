@@ -520,18 +520,23 @@ else if (
           }}
         >
 
-          <h2
-            style={{
-              fontSize:
-                isMobile ? 22 : 28,
+          {localStorage.getItem("role")
+              !== "staff" && (
 
-              fontWeight: "bold",
+                <h2
+                  style={{
+                    fontSize:
+                      isMobile ? 22 : 28,
 
-              marginBottom: 20,
-            }}
-          >
-            Business Overview
-          </h2>
+                    fontWeight: "bold",
+
+                    marginBottom: 20,
+                  }}
+                >
+                  Business Overview
+                </h2>
+
+              )}
 
           <Row gutter={[16, 16]}>
 
