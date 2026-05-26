@@ -5,7 +5,8 @@ import {
   Col,
   Card,
   Modal,
-  Button
+  Button,
+  Statistic
 } from "antd";
 
 import API from "../services/api";
@@ -48,6 +49,28 @@ export default function Dashboard() {
   const [lowStockCount,
     setLowStockCount] =
     useState(0);
+
+  // ✅ MONTHLY ANALYTICS
+
+const [monthlySales,
+  setMonthlySales] =
+  useState(0);
+
+const [monthlyExpense,
+  setMonthlyExpense] =
+  useState(0);
+
+const [monthlyProfit,
+  setMonthlyProfit] =
+  useState(0);
+
+const [totalExpense,
+  setTotalExpense] =
+  useState(0);
+
+const [netProfit,
+  setNetProfit] =
+  useState(0);
 
   // 🔥 AUTH + RESPONSIVE
 
@@ -135,6 +158,30 @@ if (currentRole === "admin") {
   setLowStockCount(
     res.data.low_stock_count || 0
   );
+  
+  // ✅ MONTHLY
+
+setMonthlySales(
+  res.data.monthly_sales || 0
+);
+
+setMonthlyExpense(
+  res.data.monthly_expense || 0
+);
+
+setMonthlyProfit(
+  res.data.monthly_profit || 0
+);
+
+// ✅ TOTAL
+
+setTotalExpense(
+  res.data.total_expense || 0
+);
+
+setNetProfit(
+  res.data.net_profit || 0
+);
 }
 
 // 👨‍💼 MANAGER
@@ -147,6 +194,28 @@ else if (
   setTotalSales(
     res.data.total_sales || 0
   );
+
+  // ✅ MONTHLY
+
+setMonthlySales(
+  res.data.monthly_sales || 0
+);
+
+setMonthlyExpense(
+  res.data.monthly_expense || 0
+);
+
+// ❌ HIDE PROFIT
+
+setMonthlyProfit(0);
+
+// ✅ TOTAL
+
+setTotalExpense(
+  res.data.total_expense || 0
+);
+
+setNetProfit(0);
 
   // ❌ hidden for manager
 
@@ -175,6 +244,16 @@ else if (
   setInventoryValue(0);
 
   setLowStockCount(0);
+
+  setMonthlySales(0);
+
+  setMonthlyExpense(0);
+
+  setMonthlyProfit(0);
+
+  setTotalExpense(0);
+
+  setNetProfit(0);
 }
 
         // ✅ FOLLOWUPS
@@ -487,6 +566,81 @@ else if (
                 </div>
 
               </Card>
+
+              {localStorage.getItem("role")
+                !== "staff" && (
+
+                  <Row
+                    gutter={[16, 16]}
+                    style={{
+                      marginTop: 20,
+                    }}
+                  >
+
+                    {/* MONTHLY SALES */}
+
+                    <Col xs={24} sm={12} md={8}>
+
+                      <Card>
+
+                        <Statistic
+
+                          title="Monthly Sales"
+
+                          value={monthlySales}
+
+                          prefix="₹"
+                        />
+
+                      </Card>
+
+                    </Col>
+
+                    {/* MONTHLY EXPENSE */}
+
+                    <Col xs={24} sm={12} md={8}>
+
+                      <Card>
+
+                        <Statistic
+
+                          title="Monthly Expense"
+
+                          value={monthlyExpense}
+
+                          prefix="₹"
+                        />
+
+                      </Card>
+
+                    </Col>
+
+                    {/* ADMIN ONLY */}
+
+                    {localStorage.getItem("role")
+                    === "admin" && (
+
+                      <Col xs={24} sm={12} md={8}>
+
+                        <Card>
+
+                          <Statistic
+
+                            title="Monthly Profit"
+
+                            value={monthlyProfit}
+
+                            prefix="₹"
+                          />
+
+                        </Card>
+
+                      </Col>
+
+                    )}
+
+                  </Row>
+                )}
 
             </Col>
           )}

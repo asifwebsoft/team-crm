@@ -9,6 +9,7 @@ from .models import LeadFollowupHistory
 from invoices.models import Invoice
 from inventory.models import InventoryItem
 from django.db.models import Sum, F
+from expenses.models import Expense
 
 
 
@@ -113,6 +114,14 @@ class DashboardView(APIView):
 
         today = date.today()
 
+        # ✅ CURRENT MONTH
+
+        current_month = today.month
+
+        current_year = today.year
+
+        # ✅ FOLLOWUPS
+
         today_followups = leads.filter(
             followup_date=today
         ).exclude(status="closed")
@@ -133,13 +142,39 @@ class DashboardView(APIView):
             total=Sum("grand_total")
         )["total"] or 0
 
+        # ✅ MONTHLY SALES
+
+        monthly_sales = Invoice.objects.filter(
+
+            company=company,
+
+            created_at__month=
+                current_month,
+
+            created_at__year=
+                current_year
+
+        ).aggregate(
+
+            total=Sum("grand_total")
+
+        )["total"] or 0
+
         # ✅ PENDING PAYMENTS
 
         pending_payments = Invoice.objects.filter(
+
             company=company,
-            status="pending"
+
+            status__in=[
+                "pending",
+                "partial"
+            ]
+
         ).aggregate(
-            total=Sum("grand_total")
+
+            total=Sum("due_amount")
+
         )["total"] or 0
 
         # ✅ INVENTORY ITEMS
@@ -154,24 +189,88 @@ class DashboardView(APIView):
 
         for item in inventory_items:
 
-            inventory_value += float(
-                item.stock_quantity
-            ) * float(item.price)
+            inventory_value += (
+
+                float(item.stock_quantity)
+
+                *
+
+                float(item.price)
+            )
 
         # ✅ LOW STOCK COUNT
 
         low_stock_count = InventoryItem.objects.filter(
+
             company=company,
+
             stock_quantity__lte=
                 F("low_stock_limit")
+
         ).count()
+
+        # ✅ TOTAL EXPENSE
+
+        total_expense = Expense.objects.filter(
+
+            company=company
+
+        ).aggregate(
+
+            total=Sum("amount")
+
+        )["total"] or 0
+
+        # ✅ MONTHLY EXPENSE
+
+        monthly_expense = Expense.objects.filter(
+
+            company=company,
+
+            expense_date__month=
+                current_month,
+
+            expense_date__year=
+                current_year
+
+        ).aggregate(
+
+            total=Sum("amount")
+
+        )["total"] or 0
+
+        # ✅ TOTAL PROFIT
+
+        net_profit = (
+
+            float(total_sales)
+
+            -
+
+            float(total_expense)
+        )
+
+        # ✅ MONTHLY PROFIT
+
+        monthly_profit = (
+
+            float(monthly_sales)
+
+            -
+
+            float(monthly_expense)
+        )
 
         # ✅ RESPONSE
 
         return Response({
 
+            # ✅ LEADS
+
             "total_leads":
                 leads.count(),
+
+            # ✅ FOLLOWUPS
 
             "today_followups": [
 
@@ -235,6 +334,9 @@ class DashboardView(APIView):
             "total_sales":
                 total_sales,
 
+            "monthly_sales":
+                monthly_sales,
+
             "pending_payments":
                 pending_payments,
 
@@ -243,6 +345,22 @@ class DashboardView(APIView):
 
             "low_stock_count":
                 low_stock_count,
+
+            # ✅ EXPENSES
+
+            "total_expense":
+                total_expense,
+
+            "monthly_expense":
+                monthly_expense,
+
+            # ✅ PROFITS
+
+            "net_profit":
+                net_profit,
+
+            "monthly_profit":
+                monthly_profit,
         })
 
 # ✅ MY LEADS
