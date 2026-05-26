@@ -680,81 +680,141 @@ else if (
           </Row>
 
         </div>
+      {/* ✅ MONTHLY ANALYTICS */}
 
-        {localStorage.getItem("role")
-                !== "staff" && (
+{role !== "staff" && (
 
-                  <Row
-                    gutter={[16, 16]}
-                    style={{
-                      marginTop: 20,
-                    }}
-                  >
+  <div
+    style={{
+      marginTop: 30,
+    }}
+  >
 
-                    {/* MONTHLY SALES */}
+    <h2
+      style={{
+        fontSize:
+          isMobile ? 22 : 28,
 
-                    <Col xs={24} sm={12} md={8}>
+        fontWeight: "bold",
 
-                      <Card>
+        marginBottom: 20,
+      }}
+    >
+      Monthly Analytics
+    </h2>
 
-                        <Statistic
+    <Row gutter={[16, 16]}>
 
-                          title="Monthly Sales"
+      {/* MONTHLY SALES */}
 
-                          value={monthlySales}
+      <Col
+        xs={24}
+        sm={12}
+        md={12}
+        lg={8}
+      >
 
-                          prefix="₹"
-                        />
+        <Card style={cardStyle}>
 
-                      </Card>
+          <div
+            style={{
+              fontSize: 15,
+              color: "#666",
+              marginBottom: 10,
+            }}
+          >
+            Monthly Sales
+          </div>
 
-                    </Col>
+          <div
+            style={{
+              ...numberStyle,
+              color: "#16a34a",
+            }}
+          >
+            ₹{monthlySales}
+          </div>
 
-                    {/* MONTHLY EXPENSE */}
+        </Card>
 
-                    <Col xs={24} sm={12} md={8}>
+      </Col>
 
-                      <Card>
+      {/* MONTHLY EXPENSE */}
 
-                        <Statistic
+      <Col
+        xs={24}
+        sm={12}
+        md={12}
+        lg={8}
+      >
 
-                          title="Monthly Expense"
+        <Card style={cardStyle}>
 
-                          value={monthlyExpense}
+          <div
+            style={{
+              fontSize: 15,
+              color: "#666",
+              marginBottom: 10,
+            }}
+          >
+            Monthly Expense
+          </div>
 
-                          prefix="₹"
-                        />
+          <div
+            style={{
+              ...numberStyle,
+              color: "#dc2626",
+            }}
+          >
+            ₹{monthlyExpense}
+          </div>
 
-                      </Card>
+        </Card>
 
-                    </Col>
+      </Col>
 
-                    {/* ADMIN ONLY */}
+      {/* 👑 ADMIN ONLY */}
 
-                    {localStorage.getItem("role")
-                    === "admin" && (
+      {role === "admin" && (
 
-                      <Col xs={24} sm={12} md={8}>
+        <Col
+          xs={24}
+          sm={12}
+          md={12}
+          lg={8}
+        >
 
-                        <Card>
+          <Card style={cardStyle}>
 
-                          <Statistic
+            <div
+              style={{
+                fontSize: 15,
+                color: "#666",
+                marginBottom: 10,
+              }}
+            >
+              Monthly Profit
+            </div>
 
-                            title="Monthly Profit"
+            <div
+              style={{
+                ...numberStyle,
+                color: "#2563eb",
+              }}
+            >
+              ₹{monthlyProfit}
+            </div>
 
-                            value={monthlyProfit}
+          </Card>
 
-                            prefix="₹"
-                          />
+        </Col>
 
-                        </Card>
+      )}
 
-                      </Col>
+    </Row>
 
-                    )}
-
-                  </Row>
-                )}
+  </div>
+)}
 
         {/* 👑 ADMIN */}
 
