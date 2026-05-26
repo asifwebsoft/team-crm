@@ -13,5 +13,6 @@ urlpatterns = [
     path('api/invoices/', include('invoices.urls')),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path("api/inventory/", include("inventory.urls")),
+    path("api/expenses/",include("expenses.urls")),
    
 ]

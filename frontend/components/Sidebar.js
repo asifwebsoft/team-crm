@@ -12,7 +12,8 @@ import {
   MenuOutlined,
   AppstoreOutlined,
   InboxOutlined,
-  BookOutlined
+  BookOutlined,
+  WalletOutlined
   
 } from "@ant-design/icons";
 
@@ -128,6 +129,11 @@ export default function Sidebar() {
           key: "/customer-ledger",
           icon: <BookOutlined />,
           label: "Customer Ledger",
+        },
+        {
+          key: "/expenses",
+          icon: <WalletOutlined />,
+          label: "Expenses",
         }
     );
   }
@@ -140,6 +146,18 @@ export default function Sidebar() {
       icon: <UsergroupAddOutlined />,
       label: "My Team",
     });
+
+    // ✅ EXPENSES
+
+        items.push({
+
+          key: "/expenses",
+
+          icon: <WalletOutlined />,
+
+          label: "Expenses",
+        });
+    
   }
 
   // 🔥 LOGOUT
