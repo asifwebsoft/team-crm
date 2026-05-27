@@ -19,6 +19,7 @@ import {
 
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import API from "../services/api";
 
 const { Sider } = Layout;
 
@@ -52,21 +53,11 @@ export default function Sidebar() {
 
   }, []);
 
-  const handleLogout = async () => {
+ const handleLogout = async () => {
 
   try {
 
-    // BACKEND LOGOUT API
-    await fetch(
-      "http://127.0.0.1:8000/accounts/logout/",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    await API.post("/accounts/logout/");
 
   } catch (err) {
 
@@ -74,10 +65,8 @@ export default function Sidebar() {
 
   }
 
-  // CLEAR STORAGE
   localStorage.clear();
 
-  // REDIRECT
   window.location.href = "/login";
 };
 

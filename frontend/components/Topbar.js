@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Layout, Dropdown } from "antd";
 
 import { useRouter } from "next/router";
+import API from "../services/api";
 
 import {
   UserOutlined,
@@ -46,21 +47,11 @@ export default function Topbar() {
   }, []);
 
   // 🚪 LOGOUT
-  const handleLogout = async () => {
+const handleLogout = async () => {
 
   try {
 
-    // BACKEND LOGOUT API
-    await fetch(
-      "http://127.0.0.1:8000/accounts/logout/",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    await API.post("/accounts/logout/");
 
   } catch (err) {
 
@@ -68,14 +59,11 @@ export default function Topbar() {
 
   }
 
-  // CLEAR STORAGE
   localStorage.clear();
 
-  // REDIRECT
   router.push("/login");
 
 };
-
   // 👤 PROFILE MENU
   const profileMenu = [
     {
