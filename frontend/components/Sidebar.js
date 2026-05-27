@@ -52,10 +52,34 @@ export default function Sidebar() {
 
   }, []);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = "/login";
-  };
+  const handleLogout = async () => {
+
+  try {
+
+    // BACKEND LOGOUT API
+    await fetch(
+      "http://127.0.0.1:8000/accounts/logout/",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+  // CLEAR STORAGE
+  localStorage.clear();
+
+  // REDIRECT
+  window.location.href = "/login";
+};
 
   // 🔥 COMMON MENU
   let items = [

@@ -46,13 +46,35 @@ export default function Topbar() {
   }, []);
 
   // 🚪 LOGOUT
-  const handleLogout = () => {
+  const handleLogout = async () => {
 
-    localStorage.clear();
+  try {
 
-    router.push("/login");
+    // BACKEND LOGOUT API
+    await fetch(
+      "http://127.0.0.1:8000/accounts/logout/",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  };
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+  // CLEAR STORAGE
+  localStorage.clear();
+
+  // REDIRECT
+  router.push("/login");
+
+};
 
   // 👤 PROFILE MENU
   const profileMenu = [

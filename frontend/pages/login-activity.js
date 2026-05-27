@@ -15,19 +15,32 @@ export default function LoginActivity() {
 
   useEffect(() => {
 
+    fetchLoginActivity();
+
+  }, []);
+
+  const fetchLoginActivity = () => {
+
     API.get("/accounts/login-activity/")
 
       .then((res) => {
 
-        console.log("LOGIN ACTIVITY:", res.data);
+        console.log(
+          "LOGIN ACTIVITY:",
+          res.data
+        );
 
         setData(res.data || []);
 
       })
 
-      .catch((err) => console.log(err));
+      .catch((err) => {
 
-  }, []);
+        console.log(err);
+
+      });
+
+  };
 
   const columns = [
 
@@ -50,14 +63,17 @@ export default function LoginActivity() {
       title: "Logout Time",
       dataIndex: "logout",
 
-      render: (value) => (
+      render: (_, record) => (
 
-        value ? (
-          value
-        ) : (
+        record.is_active ? (
+
           <Tag color="green">
             Active
           </Tag>
+
+        ) : (
+
+          record.logout || "-"
         )
 
       ),
@@ -70,7 +86,9 @@ export default function LoginActivity() {
       render: (value) => (
 
         <Tag color="blue">
-          {value || "0 sec"}
+
+          {value || "0h 0m 0s"}
+
         </Tag>
 
       ),
