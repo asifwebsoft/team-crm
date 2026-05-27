@@ -5,7 +5,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.utils import timezone
 from .serializers import SignupSerializer
 from .models import LoginActivity
 from django.core.mail import send_mail
@@ -56,10 +55,23 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # ✅ CLOSE OLD ACTIVE SESSIONS
+        LoginActivity.objects.filter(
+            user=user,
+            logout_time__isnull=True
+        ).update(
+            logout_time=timezone.now()
+        )
+
+        # ✅ CREATE NEW LOGIN ENTRY
+        LoginActivity.objects.create(
+            user=user
+        )
+
         # ✅ JWT TOKEN
         refresh = RefreshToken.for_user(user)
 
-        # ✅ LOGIN RESPONSE
+        # ✅ RESPONSE
         return Response({
 
             "message": "Login successful",
@@ -67,15 +79,16 @@ class LoginView(APIView):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
 
-            # ✅ FRONTEND REQUIRED DATA
             "role": user.role,
             "name": user.full_name,
             "user_id": user.id,
 
-            # ✅ COMPANY NAME
-            "company": user.company.name if user.company else "",
+            "company": (
+                user.company.name
+                if user.company
+                else ""
+            ),
 
-            # OPTIONAL
             "email": user.email,
 
         }, status=status.HTTP_200_OK)
@@ -102,16 +115,16 @@ class LoginActivityView(APIView):
                 else None
             )
 
-            # ✅ EXACT DURATION
-            end_time = a.logout_time
+            # ACTIVE / CLOSED SESSION
+            end_time = a.logout_time or timezone.now()
 
-            if not end_time:
-                end_time = timezone.now()
-
-            total_seconds = int(
-                (end_time - a.login_time).total_seconds()
+            # SAFETY CHECK
+            total_seconds = max(
+                int((end_time - a.login_time).total_seconds()),
+                0
             )
 
+            # TIME CALCULATION
             hours = total_seconds // 3600
 
             minutes = (
@@ -120,15 +133,8 @@ class LoginActivityView(APIView):
 
             seconds = total_seconds % 60
 
-            duration = ""
-
-            if hours > 0:
-                duration += f"{hours}h "
-
-            if minutes > 0:
-                duration += f"{minutes}m "
-
-            duration += f"{seconds}s"
+            # PROPER FORMAT
+            duration = f"{hours}h {minutes}m {seconds}s"
 
             data.append({
 
@@ -153,28 +159,37 @@ class LoginActivityView(APIView):
                     else None
                 ),
 
+                "is_active": a.logout_time is None,
+
                 "duration": duration,
 
             })
 
         return Response(data)
 
-
 # ✅ LOGOUT
 class LogoutView(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+
+        # ACTIVE SESSION FIND
         activity = LoginActivity.objects.filter(
             user=request.user,
             logout_time__isnull=True
         ).last()
 
+        # LOGOUT TIME SAVE
         if activity:
+
             activity.logout_time = timezone.now()
+
             activity.save()
 
-        return Response({"message": "Logged out"})
+        return Response({
+            "message": "Logged out successfully"
+        })
 
 
 # ✅ LOGIN ACTIVITY (FIXED)
